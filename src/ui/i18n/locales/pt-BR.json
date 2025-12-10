@@ -10,6 +10,7 @@
   "common": {
     "close": "Fechar",
     "cancel": "Cancelar",
+    "delete": "Excluir",
     "save": "Salvar",
     "create": "Criar",
     "loading": "Carregando...",
@@ -33,10 +34,12 @@
   },
   "connectionList": {
     "title": "Conexões Salvas",
-    "empty": "Nenhuma conexão encontrada"
+    "empty": "Nenhuma conexão encontrada",
+    "edit": "Editar conexão"
   },
   "connectionModal": {
     "title": "Nova Conexão",
+    "editTitle": "Editar Conexão",
     "fields": {
       "name": "Nome da Conexão",
       "namePlaceholder": "Ex: Produção",
@@ -52,7 +55,11 @@
     },
     "authNote": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
     "cancel": "Cancelar",
-    "connect": "Conectar"
+    "connect": "Conectar",
+    "save": "Salvar Alterações",
+    "test": "Testar",
+    "testing": "Testando...",
+    "testSuccess": "Conexão realizada com sucesso!"
   },
   "setupGuide": {
     "title": "Guia de Configuração",
@@ -136,9 +143,13 @@
   "loadingModal": {
     "loading": "Carregando..."
   },
-  "errorModal": {
-    "title": "Erro",
-    "close": "Fechar"
+  "alertModal": {
+    "titles": {
+      "error": "Erro",
+      "success": "Sucesso",
+      "warning": "Aviso"
+    },
+    "close": "OK"
   },
   "statistics": {
     "title": "Estatísticas do Servidor",

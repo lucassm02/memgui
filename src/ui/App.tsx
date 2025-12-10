@@ -1,6 +1,6 @@
 import { I18nextProvider } from "react-i18next";
 import { Route, Routes } from "react-router-dom";
-import ErrorModal from "@/ui/components/ErrorModal";
+import AlertModal from "@/ui/components/AlertModal";
 import LoadingModal from "@/ui/components/LoadingModal";
 
 import TitleBar from "@/ui/components/TitleBar";
@@ -30,7 +30,7 @@ const App = () => (
                   <div className="h-screen flex flex-col">
                     <TitleBar />
                     <LoadingModal />
-                    <ErrorModal />
+                    <AlertModal />
                     <Routes>
                       <Route path="/" element={<Connection />} />
                       <Route path="/panel" element={<Panel />} />

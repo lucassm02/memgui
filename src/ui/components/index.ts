@@ -3,7 +3,7 @@ export * from "./ConnectionModal";
 export * from "./ConnectionList";
 export * from "./CreateKeyModal";
 export * from "./EditKeyModal";
-export * from "./ErrorModal";
+export { default as AlertModal } from "./AlertModal";
 export * from "./LanguageSelector";
 export * from "./KeyList";
 export * from "./LoadingModal";

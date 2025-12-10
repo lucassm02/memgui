@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import { ModalContext } from "../contexts";
+import { AlertType, Connection, ModalContext } from "../contexts";
 
 type Key = {
   key: string;
@@ -16,12 +16,17 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     value: "",
     size: 0
   });
-  const [errorModalIsOpen, setErrorModalIsOpen] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState("");
+  const [alertModalIsOpen, setAlertModalIsOpen] = useState(false);
+  const [alertModalMessage, setAlertModalMessage] = useState("");
+  const [alertModalType, setAlertModalType] = useState<AlertType>("error");
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
   const [viewDataModalIsOpen, setViewDataModalIsOpen] = useState(false);
   const [connectionModalIsOpen, setConnectionModalIsOpen] = useState(false);
   const [setupGuideModalIsOpen, setSetupGuideModalIsOpen] = useState(false);
+  const [connectionToEdit, setConnectionToEdit] = useState<Connection | null>(
+    null
+  );
+  const [isEditingConnection, setIsEditingConnection] = useState(false);
   const [itemToView, setItemToView] = useState<Key>({
     key: "",
     value: "",
@@ -46,12 +51,24 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setCreateModalIsOpen(false);
   };
 
-  const openConnectionModal = () => {
+  const openConnectionModal = (connection?: Connection | null) => {
+    const isConnectionObject =
+      connection &&
+      typeof connection === "object" &&
+      "host" in connection &&
+      "port" in connection;
+
+    const parsedConnection = isConnectionObject ? connection : null;
+
+    setConnectionToEdit(parsedConnection);
+    setIsEditingConnection(!!parsedConnection);
     setConnectionModalIsOpen(true);
   };
 
   const closeConnectionModal = () => {
     setConnectionModalIsOpen(false);
+    setConnectionToEdit(null);
+    setIsEditingConnection(false);
   };
 
   const openSetupGuideModal = () => {
@@ -62,13 +79,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setSetupGuideModalIsOpen(false);
   };
 
-  const showError = (error: string) => {
-    setErrorModalIsOpen(true);
-    setErrorModalMessage(error);
+  const showAlert = (message: string, type: AlertType = "error") => {
+    setAlertModalIsOpen(true);
+    setAlertModalMessage(message);
+    setAlertModalType(type);
   };
 
-  const dismissError = () => {
-    setErrorModalIsOpen(false);
+  const dismissAlert = () => {
+    setAlertModalIsOpen(false);
   };
 
   const showLoading = () => {
@@ -99,10 +117,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         itemToEdit,
         createModalIsOpen,
         editModalIsOpen,
-        showError,
-        dismissError,
-        errorModalIsOpen,
-        errorModalMessage,
+        showAlert,
+        dismissAlert,
+        alertModalIsOpen,
+        alertModalMessage,
+        alertModalType,
         dismissLoading,
         loadingModalIsOpen,
         showLoading,
@@ -115,7 +134,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         openConnectionModal,
         closeSetupGuideModal,
         openSetupGuideModal,
-        setupGuideModalIsOpen
+        setupGuideModalIsOpen,
+        isEditingConnection,
+        connectionToEdit
       }}
     >
       {children}

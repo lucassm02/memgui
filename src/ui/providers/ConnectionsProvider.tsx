@@ -2,27 +2,10 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { ConnectionsContext } from "../contexts";
+import { Connection, ConnectionsContext, KeyData } from "../contexts";
 import { useStorage } from "../hooks";
 import { useModal } from "../hooks/useModal";
 import api, { clearConnectionId, setConnectionId } from "@/ui/services/api";
-
-interface Connection {
-  name: string;
-  host: string;
-  port: number;
-  username?: string;
-  password?: string;
-  timeout: number;
-  id: string;
-}
-
-interface KeyData {
-  key: string;
-  value: string;
-  size: number;
-  timeUntilExpiration?: number;
-}
 
 export interface ServerData {
   status: string;
@@ -85,7 +68,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const [error] = useState("");
 
   const navigate = useNavigate();
-  const { showError, showLoading, dismissLoading } = useModal();
+  const { showAlert, showLoading, dismissLoading } = useModal();
   const { getKey, setKey } = useStorage();
   const { t } = useTranslation();
 
@@ -143,7 +126,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.connectionFailed"));
+      showAlert(t("errors.connectionFailed"), "error");
       return false;
     }
   };
@@ -157,7 +140,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         (c) => c.host === host && c.port === port
       );
 
-      if (!connection) {
+      if (!connection || !connection.id) {
         return await handleConnect({
           host,
           name,
@@ -177,7 +160,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (err) {
       dismissLoading();
-      if (err.status === 401) {
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
+      if (status === 401 || status === 400 || status === 404) {
         return await handleConnect({
           host,
           name,
@@ -188,8 +173,39 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      showError(t("errors.chooseConnection"));
+      showAlert(t("errors.chooseConnection"), "error");
       return false;
+    }
+  };
+
+  const handleTestConnection = async (
+    params: Omit<Connection, "id">
+  ): Promise<boolean> => {
+    const { host, port, timeout, password, username } = params;
+    let tempConnectionId = "";
+    try {
+      showLoading();
+      const authentication =
+        username || password ? { password, username } : undefined;
+
+      const response = await api.post("/connections", {
+        host,
+        port,
+        connectionTimeout: timeout,
+        authentication
+      });
+      tempConnectionId = response.data?.connectionId ?? "";
+      if (tempConnectionId) {
+        setConnectionId(tempConnectionId);
+        await api.delete("/connections");
+      }
+      return true;
+    } catch (_error) {
+      showAlert(t("errors.connectionFailed"), "error");
+      return false;
+    } finally {
+      clearConnectionId();
+      dismissLoading();
     }
   };
 
@@ -203,7 +219,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       if (showLoadingModal) dismissLoading();
-      showError(t("errors.loadServerData"));
+      showAlert(t("errors.loadServerData"), "error");
       return false;
     }
   };
@@ -233,7 +249,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       if (showLoadingModal) dismissLoading();
-      showError(t("errors.loadKeys"));
+      showAlert(t("errors.loadKeys"), "error");
       return false;
     }
   };
@@ -258,7 +274,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.createKey"));
+      showAlert(t("errors.createKey"), "error");
       return false;
     }
   };
@@ -286,7 +302,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.editKey"));
+      showAlert(t("errors.editKey"), "error");
       return false;
     }
   };
@@ -297,7 +313,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       setKeys((prevKeys) => prevKeys.filter((k) => k.key !== key));
       return true;
     } catch (_error) {
-      showError(t("errors.deleteKey"));
+      showAlert(t("errors.deleteKey"), "error");
       return false;
     }
   };
@@ -312,6 +328,45 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     } catch (_error) {
       return null;
     }
+  };
+
+  const handleEditConnection = (
+    updatedConnection: Connection,
+    previousConnection?: Connection
+  ) => {
+    const connectionWithoutId = { ...updatedConnection, id: "" };
+
+    const isSameConnection = (conn?: Connection) => {
+      if (!conn) return false;
+      if (previousConnection?.id) {
+        return conn.id === previousConnection.id;
+      }
+      if (previousConnection) {
+        return (
+          conn.host === previousConnection.host &&
+          conn.port === previousConnection.port
+        );
+      }
+      return conn.id === updatedConnection.id;
+    };
+
+    setSavedConnections((prev) => {
+      const updatedList = prev.map((conn) =>
+        isSameConnection(conn) ? { ...connectionWithoutId } : conn
+      );
+      const hasMatch = prev.some((conn) => isSameConnection(conn));
+      const nextList = hasMatch
+        ? updatedList
+        : [connectionWithoutId, ...prev];
+
+      setKey("CONNECTIONS", nextList);
+
+      if (isSameConnection(currentConnection)) {
+        setCurrentConnection(connectionWithoutId);
+      }
+
+      return nextList;
+    });
   };
 
   const handleDeleteConnection = (connection: Connection) => {
@@ -339,6 +394,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         handleCreateKey,
         handleEditKey,
         handleDeleteKey,
+        handleTestConnection,
+        handleEditConnection,
         handleDeleteConnection,
         handleLoadServerData,
         serverData,

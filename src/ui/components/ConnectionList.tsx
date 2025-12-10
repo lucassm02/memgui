@@ -1,5 +1,6 @@
 import {
   LinkIcon,
+  PencilSquareIcon,
   SignalSlashIcon,
   TrashIcon,
   XMarkIcon
@@ -7,21 +8,21 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
-import { useConnections, useDarkMode, useMenu, useElectron } from "@/ui/hooks";
-
-type Connection = {
-  name: string;
-  host: string;
-  port: number;
-  timeout: number;
-  id?: string;
-};
+import {
+  useConnections,
+  useDarkMode,
+  useMenu,
+  useElectron,
+  useModal
+} from "@/ui/hooks";
+import { Connection } from "@/ui/contexts";
 
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();
   const { darkMode } = useDarkMode();
   const { savedConnections, handleChoseConnection, handleDeleteConnection } =
     useConnections();
+  const { openConnectionModal } = useModal();
   const { t } = useTranslation();
 
   const navigate = useNavigate();
@@ -118,21 +119,38 @@ const ConnectionList = () => {
                 </div>
               </div>
 
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteConnection(conn);
-                }}
-                className={`cursor-pointer p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openConnectionModal(conn);
+                  }}
+                  className={`cursor-pointer p-1 rounded-md ${
+                    darkMode
+                      ? "text-blue-300 hover:bg-gray-600"
+                      : "text-blue-600 hover:bg-gray-200"
+                  }`}
+                  aria-label={t("connectionList.edit")}
+                >
+                  <PencilSquareIcon className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteConnection(conn);
+                  }}
+                  className={`cursor-pointer p-1 rounded-md
                   ${
                     darkMode
                       ? "text-red-400 hover:bg-gray-600"
                       : "text-red-600 hover:bg-gray-200"
                   }
                 `}
-              >
-                <TrashIcon className="w-4 h-4" />
-              </button>
+                  aria-label={t("common.delete")}
+                >
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
