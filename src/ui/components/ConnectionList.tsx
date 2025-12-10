@@ -4,7 +4,9 @@ import {
   TrashIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
+
 import { useConnections, useDarkMode, useMenu, useElectron } from "@/ui/hooks";
 
 type Connection = {
@@ -12,6 +14,7 @@ type Connection = {
   host: string;
   port: number;
   timeout: number;
+  id?: string;
 };
 
 const ConnectionList = () => {
@@ -19,6 +22,7 @@ const ConnectionList = () => {
   const { darkMode } = useDarkMode();
   const { savedConnections, handleChoseConnection, handleDeleteConnection } =
     useConnections();
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const { enabled } = useElectron();
@@ -53,7 +57,7 @@ const ConnectionList = () => {
                 darkMode ? "text-gray-300" : "text-gray-600"
               }`}
             >
-              Conexões Salvas
+              {t("connectionList.title")}
             </h3>
             <button
               onClick={closeMenu}
@@ -76,7 +80,7 @@ const ConnectionList = () => {
               }`}
             >
               <SignalSlashIcon className="w-8 h-8 text-gray-400" />
-              <p>Nenhuma conexão encontrada</p>
+              <p>{t("connectionList.empty")}</p>
             </div>
           )}
 

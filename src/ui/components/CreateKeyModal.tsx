@@ -5,6 +5,7 @@ import { xml } from "@codemirror/lang-xml";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import CodeMirror from "@uiw/react-codemirror";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
@@ -29,6 +30,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
 
   const { createModalIsOpen, closeCreateModal } = useModal();
   const { darkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   const languageExtension = useMemo(() => {
     switch (format) {
@@ -78,11 +80,11 @@ const CreateKeyModal = ({ onSave }: Params) => {
           className={`flex justify-between items-center border-b pb-3
             ${darkMode ? "border-gray-700" : "border-gray-300"}`}
         >
-          <h2 className="text-lg font-medium">✨ Nova Chave</h2>
+          <h2 className="text-lg font-medium">{t("createKeyModal.title")}</h2>
           <button
             onClick={closeCreateModal}
             className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
-            aria-label="Fechar modal"
+            aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
@@ -93,7 +95,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              CHAVE:
+              {t("createKeyModal.fields.key").toUpperCase()}:
             </label>
             <input
               id="key-input"
@@ -112,7 +114,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              EXPIRAÇÃO (segundos):
+              {t("createKeyModal.fields.expiration").toUpperCase()}:
             </label>
             <input
               type="number"
@@ -125,7 +127,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
                     : undefined
                 })
               }
-              placeholder="Opcional"
+              placeholder={t("createKeyModal.optional")}
               className={`mt-1 p-2 rounded-md w-full border focus:outline-none transition
                 ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
             />
@@ -135,7 +137,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              FORMATO:
+              {t("createKeyModal.fields.format").toUpperCase()}:
             </label>
             <select
               id="format-selector"
@@ -156,7 +158,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              VALOR:
+              {t("createKeyModal.fields.value").toUpperCase()}:
             </label>
             <div
               className={`p-3 rounded-md border mt-1 max-h-72 overflow-auto transition
@@ -179,14 +181,14 @@ const CreateKeyModal = ({ onSave }: Params) => {
               className={`px-4 py-2 rounded-md font-medium transition-all
                 ${darkMode ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-500 hover:bg-red-600 text-white"}`}
             >
-              Cancelar
+              {t("createKeyModal.cancel")}
             </button>
             <button
               type="submit"
               className={`px-4 py-2 rounded-md font-medium transition-all
                 ${darkMode ? "bg-blue-700 hover:bg-blue-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
             >
-              Criar Chave
+              {t("createKeyModal.create")}
             </button>
           </div>
         </form>

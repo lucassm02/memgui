@@ -1,5 +1,7 @@
-import { ReactNode, useEffect, useState } from "react";
-import { data, useNavigate } from "react-router-dom";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
 import { ConnectionsContext } from "../contexts";
 import { useStorage } from "../hooks";
 import { useModal } from "../hooks/useModal";
@@ -85,8 +87,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const { showError, showLoading, dismissLoading } = useModal();
   const { getKey, setKey } = useStorage();
+  const { t } = useTranslation();
 
-  async function loadConnections() {
+  const loadConnections = useCallback(async () => {
     const data = await getKey("CONNECTIONS");
 
     if (!data) return;
@@ -94,19 +97,19 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     const { value } = data;
 
     setSavedConnections(value as Connection[]);
-  }
+  }, [getKey]);
 
   useEffect(() => {
     loadConnections();
-  }, []);
+  }, [loadConnections]);
 
   api.interceptors.response.use(
     (response) => response,
-    (error) => {
-      if (error.response && error.response.status === 401) {
+    (err) => {
+      if (err.response && err.response.status === 401) {
         navigate("/");
       }
-      return Promise.reject(error);
+      return Promise.reject(err);
     }
   );
 
@@ -140,7 +143,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError("Falha na conexão. Verifique os dados e tente novamente.");
+      showError(t("errors.connectionFailed"));
       return false;
     }
   };
@@ -185,7 +188,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      showError("Erro ao escolher conexão.");
+      showError(t("errors.chooseConnection"));
       return false;
     }
   };
@@ -200,7 +203,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       if (showLoadingModal) dismissLoading();
-      showError("Não foi possível carregar estatistias do servidor.");
+      showError(t("errors.loadServerData"));
       return false;
     }
   };
@@ -230,7 +233,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       if (showLoadingModal) dismissLoading();
-      showError("Erro ao carregar chaves.");
+      showError(t("errors.loadKeys"));
       return false;
     }
   };
@@ -255,7 +258,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError("Erro ao criar chave.");
+      showError(t("errors.createKey"));
       return false;
     }
   };
@@ -283,7 +286,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       dismissLoading();
-      showError("Erro ao editar chave.");
+      showError(t("errors.editKey"));
       return false;
     }
   };
@@ -294,7 +297,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       setKeys((prevKeys) => prevKeys.filter((k) => k.key !== key));
       return true;
     } catch (_error) {
-      showError("Erro ao excluir chave.");
+      showError(t("errors.deleteKey"));
       return false;
     }
   };

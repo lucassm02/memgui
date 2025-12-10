@@ -4,6 +4,7 @@ export * from "./ConnectionList";
 export * from "./CreateKeyModal";
 export * from "./EditKeyModal";
 export * from "./ErrorModal";
+export * from "./LanguageSelector";
 export * from "./KeyList";
 export * from "./LoadingModal";
 export * from "./TitleBar";

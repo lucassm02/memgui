@@ -1,5 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import React, { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   showDisclaimer: boolean;
@@ -14,6 +15,8 @@ const Disclaimer = ({
   children,
   className
 }: Props) => {
+  const { t } = useTranslation();
+
   if (!showDisclaimer) return null;
 
   return (
@@ -23,14 +26,14 @@ const Disclaimer = ({
       <button
         onClick={hideDisclaimer}
         className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-500 transition"
-        aria-label="Fechar aviso"
+        aria-label={t("common.close")}
       >
         {typeof hideDisclaimer === "function" && (
           <XMarkIcon className="w-5 h-5" />
         )}
       </button>
 
-      <h3 className="font-semibold text-yellow-800">⚠️ Importante:</h3>
+      <h3 className="font-semibold text-yellow-800">{t("disclaimer.title")}</h3>
       <p className="mt-1">{children}</p>
     </div>
   );
