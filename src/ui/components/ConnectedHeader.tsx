@@ -45,7 +45,7 @@ const ConnectedHeader = () => {
   return (
     <>
       <header
-        className={`p-4 border-b flex items-center justify-between ${
+        className={`relative p-4 border-b flex items-center justify-between ${
           darkMode
             ? "bg-gray-800 border-gray-700"
             : "bg-gray-100 border-gray-200"
@@ -62,35 +62,43 @@ const ConnectedHeader = () => {
           <Bars3Icon className="w-6 h-6" />
         </button>
 
-        <div className="flex items-center gap-4">
-          <div className="p-2 rounded-xl bg-blue-400/10 border border-blue-400/20">
-            <ServerIcon
-              className={`w-6 h-6 ${
-                darkMode ? "text-blue-400" : "text-blue-600"
-              }`}
-            />
-          </div>
-          <div>
-            <h1
-              className={`text-xl font-bold ${
-                darkMode ? "text-gray-100" : "text-gray-900"
-              }`}
-            >
-              {currentConnection.name || t("app.name")}
-              <span className="ml-2 text-xs font-normal opacity-75">
-                {currentConnection.id?.slice(0, 8)}
-              </span>
-            </h1>
-            <div
-              className={`flex items-center gap-2 text-sm ${
-                darkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              <LinkIcon className="w-4 h-4" />
-              <span>
-                {currentConnection.host}:{currentConnection.port}
-              </span>
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-ping" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <div className="flex items-center gap-4 pointer-events-auto">
+            <div className="p-2 rounded-xl bg-blue-400/10 border border-blue-400/20 flex items-center justify-center">
+              <ServerIcon
+                className={`w-6 h-6 ${
+                  darkMode ? "text-blue-400" : "text-blue-600"
+                }`}
+              />
+            </div>
+            <div className="leading-tight">
+              <div className="flex items-center gap-2">
+                <h1
+                  className={`text-xl font-bold leading-tight ${
+                    darkMode ? "text-gray-100" : "text-gray-900"
+                  }`}
+                >
+                  {currentConnection.name || t("app.name")}
+                </h1>
+                <span className="text-xs font-normal opacity-75">
+                  {currentConnection.id?.slice(0, 8)}
+                </span>
+              </div>
+              <div
+                className={`flex items-center gap-2 text-sm leading-none ${
+                  darkMode ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                <LinkIcon className="w-4 h-4" />
+                <span>
+                  {currentConnection.host}:{currentConnection.port}
+                </span>
+                <div className="relative flex items-center">
+                  <span className="sr-only">connected</span>
+                  <span className="w-2 h-2 rounded-full bg-green-400 opacity-75 animate-ping" />
+                  <span className="absolute w-2 h-2 rounded-full bg-green-500" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
