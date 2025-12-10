@@ -1,19 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect } from "react";
 import ConnectedHeader from "@/ui/components/ConnectedHeader";
 import ConnectionList from "@/ui/components/ConnectionList";
 import KeyList from "@/ui/components/KeyList";
-import { useConnections } from "@/ui/hooks";
 
 import { useDarkMode } from "@/ui/hooks/useDarkMode";
 
 export function Panel() {
   const { darkMode } = useDarkMode();
-  const { handleLoadKeys } = useConnections();
-
-  useEffect(() => {
-    handleLoadKeys();
-  }, []);
 
   return (
     <>

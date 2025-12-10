@@ -6,7 +6,7 @@ import {
   PlusIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useConnections } from "../hooks/useConnections";
@@ -25,8 +25,7 @@ const KeyList = () => {
     handleDeleteKey,
     handleCreateKey,
     handleEditKey,
-    currentConnection,
-    handleGetByKey
+    currentConnection
   } = useConnections();
 
   const { openCreateModal, openEditModal, openViewDataModal } = useModal();
@@ -46,44 +45,41 @@ const KeyList = () => {
     let interval: NodeJS.Timeout;
     if (autoUpdate) {
       interval = setInterval(() => {
-        handleLoadKeys(false);
+        handleLoadKeys(false, searchTerm, maxItems);
       }, 5000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoUpdate, handleLoadKeys]);
+    // handleLoadKeys identity is stable enough; omit from deps to prevent loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoUpdate, searchTerm, maxItems]);
 
+  const lastLoadParams = useRef<string>("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    (async () => {
-      if (searchTerm === "") {
-        return;
-      }
-
-      if (!(currentConnection.username && currentConnection.password)) {
-        return;
-      }
-
-      const item = keys.find((item) =>
-        new RegExp(searchTerm, "i").test(item.key)
-      );
-
-      if (!item) {
-        const value = await handleGetByKey(searchTerm);
-        if (value) {
-          await handleLoadKeys();
-        }
-      }
-    })();
-  }, [searchTerm]);
-
-  const filteredKeys = keys.filter((item) => {
-    try {
-      return new RegExp(searchTerm, "i").test(item.key);
-    } catch {
-      return true;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
-  });
+
+    debounceRef.current = setTimeout(() => {
+      const currentKey = `${searchTerm}|${maxItems}`;
+      if (lastLoadParams.current === currentKey) return;
+      lastLoadParams.current = currentKey;
+
+      const showLoading = searchTerm.trim() === "";
+      handleLoadKeys(showLoading, searchTerm, maxItems);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, maxItems]);
+
+  const filteredKeys = keys;
 
   return (
     <div
@@ -114,7 +110,7 @@ const KeyList = () => {
           </button>
 
           <button
-            onClick={() => handleLoadKeys()}
+            onClick={() => handleLoadKeys(true, searchTerm, maxItems)}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-sm ${
               darkMode
                 ? "bg-gray-700 hover:bg-gray-600 text-white"

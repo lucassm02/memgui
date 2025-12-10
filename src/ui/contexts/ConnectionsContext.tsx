@@ -73,7 +73,11 @@ export interface ConnectionsContextType {
     connection: Omit<Connection, "id">
   ) => Promise<boolean>;
   handleDisconnect: () => void;
-  handleLoadKeys: (showLoadingModal?: boolean) => Promise<boolean>;
+  handleLoadKeys: (
+    showLoadingModal?: boolean,
+    search?: string,
+    limit?: number
+  ) => Promise<boolean>;
   handleCreateKey: (newKey: KeyData) => Promise<boolean>;
   handleEditKey: (updatedKey: KeyData) => Promise<boolean>;
   handleDeleteKey: (key: string) => Promise<boolean>;

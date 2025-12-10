@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -82,7 +82,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     setSavedConnections(value as Connection[]);
   }, [getKey]);
 
+  const hasLoadedConnections = useRef(false);
   useEffect(() => {
+    if (hasLoadedConnections.current) return;
+    hasLoadedConnections.current = true;
     loadConnections();
   }, [loadConnections]);
 
@@ -123,6 +126,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         return updated;
       });
 
+      dismissLoading();
       return true;
     } catch (_error) {
       dismissLoading();
@@ -237,22 +241,32 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const handleLoadKeys = async (showLoadingModal = true) => {
-    try {
-      if (showLoadingModal) showLoading();
-      const response = await api.get("/keys");
-      const sortedKeys = [...response.data].sort((a, b) =>
-        a.key.localeCompare(b.key)
-      );
-      setKeys(sortedKeys);
-      if (showLoadingModal) dismissLoading();
-      return true;
-    } catch (_error) {
-      if (showLoadingModal) dismissLoading();
-      showAlert(t("errors.loadKeys"), "error");
-      return false;
-    }
-  };
+  const handleLoadKeys = useCallback(
+    async (showLoadingModal = true, search?: string, limit?: number) => {
+      try {
+        if (showLoadingModal) showLoading();
+        const response = await api.get("/keys", {
+          params: {
+            search: search || undefined,
+            limit: limit || undefined
+          }
+        });
+        const sortedKeys = [...response.data].sort((a, b) =>
+          a.key.localeCompare(b.key)
+        );
+        setKeys(sortedKeys);
+        if (showLoadingModal) dismissLoading();
+        return true;
+      } catch (_error) {
+        if (showLoadingModal) dismissLoading();
+        showAlert(t("errors.loadKeys"), "error");
+        return false;
+      }
+    },
+    // Only depends on alert/loading handlers; avoid re-creating each render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showAlert, showLoading, dismissLoading]
+  );
 
   const handleCreateKey = async (newKey: KeyData) => {
     try {

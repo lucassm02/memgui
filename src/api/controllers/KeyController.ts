@@ -26,6 +26,11 @@ class KeyController {
     const connections = connectionManager();
     const connectionId = <string>request.headers["x-connection-id"];
     const connection = connections.get(connectionId)!;
+    const searchTerm =
+      typeof request.query.search === "string" ? request.query.search : "";
+    const limitParam = Number(request.query.limit);
+    const limit =
+      Number.isFinite(limitParam) && limitParam > 0 ? limitParam : undefined;
 
     try {
       let storedKeys: string[] = [];
@@ -39,8 +44,20 @@ class KeyController {
         logger.error("Erro ao obter chave reservada", err as Error);
       }
 
+      const shouldUpdateIndex = !searchTerm && !limit;
+
       if (connection.authentication) {
-        const payload = await this.getKeysValue(storedKeys, connection);
+        const filteredKeys = this.applyKeyFilters(
+          storedKeys,
+          searchTerm,
+          limit
+        );
+        const payload = await this.getKeysValue(
+          filteredKeys,
+          connection,
+          undefined,
+          shouldUpdateIndex
+        );
         response.json(payload);
         return;
       }
@@ -73,13 +90,23 @@ class KeyController {
       const keysInfo = keysInfoArrays.flat();
       const slabKeys = keysInfo.map((info) => info.key);
       const allKeys = Array.from(new Set([...slabKeys, ...storedKeys])).sort();
+      const filteredKeys = this.applyKeyFilters(
+        allKeys,
+        searchTerm,
+        limit
+      );
 
-      if (allKeys.length === 0) {
+      if (filteredKeys.length === 0) {
         response.json([]);
         return;
       }
 
-      const payload = await this.getKeysValue(allKeys, connection, keysInfo);
+      const payload = await this.getKeysValue(
+        filteredKeys,
+        connection,
+        keysInfo,
+        shouldUpdateIndex
+      );
 
       response.json(payload);
     } catch (error) {
@@ -173,7 +200,8 @@ class KeyController {
   private async getKeysValue(
     keys: string[],
     connection: MemcachedConnection,
-    keysInfo?: Key[]
+    keysInfo?: Key[],
+    updateIndex = true
   ): Promise<KeyPayload[]> {
     const limit = pLimit(MAX_CONCURRENT_REQUESTS);
 
@@ -219,7 +247,9 @@ class KeyController {
       results.filter((item) => item !== null && item!.key !== RESERVED_KEY)
     );
 
-    this.updateKeyIndex(validKeys, connection);
+    if (updateIndex) {
+      this.updateKeyIndex(validKeys, connection);
+    }
 
     return validKeys;
   }
@@ -257,6 +287,31 @@ class KeyController {
     };
 
     handler().catch((error) => logger.error(error));
+  }
+
+  private applyKeyFilters(
+    keys: string[],
+    search: string,
+    limit?: number
+  ): string[] {
+    let filtered = [...keys];
+
+    if (search) {
+      try {
+        const regex = new RegExp(search, "i");
+        filtered = filtered.filter((key) => regex.test(key));
+      } catch {
+        filtered = filtered.filter((key) =>
+          key.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+    }
+
+    if (limit && limit > 0) {
+      filtered = filtered.slice(0, limit);
+    }
+
+    return filtered;
   }
 }
 
