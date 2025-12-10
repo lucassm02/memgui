@@ -5,6 +5,7 @@ import { xml } from "@codemirror/lang-xml";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import CodeMirror from "@uiw/react-codemirror";
 import { useState, useEffect, FormEvent, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
@@ -20,6 +21,7 @@ type Params = { onSave: (key: Key) => void };
 const EditKeyModal = ({ onSave }: Params) => {
   const { editModalIsOpen, closeEditModal, itemToEdit } = useModal();
   const { darkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   const [value, setValue] = useState(itemToEdit?.value || "");
   const [timeUntilExpiration, setTimeUntilExpiration] = useState(
@@ -82,11 +84,11 @@ const EditKeyModal = ({ onSave }: Params) => {
           className={`flex justify-between items-center border-b pb-3
             ${darkMode ? "border-gray-700" : "border-gray-300"}`}
         >
-          <h2 className="text-lg font-medium">✏️ Editar Chave</h2>
+          <h2 className="text-lg font-medium">{t("editKeyModal.title")}</h2>
           <button
             onClick={closeEditModal}
             className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
-            aria-label="Fechar modal"
+            aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
@@ -97,7 +99,7 @@ const EditKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              CHAVE:
+              {t("editKeyModal.fields.key").toUpperCase()}:
             </label>
             <input
               type="text"
@@ -112,13 +114,13 @@ const EditKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              EXPIRAÇÃO (segundos):
+              {t("editKeyModal.fields.expiration").toUpperCase()}:
             </label>
             <input
               type="number"
               value={timeUntilExpiration}
               onChange={(e) => setTimeUntilExpiration(e.target.value)}
-              placeholder="Opcional"
+              placeholder={t("createKeyModal.optional")}
               className={`mt-1 w-full p-2 rounded-md border focus:outline-none transition
                 ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
             />
@@ -128,7 +130,7 @@ const EditKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              FORMATO:
+              {t("editKeyModal.fields.format").toUpperCase()}:
             </label>
             <select
               id="format-selector"
@@ -149,7 +151,7 @@ const EditKeyModal = ({ onSave }: Params) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              NOVO VALOR:
+              {t("editKeyModal.fields.value").toUpperCase()}:
             </label>
             <div
               className={`mt-1 p-3 rounded-md border max-h-72 overflow-auto transition
@@ -172,14 +174,14 @@ const EditKeyModal = ({ onSave }: Params) => {
               className={`px-4 py-2 rounded-md font-medium transition-all
                 ${darkMode ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-500 hover:bg-red-600 text-white"}`}
             >
-              Cancelar
+              {t("editKeyModal.cancel")}
             </button>
             <button
               type="submit"
               className={`px-4 py-2 rounded-md font-medium transition-all
                 ${darkMode ? "bg-blue-700 hover:bg-blue-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
             >
-              Salvar Alterações
+              {t("editKeyModal.save")}
             </button>
           </div>
         </form>

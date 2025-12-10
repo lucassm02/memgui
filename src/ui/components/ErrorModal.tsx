@@ -1,10 +1,13 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
 
 const ErrorModal = () => {
   const { dismissError, errorModalIsOpen, errorModalMessage } = useModal();
   const { darkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   if (!errorModalIsOpen) return null;
 
@@ -16,7 +19,7 @@ const ErrorModal = () => {
       >
         <div className="flex items-center gap-3">
           <ExclamationCircleIcon className="w-8 h-8 text-red-500" />
-          <h2 className="text-lg font-semibold">Erro</h2>
+          <h2 className="text-lg font-semibold">{t("errorModal.title")}</h2>
         </div>
 
         <p
@@ -31,7 +34,7 @@ const ErrorModal = () => {
             className={`px-4 py-2 rounded-md font-medium transition-all 
             ${darkMode ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-500 hover:bg-red-600 text-white"}`}
           >
-            Fechar
+            {t("errorModal.close")}
           </button>
         </div>
       </div>

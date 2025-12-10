@@ -1,0 +1,179 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "Idioma",
+    "pt-BR": "Português (Brasil)",
+    "en": "English"
+  },
+  "common": {
+    "close": "Fechar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "create": "Criar",
+    "loading": "Carregando...",
+    "actions": "Ações",
+    "copied": "Copiado!",
+    "clickToCopy": "Clique para copiar",
+    "optional": "Opcional"
+  },
+  "header": {
+    "back": "Voltar",
+    "stats": "Estatísticas",
+    "disconnect": "Desconectar"
+  },
+  "connectionHome": {
+    "welcomeTitle": "Bem-vindo ao MemGUI",
+    "welcomeDescription": "Para começar, conecte-se a um servidor existente ou crie uma nova conexão.",
+    "createButton": "Criar Nova Conexão",
+    "newHereTitle": "Novo por aqui?",
+    "newHereDescription": "Caso não tenha um servidor configurado, veja nosso",
+    "setupGuideLink": "guia de configuração"
+  },
+  "connectionList": {
+    "title": "Conexões Salvas",
+    "empty": "Nenhuma conexão encontrada"
+  },
+  "connectionModal": {
+    "title": "Nova Conexão",
+    "fields": {
+      "name": "Nome da Conexão",
+      "namePlaceholder": "Ex: Produção",
+      "address": "Endereço do Servidor",
+      "hostPlaceholder": "Ex: 192.168.1.1",
+      "port": "Porta",
+      "options": "Opções Avançadas",
+      "username": "Usuário (opcional)",
+      "usernamePlaceholder": "Digite seu usuário",
+      "password": "Senha (opcional)",
+      "passwordPlaceholder": "Digite sua senha",
+      "timeout": "Timeout em segundos (mínimo 300)"
+    },
+    "authNote": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
+    "cancel": "Cancelar",
+    "connect": "Conectar"
+  },
+  "setupGuide": {
+    "title": "Guia de Configuração",
+    "disclaimer": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
+    "fields": {
+      "name": {
+        "title": "Nome da Conexão",
+        "description": "Defina um nome para identificar a conexão dentro do sistema."
+      },
+      "address": {
+        "title": "Endereço do Servidor",
+        "description": "Insira o IP ou domínio do servidor Memcached. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>."
+      },
+      "port": {
+        "title": "Porta",
+        "description": "O padrão do Memcached é <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
+      },
+      "auth": {
+        "title": "Autenticação (Opcional)",
+        "description": "Insira usuário e senha apenas se seu servidor exigir autenticação."
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "O timeout define o tempo máximo de resposta."
+      }
+    },
+    "close": "Fechar"
+  },
+  "disclaimer": {
+    "title": "Importante:"
+  },
+  "keyList": {
+    "title": "Chaves Armazenadas",
+    "create": "Criar",
+    "refresh": "Atualizar",
+    "autoRefresh": "Auto Atualizar",
+    "searchPlaceholder": "Digite uma chave ou regex...",
+    "columns": {
+      "key": "Chave",
+      "value": "Valor",
+      "expiration": "Expiração",
+      "size": "Tamanho",
+      "actions": "Ações"
+    },
+    "empty": "Nenhuma chave armazenada",
+    "authWarning": "Quando o Memcached está configurado com autenticação, apenas as chaves criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas ou excluídas. Isso ocorre devido a uma <strong>limitação do protocolo do Memcached autenticado</strong>, que restringe o acesso a chaves criadas por outras fontes."
+  },
+  "createKeyModal": {
+    "title": "Nova Chave",
+    "fields": {
+      "key": "Chave",
+      "expiration": "Expiração (segundos)",
+      "format": "Formato",
+      "value": "Valor"
+    },
+    "optional": "Opcional",
+    "cancel": "Cancelar",
+    "create": "Criar Chave"
+  },
+  "editKeyModal": {
+    "title": "Editar Chave",
+    "fields": {
+      "key": "Chave",
+      "expiration": "Expiração (segundos)",
+      "format": "Formato",
+      "value": "Novo valor"
+    },
+    "cancel": "Cancelar",
+    "save": "Salvar Alterações"
+  },
+  "viewDataModal": {
+    "title": "Detalhes",
+    "fields": {
+      "key": "Chave",
+      "expiration": "Expiração",
+      "size": "Tamanho (bytes)"
+    },
+    "format": "Formato",
+    "close": "Fechar"
+  },
+  "loadingModal": {
+    "loading": "Carregando..."
+  },
+  "errorModal": {
+    "title": "Erro",
+    "close": "Fechar"
+  },
+  "statistics": {
+    "title": "Estatísticas do Servidor",
+    "advanced": "Monitoramento Avançado",
+    "slabs": "Estatísticas de Slabs",
+    "host": "Host",
+    "uptimeLabel": "Tempo ativo",
+    "uptime_one": "{{count}} dia",
+    "uptime_other": "{{count}} dias",
+    "connections": "Conexões",
+    "version": "Versão",
+    "cacheEfficiency": "Eficiência do Cache",
+    "commands": "Comandos Executados",
+    "getSet": "GET / SET",
+    "memoryUsed": "Memória Usada",
+    "requestsPerSecond": "Requisições/s",
+    "bytesWritten": "Bytes Escritos",
+    "bytesRead": "Bytes Lidos",
+    "expirationsEvictions": "Expirações & Evicções",
+    "table": {
+      "id": "ID",
+      "size": "Tamanho",
+      "total": "Total",
+      "used": "Usado",
+      "free": "Livre",
+      "hits": "Hits"
+    }
+  },
+  "errors": {
+    "connectionFailed": "Falha na conexão. Verifique os dados e tente novamente.",
+    "chooseConnection": "Erro ao escolher conexão.",
+    "loadServerData": "Não foi possível carregar estatísticas do servidor.",
+    "loadKeys": "Erro ao carregar chaves.",
+    "createKey": "Erro ao criar chave.",
+    "editKey": "Erro ao editar chave.",
+    "deleteKey": "Erro ao excluir chave."
+  }
+}

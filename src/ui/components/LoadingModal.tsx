@@ -1,10 +1,13 @@
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
+
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
 
 const LoadingModal = () => {
   const { loadingModalIsOpen } = useModal();
   const { darkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   if (!loadingModalIsOpen) return null;
 
@@ -29,7 +32,7 @@ const LoadingModal = () => {
           className={`mt-5 text-sm font-medium transition
           ${darkMode ? "text-gray-300" : "text-gray-700"}`}
         >
-          Carregando...
+          {t("loadingModal.loading")}
         </p>
       </div>
     </div>

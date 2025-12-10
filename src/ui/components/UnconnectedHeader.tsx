@@ -1,4 +1,6 @@
 import { Bars3Icon, MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+
+import LanguageSelector from "./LanguageSelector";
 import { useDarkMode, useMenu } from "@/ui/hooks";
 
 const UnconnectedHeader = () => {
@@ -16,16 +18,19 @@ const UnconnectedHeader = () => {
         <Bars3Icon className="w-6 h-6" />
       </button>
 
-      <button
-        onClick={toggleDarkMode}
-        className={`cursor-pointer p-2 rounded-lg ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-600 hover:bg-gray-100"}`}
-      >
-        {darkMode ? (
-          <SunIcon className="w-6 h-6" />
-        ) : (
-          <MoonIcon className="w-6 h-6" />
-        )}
-      </button>
+      <div className="flex items-center gap-3">
+        <LanguageSelector />
+        <button
+          onClick={toggleDarkMode}
+          className={`cursor-pointer p-2 rounded-lg ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-600 hover:bg-gray-100"}`}
+        >
+          {darkMode ? (
+            <SunIcon className="w-6 h-6" />
+          ) : (
+            <MoonIcon className="w-6 h-6" />
+          )}
+        </button>
+      </div>
     </header>
   );
 };

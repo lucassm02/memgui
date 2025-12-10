@@ -7,6 +7,8 @@ import {
   TrashIcon
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+
 import { useConnections } from "../hooks/useConnections";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
@@ -28,6 +30,7 @@ const KeyList = () => {
   } = useConnections();
 
   const { openCreateModal, openEditModal, openViewDataModal } = useModal();
+  const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [maxItems, setMaxItems] = useState(10);
@@ -93,14 +96,13 @@ const KeyList = () => {
         showDisclaimer={showDisclaimer}
         hideDisclaimer={() => setShowDisclaimer(false)}
       >
-        Quando o Memcached está configurado com autenticação, apenas as chaves
-        criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas
-        ou excluídas. Isso ocorre devido a uma{" "}
-        <strong>limitação do protocolo do Memcached autenticado</strong>, que
-        restringe o acesso a chaves criadas por outras fontes.
+        <Trans
+          i18nKey="keyList.authWarning"
+          components={{ strong: <strong /> }}
+        />
       </Disclaimer>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Chaves Armazenadas</h2>
+        <h2 className="text-xl font-semibold">{t("keyList.title")}</h2>
 
         <div className="flex gap-2">
           <button
@@ -108,7 +110,7 @@ const KeyList = () => {
             className="px-4 py-2 rounded-lg flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white transition-all shadow-sm cursor-pointer"
           >
             <PlusIcon className="w-5 h-5" />
-            Criar
+            {t("keyList.create")}
           </button>
 
           <button
@@ -120,7 +122,7 @@ const KeyList = () => {
             } cursor-pointer`}
           >
             <ArrowPathIcon className="w-5 h-5" />
-            Atualizar
+            {t("keyList.refresh")}
           </button>
 
           <button
@@ -138,7 +140,7 @@ const KeyList = () => {
             <ArrowPathIcon
               className={`w-5 h-5 ${autoUpdate ? "animate-spin" : ""}`}
             />
-            Auto Atualizar
+            {t("keyList.autoRefresh")}
           </button>
         </div>
       </div>
@@ -150,7 +152,7 @@ const KeyList = () => {
       >
         <input
           type="text"
-          placeholder="🔍 Digite uma chave ou regex..."
+          placeholder={t("keyList.searchPlaceholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className={`w-full px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm ${
@@ -191,11 +193,13 @@ const KeyList = () => {
             }`}
           >
             <tr>
-              <th className="px-6 py-3">Chave</th>
-              <th className="px-6 py-3">Valor</th>
-              <th className="px-6 py-3">Expiração</th>
-              <th className="px-6 py-3">Tamanho</th>
-              <th className="px-6 py-3 text-right">Ações</th>
+              <th className="px-6 py-3">{t("keyList.columns.key")}</th>
+              <th className="px-6 py-3">{t("keyList.columns.value")}</th>
+              <th className="px-6 py-3">{t("keyList.columns.expiration")}</th>
+              <th className="px-6 py-3">{t("keyList.columns.size")}</th>
+              <th className="px-6 py-3 text-right">
+                {t("keyList.columns.actions")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -262,7 +266,7 @@ const KeyList = () => {
             ) : (
               <tr>
                 <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  Nenhuma chave armazenada
+                  {t("keyList.empty")}
                 </td>
               </tr>
             )}

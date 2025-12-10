@@ -8,14 +8,17 @@ import {
   ServerIcon,
   SunIcon
 } from "@heroicons/react/24/outline";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router";
 
+import LanguageSelector from "./LanguageSelector";
 import { useConnections, useDarkMode, useMenu } from "@/ui/hooks";
 
 const ConnectedHeader = () => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const { currentConnection, handleDisconnect, handleLoadServerData } =
     useConnections();
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,7 +76,7 @@ const ConnectedHeader = () => {
                 darkMode ? "text-gray-100" : "text-gray-900"
               }`}
             >
-              {currentConnection.name || "MemGUI"}
+              {currentConnection.name || t("app.name")}
               <span className="ml-2 text-xs font-normal opacity-75">
                 {currentConnection.id?.slice(0, 8)}
               </span>
@@ -103,7 +106,7 @@ const ConnectedHeader = () => {
               }`}
             >
               <ArrowUturnLeftIcon className="w-5 h-5" />
-              <span className="text-sm">Voltar</span>
+              <span className="text-sm">{t("header.back")}</span>
             </button>
           ) : (
             <button
@@ -115,7 +118,7 @@ const ConnectedHeader = () => {
               }`}
             >
               <ChartBarIcon className="w-5 h-5" />
-              <span className="text-sm">Estatísticas</span>
+              <span className="text-sm">{t("header.stats")}</span>
             </button>
           )}
 
@@ -128,8 +131,10 @@ const ConnectedHeader = () => {
             }`}
           >
             <LinkSlashIcon className="w-5 h-5" />
-            <span className="text-sm">Desconectar</span>
+            <span className="text-sm">{t("header.disconnect")}</span>
           </button>
+
+          <LanguageSelector />
 
           <button
             onClick={toggleDarkMode}

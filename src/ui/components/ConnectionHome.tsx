@@ -1,10 +1,13 @@
 import { PlusCircleIcon } from "@heroicons/react/24/solid";
+import { useTranslation } from "react-i18next";
+
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "@/ui/hooks";
 
 const ConnectionHome = () => {
   const { darkMode } = useDarkMode();
   const { openConnectionModal, openSetupGuideModal } = useModal();
+  const { t } = useTranslation();
 
   return (
     <div
@@ -18,10 +21,11 @@ const ConnectionHome = () => {
         />
       </div>
 
-      <h1 className="text-3xl font-bold mb-2">Bem-vindo ao MemGUI</h1>
+      <h1 className="text-3xl font-bold mb-2">
+        {t("connectionHome.welcomeTitle")}
+      </h1>
       <p className="text-gray-400 max-w-md">
-        Para começar, conecte-se a um servidor existente ou crie uma nova
-        conexão.
+        {t("connectionHome.welcomeDescription")}
       </p>
 
       <button
@@ -29,21 +33,23 @@ const ConnectionHome = () => {
         className="mt-6 px-6 py-3 rounded-lg font-medium bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 transition-all"
       >
         <PlusCircleIcon className="w-5 h-5" />
-        Criar Nova Conexão
+        {t("connectionHome.createButton")}
       </button>
 
       <div
         className={`mt-6 p-4 rounded-lg border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"} max-w-md`}
       >
-        <h2 className="font-semibold text-lg">Novo por aqui?</h2>
+        <h2 className="font-semibold text-lg">
+          {t("connectionHome.newHereTitle")}
+        </h2>
         <p className="text-sm text-gray-400">
-          Caso não tenha um servidor configurado, veja nosso{" "}
-          <a
+          {t("connectionHome.newHereDescription")}{" "}
+          <button
             onClick={openSetupGuideModal}
             className="text-blue-400 hover:cursor-pointer"
           >
-            guia de configuração
-          </a>
+            {t("connectionHome.setupGuideLink")}
+          </button>
           .
         </p>
       </div>

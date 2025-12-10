@@ -1,0 +1,179 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "Language",
+    "pt-BR": "Portuguese (Brazil)",
+    "en": "English"
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "loading": "Loading...",
+    "actions": "Actions",
+    "copied": "Copied!",
+    "clickToCopy": "Click to copy",
+    "optional": "Optional"
+  },
+  "header": {
+    "back": "Back",
+    "stats": "Statistics",
+    "disconnect": "Disconnect"
+  },
+  "connectionHome": {
+    "welcomeTitle": "Welcome to MemGUI",
+    "welcomeDescription": "To get started, connect to an existing server or create a new connection.",
+    "createButton": "Create New Connection",
+    "newHereTitle": "New here?",
+    "newHereDescription": "If you do not have a server set up, check our",
+    "setupGuideLink": "setup guide"
+  },
+  "connectionList": {
+    "title": "Saved Connections",
+    "empty": "No connections found"
+  },
+  "connectionModal": {
+    "title": "New Connection",
+    "fields": {
+      "name": "Connection Name",
+      "namePlaceholder": "Ex: Production",
+      "address": "Server Address",
+      "hostPlaceholder": "Ex: 192.168.1.1",
+      "port": "Port",
+      "options": "Advanced Options",
+      "username": "Username (optional)",
+      "usernamePlaceholder": "Enter your username",
+      "password": "Password (optional)",
+      "passwordPlaceholder": "Enter your password",
+      "timeout": "Timeout in seconds (minimum 300)"
+    },
+    "authNote": "When authentication is enabled, only keys created in <strong>MemGUI</strong> can be managed due to a limitation of the authenticated Memcached protocol.",
+    "cancel": "Cancel",
+    "connect": "Connect"
+  },
+  "setupGuide": {
+    "title": "Setup Guide",
+    "disclaimer": "When authentication is enabled, only keys created in <strong>MemGUI</strong> can be managed due to a limitation of the authenticated Memcached protocol.",
+    "fields": {
+      "name": {
+        "title": "Connection Name",
+        "description": "Choose a name to identify the connection within the app."
+      },
+      "address": {
+        "title": "Server Address",
+        "description": "Enter the IP or domain of the Memcached server. For local use <code>127.0.0.1</code> or <code>localhost</code>."
+      },
+      "port": {
+        "title": "Port",
+        "description": "The default Memcached port is <strong>11211</strong>. If you changed it, use the configured port."
+      },
+      "auth": {
+        "title": "Authentication (Optional)",
+        "description": "Fill in username and password only if your server requires authentication."
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Timeout controls the maximum response time."
+      }
+    },
+    "close": "Close"
+  },
+  "disclaimer": {
+    "title": "Important:"
+  },
+  "keyList": {
+    "title": "Stored Keys",
+    "create": "Create",
+    "refresh": "Refresh",
+    "autoRefresh": "Auto Refresh",
+    "searchPlaceholder": "Type a key or regex...",
+    "columns": {
+      "key": "Key",
+      "value": "Value",
+      "expiration": "Expiration",
+      "size": "Size",
+      "actions": "Actions"
+    },
+    "empty": "No keys stored",
+    "authWarning": "When Memcached runs with authentication enabled, only keys created inside <strong>MemGUI</strong> can be listed, edited, or removed. This is a <strong>limitation of the authenticated Memcached protocol</strong>, which restricts access to keys created elsewhere."
+  },
+  "createKeyModal": {
+    "title": "New Key",
+    "fields": {
+      "key": "Key",
+      "expiration": "Expiration (seconds)",
+      "format": "Format",
+      "value": "Value"
+    },
+    "optional": "Optional",
+    "cancel": "Cancel",
+    "create": "Create Key"
+  },
+  "editKeyModal": {
+    "title": "Edit Key",
+    "fields": {
+      "key": "Key",
+      "expiration": "Expiration (seconds)",
+      "format": "Format",
+      "value": "New value"
+    },
+    "cancel": "Cancel",
+    "save": "Save Changes"
+  },
+  "viewDataModal": {
+    "title": "Details",
+    "fields": {
+      "key": "Key",
+      "expiration": "Expiration",
+      "size": "Size (bytes)"
+    },
+    "format": "Format",
+    "close": "Close"
+  },
+  "loadingModal": {
+    "loading": "Loading..."
+  },
+  "errorModal": {
+    "title": "Error",
+    "close": "Close"
+  },
+  "statistics": {
+    "title": "Server Statistics",
+    "advanced": "Advanced Monitoring",
+    "slabs": "Slab Statistics",
+    "host": "Host",
+    "uptimeLabel": "Uptime",
+    "uptime_one": "{{count}} day",
+    "uptime_other": "{{count}} days",
+    "connections": "Connections",
+    "version": "Version",
+    "cacheEfficiency": "Cache Efficiency",
+    "commands": "Commands Executed",
+    "getSet": "GET / SET",
+    "memoryUsed": "Memory Used",
+    "requestsPerSecond": "Requests/s",
+    "bytesWritten": "Bytes Written",
+    "bytesRead": "Bytes Read",
+    "expirationsEvictions": "Expirations & Evictions",
+    "table": {
+      "id": "ID",
+      "size": "Size",
+      "total": "Total",
+      "used": "Used",
+      "free": "Free",
+      "hits": "Hits"
+    }
+  },
+  "errors": {
+    "connectionFailed": "Connection failed. Check the data and try again.",
+    "chooseConnection": "Error while selecting the connection.",
+    "loadServerData": "Unable to load server statistics.",
+    "loadKeys": "Failed to load keys.",
+    "createKey": "Failed to create key.",
+    "editKey": "Failed to edit key.",
+    "deleteKey": "Failed to delete key."
+  }
+}

@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/) and uses the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
+## [1.1.0] - 2025-12-10
+
+### Added
+
+- **Internationalization (i18n)** across the UI using i18next with language auto-detection (browser) and persistence via storage.
+- **Language Selector** in the header (connected and disconnected views) to switch between Portuguese (Brazil) and English.
+- **Locale Files & Provider**: structured translation resources for `pt-BR` and `en`, plus a dedicated provider/hook to manage language changes.
+- **Documentation** on how to add new languages, where to place locale files, and how detection/persistence works.
+
+### Changed
+
+- **UI Text & Error Messages** now sourced from translation keys instead of hardcoded strings.
+- **Statistics & Modals** updated to render translated labels, placeholders, and messages using the translation hooks.
+
 ## [1.0.0] - 2025-02-11
 
 ### Added

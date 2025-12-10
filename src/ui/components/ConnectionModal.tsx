@@ -4,6 +4,8 @@ import {
   ChevronRightIcon
 } from "@heroicons/react/24/outline";
 import { useState, ChangeEvent, FormEvent } from "react";
+import { useTranslation, Trans } from "react-i18next";
+
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
 import Disclaimer from "./Disclaimer";
@@ -23,6 +25,7 @@ type Props = { onSubmit: (connection: Connection) => void };
 const ConnectionModal = ({ onSubmit }: Props) => {
   const { connectionModalIsOpen, closeConnectionModal } = useModal();
   const { darkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState({
@@ -72,12 +75,14 @@ const ConnectionModal = ({ onSubmit }: Props) => {
         >
           <div className="flex items-center gap-2">
             <ServerIcon className="w-6 h-6 text-blue-400" />
-            <h2 className="text-lg font-medium">🔗 Nova Conexão</h2>
+            <h2 className="text-lg font-medium">
+              {t("connectionModal.title")}
+            </h2>
           </div>
           <button
             onClick={closeConnectionModal}
             className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
-            aria-label="Fechar modal"
+            aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
@@ -88,12 +93,12 @@ const ConnectionModal = ({ onSubmit }: Props) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              Nome da Conexão:
+              {t("connectionModal.fields.name")}:
             </label>
             <input
               type="text"
               name="name"
-              placeholder="Ex: Produção"
+              placeholder={t("connectionModal.fields.namePlaceholder")}
               value={formData.name}
               onChange={handleChange}
               className={`mt-1 w-full p-2 rounded-md border focus:outline-none transition
@@ -106,13 +111,13 @@ const ConnectionModal = ({ onSubmit }: Props) => {
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
             >
-              Endereço do Servidor:
+              {t("connectionModal.fields.address")}:
             </label>
             <div className="flex gap-3">
               <input
                 type="text"
                 name="host"
-                placeholder="Ex: 192.168.1.1"
+                placeholder={t("connectionModal.fields.hostPlaceholder")}
                 value={formData.host}
                 onChange={handleChange}
                 className={`flex-1 p-2 rounded-md border focus:outline-none transition
@@ -122,6 +127,7 @@ const ConnectionModal = ({ onSubmit }: Props) => {
               <input
                 type="number"
                 name="port"
+                aria-label={t("connectionModal.fields.port")}
                 value={formData.port}
                 onChange={handleChange}
                 className={`w-24 p-2 rounded-md border focus:outline-none transition
@@ -140,7 +146,7 @@ const ConnectionModal = ({ onSubmit }: Props) => {
               <ChevronRightIcon
                 className={`w-5 h-5 transition-transform ${showAdvanced ? "rotate-90" : ""}`}
               />
-              Opções Avançadas
+              {t("connectionModal.fields.options")}
             </button>
           </div>
 
@@ -151,12 +157,14 @@ const ConnectionModal = ({ onSubmit }: Props) => {
                   <label
                     className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                   >
-                    Usuário (opcional):
+                    {t("connectionModal.fields.username")}:
                   </label>
                   <input
                     type="text"
                     name="username"
-                    placeholder="Digite seu usuário"
+                    placeholder={t(
+                      "connectionModal.fields.usernamePlaceholder"
+                    )}
                     value={formData.username}
                     onChange={handleChange}
                     className={`w-full p-2 rounded-md border focus:outline-none transition
@@ -167,12 +175,14 @@ const ConnectionModal = ({ onSubmit }: Props) => {
                   <label
                     className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                   >
-                    Senha (opcional):
+                    {t("connectionModal.fields.password")}:
                   </label>
                   <input
                     type="password"
                     name="password"
-                    placeholder="Digite sua senha"
+                    placeholder={t(
+                      "connectionModal.fields.passwordPlaceholder"
+                    )}
                     value={formData.password}
                     onChange={handleChange}
                     className={`w-full p-2 rounded-md border focus:outline-none transition
@@ -185,7 +195,7 @@ const ConnectionModal = ({ onSubmit }: Props) => {
                   <label
                     className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
                   >
-                    Timeout em segundos (mínimo 300):
+                    {t("connectionModal.fields.timeout")}:
                   </label>
                   <input
                     type="number"
@@ -200,9 +210,10 @@ const ConnectionModal = ({ onSubmit }: Props) => {
               </div>
 
               <Disclaimer className="mt-5 mb-5" showDisclaimer={true}>
-                Com autenticação ativada, apenas chaves criadas no{" "}
-                <strong>MemGUI</strong> podem ser gerenciadas, devido a uma
-                limitação do protocolo do Memcached autenticado.
+                <Trans
+                  i18nKey="connectionModal.authNote"
+                  components={{ strong: <strong /> }}
+                />
               </Disclaimer>
             </>
           )}
@@ -213,13 +224,13 @@ const ConnectionModal = ({ onSubmit }: Props) => {
               onClick={closeConnectionModal}
               className="px-4 py-2 rounded-md bg-red-500 text-white"
             >
-              Cancelar
+              {t("connectionModal.cancel")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 rounded-md bg-blue-600 text-white"
             >
-              Conectar
+              {t("connectionModal.connect")}
             </button>
           </div>
         </form>
