@@ -9,6 +9,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useElectron } from "../hooks/useElectron";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 import Disclaimer from "./Disclaimer";
 import { Connection } from "@/ui/contexts";
 
@@ -139,7 +140,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
           </div>
           <button
             onClick={closeConnectionModal}
-            className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
+            className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
             aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
@@ -199,7 +200,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-500"
+              className={`${toneButton("primary", darkMode, "sm")} !px-3`}
             >
               <ChevronRightIcon
                 className={`w-5 h-5 transition-transform ${showAdvanced ? "rotate-90" : ""}`}
@@ -280,11 +281,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
             <button
               type="button"
               onClick={handleTestConnection}
-              className={`px-4 py-2 rounded-md border ${
-                darkMode
-                  ? "border-gray-600 text-gray-200 hover:bg-gray-700"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-100"
-              }`}
+              className={toneButton("neutral", darkMode, "sm")}
               disabled={isTesting}
             >
               {isTesting
@@ -294,13 +291,13 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
             <button
               type="button"
               onClick={closeConnectionModal}
-              className="px-4 py-2 rounded-md bg-red-500 text-white"
+              className={toneButton("neutral", darkMode, "sm")}
             >
               {t("connectionModal.cancel")}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white"
+              className={toneButton("success", darkMode, "sm")}
             >
               {isEditingConnection
                 ? t("connectionModal.save")

@@ -7,10 +7,10 @@ import ConnectionModal from "@/ui/components/ConnectionModal";
 import SetupGuide from "@/ui/components/SetupGuide";
 import UnconnectedHeader from "@/ui/components/UnconnectedHeader";
 
+import { Connection as ConnectionType } from "@/ui/contexts";
 import { useMenu, useModal } from "@/ui/hooks";
 import { useConnections } from "@/ui/hooks/useConnections";
 import { useDarkMode } from "@/ui/hooks/useDarkMode";
-import { Connection as ConnectionType } from "@/ui/contexts";
 
 type SubmitParams = {
   name: string;
@@ -45,10 +45,7 @@ export function Connection() {
     options: { isEditing: boolean; previousConnection?: ConnectionType }
   ) {
     if (options.isEditing) {
-      handleEditConnection(
-        { ...params, id: "" },
-        options.previousConnection
-      );
+      handleEditConnection({ ...params, id: "" }, options.previousConnection);
       return;
     }
 

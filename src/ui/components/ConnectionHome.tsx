@@ -2,6 +2,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
+import { toneButton } from "../utils/buttonTone";
 import { useModal } from "@/ui/hooks";
 
 const ConnectionHome = () => {
@@ -30,7 +31,7 @@ const ConnectionHome = () => {
 
       <button
         onClick={openConnectionModal}
-        className="mt-6 px-6 py-3 rounded-lg font-medium bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 transition-all"
+        className={`${toneButton("success", darkMode)} mt-6`}
       >
         <PlusCircleIcon className="w-5 h-5" />
         {t("connectionHome.createButton")}
@@ -46,7 +47,7 @@ const ConnectionHome = () => {
           {t("connectionHome.newHereDescription")}{" "}
           <button
             onClick={openSetupGuideModal}
-            className="text-blue-400 hover:cursor-pointer"
+            className={`text-blue-400 hover:cursor-pointer mt-2`}
           >
             {t("connectionHome.setupGuideLink")}
           </button>

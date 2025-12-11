@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import ConnectedHeader from "@/ui/components/ConnectedHeader";
 import ConnectionList from "@/ui/components/ConnectionList";
 import KeyList from "@/ui/components/KeyList";
@@ -17,7 +16,7 @@ export function Panel() {
       >
         <ConnectedHeader />
         <main className="flex-1 overflow-auto">
-          <div className="w-full max-w-7xl mx-auto">
+          <div className="w-full max-w-none mx-auto px-2 sm:px-3">
             <KeyList />
           </div>
           <ConnectionList />

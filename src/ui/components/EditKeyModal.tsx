@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 
 type Key = {
   key: string;
@@ -87,7 +88,7 @@ const EditKeyModal = ({ onSave }: Params) => {
           <h2 className="text-lg font-medium">{t("editKeyModal.title")}</h2>
           <button
             onClick={closeEditModal}
-            className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
+            className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
             aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
@@ -171,15 +172,13 @@ const EditKeyModal = ({ onSave }: Params) => {
             <button
               type="button"
               onClick={closeEditModal}
-              className={`px-4 py-2 rounded-md font-medium transition-all
-                ${darkMode ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-500 hover:bg-red-600 text-white"}`}
+              className={toneButton("neutral", darkMode, "sm")}
             >
               {t("editKeyModal.cancel")}
             </button>
             <button
               type="submit"
-              className={`px-4 py-2 rounded-md font-medium transition-all
-                ${darkMode ? "bg-blue-700 hover:bg-blue-600 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+              className={toneButton("primary", darkMode, "sm")}
             >
               {t("editKeyModal.save")}
             </button>

@@ -126,6 +126,21 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     [showAlert, showLoading, dismissLoading]
   );
 
+  const handleFlushAllKeys = async () => {
+    try {
+      showLoading();
+      await api.delete("/keys");
+      setKeys([]);
+      dismissLoading();
+      showAlert(t("keyList.flushSuccess"), "success");
+      return true;
+    } catch (_error) {
+      dismissLoading();
+      showAlert(t("errors.flushKeys"), "error");
+      return false;
+    }
+  };
+
   const handleConnect = async (params: Omit<Connection, "id">) => {
     try {
       showLoading();
@@ -372,9 +387,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         isSameConnection(conn) ? { ...connectionWithoutId } : conn
       );
       const hasMatch = prev.some((conn) => isSameConnection(conn));
-      const nextList = hasMatch
-        ? updatedList
-        : [connectionWithoutId, ...prev];
+      const nextList = hasMatch ? updatedList : [connectionWithoutId, ...prev];
 
       setKey("CONNECTIONS", nextList);
 
@@ -408,6 +421,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         handleChoseConnection,
         handleDisconnect,
         handleLoadKeys,
+        handleFlushAllKeys,
         handleCreateKey,
         handleEditKey,
         handleDeleteKey,

@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import LanguageSelector from "./LanguageSelector";
 import { useConnections, useDarkMode, useMenu } from "@/ui/hooks";
+import { toneButton } from "@/ui/utils/buttonTone";
 
 const ConnectedHeader = () => {
   const { darkMode, toggleDarkMode } = useDarkMode();
@@ -53,11 +54,7 @@ const ConnectedHeader = () => {
       >
         <button
           onClick={openMenu}
-          className={`cursor-pointer p-2 rounded-lg ${
-            darkMode
-              ? "text-gray-300 hover:bg-gray-700"
-              : "text-gray-600 hover:bg-gray-200"
-          }`}
+          className={toneButton("neutral", darkMode, "icon")}
         >
           <Bars3Icon className="w-6 h-6" />
         </button>
@@ -107,11 +104,7 @@ const ConnectedHeader = () => {
           {location.pathname === "/statistics" ? (
             <button
               onClick={goBack}
-              className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                darkMode
-                  ? "text-yellow-400 hover:bg-gray-700/40"
-                  : "text-yellow-600 hover:bg-gray-100"
-              }`}
+              className={toneButton("warning", darkMode, "sm")}
             >
               <ArrowUturnLeftIcon className="w-5 h-5" />
               <span className="text-sm">{t("header.back")}</span>
@@ -119,11 +112,7 @@ const ConnectedHeader = () => {
           ) : (
             <button
               onClick={goToStatistics}
-              className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-                darkMode
-                  ? "text-yellow-400 hover:bg-gray-700/40"
-                  : "text-yellow-600 hover:bg-gray-100"
-              }`}
+              className={toneButton("warning", darkMode, "sm")}
             >
               <ChartBarIcon className="w-5 h-5" />
               <span className="text-sm">{t("header.stats")}</span>
@@ -132,11 +121,7 @@ const ConnectedHeader = () => {
 
           <button
             onClick={disconnect}
-            className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
-              darkMode
-                ? "text-red-400 hover:bg-gray-700/40"
-                : "text-red-600 hover:bg-gray-100"
-            }`}
+            className={toneButton("danger", darkMode, "sm")}
           >
             <LinkSlashIcon className="w-5 h-5" />
             <span className="text-sm">{t("header.disconnect")}</span>
@@ -146,11 +131,7 @@ const ConnectedHeader = () => {
 
           <button
             onClick={toggleDarkMode}
-            className={`cursor-pointer p-2 rounded-xl border ${
-              darkMode
-                ? "border-gray-600 text-blue-400 hover:bg-gray-700/40"
-                : "border-gray-200 text-blue-600 hover:bg-gray-100"
-            }`}
+            className={toneButton("neutral", darkMode, "icon")}
           >
             {darkMode ? (
               <SunIcon className="w-6 h-6" />

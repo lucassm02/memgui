@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useElectron } from "../hooks/useElectron";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 
 const typeConfig = {
   success: {
@@ -30,9 +31,24 @@ const typeConfig = {
   }
 } as const;
 
+const confirmButtonVariants = {
+  success: "success",
+  error: "danger",
+  warning: "warning"
+} as const;
+
 const AlertModal = () => {
-  const { dismissAlert, alertModalIsOpen, alertModalMessage, alertModalType } =
-    useModal();
+  const {
+    dismissAlert,
+    alertModalIsOpen,
+    alertModalMessage,
+    alertModalType,
+    alertModalMode,
+    alertModalConfirmLabel,
+    alertModalCancelLabel,
+    alertModalOnConfirm,
+    alertModalTitle
+  } = useModal();
   const { darkMode } = useDarkMode();
   const { enabled: electronEnabled } = useElectron();
   const { t } = useTranslation();
@@ -41,6 +57,25 @@ const AlertModal = () => {
 
   const config = typeConfig[alertModalType] ?? typeConfig.error;
   const Icon = config.icon;
+  const confirmVariant =
+    confirmButtonVariants[alertModalType] ?? confirmButtonVariants.error;
+  const title =
+    alertModalTitle && alertModalTitle.trim().length > 0
+      ? alertModalTitle
+      : t(`alertModal.titles.${alertModalType}`);
+
+  const handleConfirm = async () => {
+    const onConfirm = alertModalOnConfirm;
+    dismissAlert();
+
+    if (!onConfirm) return;
+
+    try {
+      await onConfirm();
+    } catch (error) {
+      console.error("Confirm modal action failed", error);
+    }
+  };
 
   return (
     <div
@@ -54,9 +89,7 @@ const AlertModal = () => {
       >
         <div className="flex items-center gap-3">
           <Icon className={`w-8 h-8 ${config.color}`} />
-          <h2 className="text-lg font-semibold">
-            {t(`alertModal.titles.${alertModalType}`)}
-          </h2>
+          <h2 className="text-lg font-semibold">{title}</h2>
         </div>
 
         <p
@@ -67,15 +100,31 @@ const AlertModal = () => {
           {alertModalMessage}
         </p>
 
-        <div className="mt-5 flex justify-end">
-          <button
-            onClick={dismissAlert}
-            className={`px-4 py-2 rounded-md font-medium transition-all
-            ${darkMode ? "bg-blue-600 hover:bg-blue-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
-          >
-            {t("alertModal.close")}
-          </button>
-        </div>
+        {alertModalMode === "confirm" ? (
+          <div className="mt-5 flex justify-end gap-3">
+            <button
+              onClick={dismissAlert}
+              className={toneButton("neutral", darkMode, "sm")}
+            >
+              {alertModalCancelLabel || t("alertModal.cancel")}
+            </button>
+            <button
+              onClick={handleConfirm}
+              className={toneButton(confirmVariant, darkMode, "sm")}
+            >
+              {alertModalConfirmLabel || t("alertModal.confirm")}
+            </button>
+          </div>
+        ) : (
+          <div className="mt-5 flex justify-end">
+            <button
+              onClick={dismissAlert}
+              className={toneButton("primary", darkMode, "sm")}
+            >
+              {t("alertModal.close")}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

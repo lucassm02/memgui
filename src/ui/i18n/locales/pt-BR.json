@@ -96,6 +96,7 @@
     "create": "Criar",
     "refresh": "Atualizar",
     "autoRefresh": "Auto Atualizar",
+    "clearAll": "Limpar Tudo",
     "searchPlaceholder": "Digite uma chave ou regex...",
     "columns": {
       "key": "Chave",
@@ -105,7 +106,14 @@
       "actions": "Ações"
     },
     "empty": "Nenhuma chave armazenada",
-    "authWarning": "Quando o Memcached está configurado com autenticação, apenas as chaves criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas ou excluídas. Isso ocorre devido a uma <strong>limitação do protocolo do Memcached autenticado</strong>, que restringe o acesso a chaves criadas por outras fontes."
+    "authWarning": "Quando o Memcached está configurado com autenticação, apenas as chaves criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas ou excluídas. Isso ocorre devido a uma <strong>limitação do protocolo do Memcached autenticado</strong>, que restringe o acesso a chaves criadas por outras fontes.",
+    "flushConfirmation": {
+      "title": "Limpar todas as chaves?",
+      "message": "Esta ação removerá todas as chaves do Memcached imediatamente. Deseja continuar?",
+      "confirm": "Sim, limpar tudo",
+      "cancel": "Cancelar"
+    },
+    "flushSuccess": "Todas as chaves foram removidas com sucesso."
   },
   "createKeyModal": {
     "title": "Nova Chave",
@@ -149,7 +157,9 @@
       "success": "Sucesso",
       "warning": "Aviso"
     },
-    "close": "OK"
+    "close": "OK",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
   },
   "statistics": {
     "title": "Estatísticas do Servidor",
@@ -185,6 +195,7 @@
     "loadKeys": "Erro ao carregar chaves.",
     "createKey": "Erro ao criar chave.",
     "editKey": "Erro ao editar chave.",
-    "deleteKey": "Erro ao excluir chave."
+    "deleteKey": "Erro ao excluir chave.",
+    "flushKeys": "Erro ao limpar chaves."
   }
 }

@@ -96,6 +96,7 @@
     "create": "Create",
     "refresh": "Refresh",
     "autoRefresh": "Auto Refresh",
+    "clearAll": "Clear All",
     "searchPlaceholder": "Type a key or regex...",
     "columns": {
       "key": "Key",
@@ -105,7 +106,14 @@
       "actions": "Actions"
     },
     "empty": "No keys stored",
-    "authWarning": "When Memcached runs with authentication enabled, only keys created inside <strong>MemGUI</strong> can be listed, edited, or removed. This is a <strong>limitation of the authenticated Memcached protocol</strong>, which restricts access to keys created elsewhere."
+    "authWarning": "When Memcached runs with authentication enabled, only keys created inside <strong>MemGUI</strong> can be listed, edited, or removed. This is a <strong>limitation of the authenticated Memcached protocol</strong>, which restricts access to keys created elsewhere.",
+    "flushConfirmation": {
+      "title": "Clear all keys?",
+      "message": "This will remove every key from Memcached right away. Do you want to continue?",
+      "confirm": "Yes, clear all",
+      "cancel": "Cancel"
+    },
+    "flushSuccess": "All keys were cleared successfully."
   },
   "createKeyModal": {
     "title": "New Key",
@@ -149,7 +157,9 @@
       "success": "Success",
       "warning": "Warning"
     },
-    "close": "OK"
+    "close": "OK",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "statistics": {
     "title": "Server Statistics",
@@ -185,6 +195,7 @@
     "loadKeys": "Failed to load keys.",
     "createKey": "Failed to create key.",
     "editKey": "Failed to edit key.",
-    "deleteKey": "Failed to delete key."
+    "deleteKey": "Failed to delete key.",
+    "flushKeys": "Failed to clear keys."
   }
 }

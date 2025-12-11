@@ -68,7 +68,9 @@ export interface ConnectionsContextType {
   serverData: ServerData | null;
   error: string;
   handleConnect: (connection: Omit<Connection, "id">) => Promise<boolean>;
-  handleTestConnection: (connection: Omit<Connection, "id">) => Promise<boolean>;
+  handleTestConnection: (
+    connection: Omit<Connection, "id">
+  ) => Promise<boolean>;
   handleChoseConnection: (
     connection: Omit<Connection, "id">
   ) => Promise<boolean>;
@@ -78,6 +80,7 @@ export interface ConnectionsContextType {
     search?: string,
     limit?: number
   ) => Promise<boolean>;
+  handleFlushAllKeys: () => Promise<boolean>;
   handleCreateKey: (newKey: KeyData) => Promise<boolean>;
   handleEditKey: (updatedKey: KeyData) => Promise<boolean>;
   handleDeleteKey: (key: string) => Promise<boolean>;

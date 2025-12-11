@@ -8,6 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
+import { Connection } from "@/ui/contexts";
 import {
   useConnections,
   useDarkMode,
@@ -15,7 +16,7 @@ import {
   useElectron,
   useModal
 } from "@/ui/hooks";
-import { Connection } from "@/ui/contexts";
+import { toneButton } from "@/ui/utils/buttonTone";
 
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();
@@ -66,7 +67,7 @@ const ConnectionList = () => {
             </h3>
             <button
               onClick={closeMenu}
-              className="cursor-pointer p-1 rounded-md hover:bg-gray-700/50"
+              className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
             >
               <XMarkIcon
                 className={`w-6 h-6 ${
@@ -130,11 +131,7 @@ const ConnectionList = () => {
                       e.stopPropagation();
                       openConnectionModal(conn);
                     }}
-                    className={`cursor-pointer p-1 rounded-md ${
-                      darkMode
-                        ? "text-blue-300 hover:bg-gray-600"
-                        : "text-blue-600 hover:bg-gray-200"
-                    }`}
+                    className={`${toneButton("primary", darkMode, "icon")} !p-1`}
                     aria-label={t("connectionList.edit")}
                   >
                     <PencilSquareIcon className="w-4 h-4" />
@@ -144,13 +141,7 @@ const ConnectionList = () => {
                       e.stopPropagation();
                       handleDeleteConnection(conn);
                     }}
-                    className={`cursor-pointer p-1 rounded-md
-                  ${
-                    darkMode
-                      ? "text-red-400 hover:bg-gray-600"
-                      : "text-red-600 hover:bg-gray-200"
-                  }
-                `}
+                    className={`${toneButton("danger", darkMode, "icon")} !p-1`}
                     aria-label={t("common.delete")}
                   >
                     <TrashIcon className="w-4 h-4" />

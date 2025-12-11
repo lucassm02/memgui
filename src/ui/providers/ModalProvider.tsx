@@ -19,6 +19,19 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [alertModalIsOpen, setAlertModalIsOpen] = useState(false);
   const [alertModalMessage, setAlertModalMessage] = useState("");
   const [alertModalType, setAlertModalType] = useState<AlertType>("error");
+  const [alertModalMode, setAlertModalMode] = useState<"alert" | "confirm">(
+    "alert"
+  );
+  const [alertModalConfirmLabel, setAlertModalConfirmLabel] = useState<
+    string | null
+  >(null);
+  const [alertModalCancelLabel, setAlertModalCancelLabel] = useState<
+    string | null
+  >(null);
+  const [alertModalOnConfirm, setAlertModalOnConfirm] = useState<
+    (() => void | Promise<void>) | null
+  >(null);
+  const [alertModalTitle, setAlertModalTitle] = useState<string | null>(null);
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
   const [viewDataModalIsOpen, setViewDataModalIsOpen] = useState(false);
   const [connectionModalIsOpen, setConnectionModalIsOpen] = useState(false);
@@ -83,10 +96,45 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setAlertModalIsOpen(true);
     setAlertModalMessage(message);
     setAlertModalType(type);
+    setAlertModalMode("alert");
+    setAlertModalConfirmLabel(null);
+    setAlertModalCancelLabel(null);
+    setAlertModalOnConfirm(null);
+    setAlertModalTitle(null);
   };
 
   const dismissAlert = () => {
     setAlertModalIsOpen(false);
+    setAlertModalMode("alert");
+    setAlertModalConfirmLabel(null);
+    setAlertModalCancelLabel(null);
+    setAlertModalOnConfirm(null);
+    setAlertModalTitle(null);
+  };
+
+  const showConfirm = ({
+    message,
+    onConfirm,
+    type = "warning",
+    title,
+    confirmLabel,
+    cancelLabel
+  }: {
+    message: string;
+    onConfirm: () => void | Promise<void>;
+    type?: AlertType;
+    title?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+  }) => {
+    setAlertModalIsOpen(true);
+    setAlertModalMessage(message);
+    setAlertModalType(type);
+    setAlertModalMode("confirm");
+    setAlertModalOnConfirm(() => onConfirm);
+    setAlertModalTitle(title ?? null);
+    setAlertModalConfirmLabel(confirmLabel ?? null);
+    setAlertModalCancelLabel(cancelLabel ?? null);
   };
 
   const showLoading = () => {
@@ -118,10 +166,16 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         createModalIsOpen,
         editModalIsOpen,
         showAlert,
+        showConfirm,
         dismissAlert,
         alertModalIsOpen,
         alertModalMessage,
         alertModalType,
+        alertModalMode,
+        alertModalConfirmLabel,
+        alertModalCancelLabel,
+        alertModalOnConfirm,
+        alertModalTitle,
         dismissLoading,
         loadingModalIsOpen,
         showLoading,

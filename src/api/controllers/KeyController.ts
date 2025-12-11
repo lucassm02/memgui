@@ -90,11 +90,7 @@ class KeyController {
       const keysInfo = keysInfoArrays.flat();
       const slabKeys = keysInfo.map((info) => info.key);
       const allKeys = Array.from(new Set([...slabKeys, ...storedKeys])).sort();
-      const filteredKeys = this.applyKeyFilters(
-        allKeys,
-        searchTerm,
-        limit
-      );
+      const filteredKeys = this.applyKeyFilters(allKeys, searchTerm, limit);
 
       if (filteredKeys.length === 0) {
         response.json([]);

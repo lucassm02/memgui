@@ -1,6 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { useDarkMode } from "../hooks/useDarkMode";
+import { toneButton } from "../utils/buttonTone";
 
 type Props = {
   showDisclaimer: boolean;
@@ -16,6 +18,7 @@ const Disclaimer = ({
   className
 }: Props) => {
   const { t } = useTranslation();
+  const { darkMode } = useDarkMode();
 
   if (!showDisclaimer) return null;
 
@@ -25,7 +28,11 @@ const Disclaimer = ({
     >
       <button
         onClick={hideDisclaimer}
-        className="absolute top-2 right-2 text-yellow-700 hover:text-yellow-500 transition"
+        className={`${toneButton(
+          "warning",
+          darkMode,
+          "icon"
+        )} absolute top-2 right-2 !p-1`}
         aria-label={t("common.close")}
       >
         {typeof hideDisclaimer === "function" && (

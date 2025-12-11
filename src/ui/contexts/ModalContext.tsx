@@ -13,6 +13,14 @@ export type AlertType = "error" | "success" | "warning";
 export interface ModalContextType {
   openEditModal: (itemToEdit: Key) => void;
   closeEditModal: () => void;
+  showConfirm: (params: {
+    message: string;
+    onConfirm: () => void | Promise<void>;
+    type?: AlertType;
+    title?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+  }) => void;
   openCreateModal: () => void;
   closeCreateModal: () => void;
   openViewDataModal: (dataToShow: Key) => void;
@@ -32,6 +40,11 @@ export interface ModalContextType {
   alertModalIsOpen: boolean;
   alertModalMessage: string;
   alertModalType: AlertType;
+  alertModalMode: "alert" | "confirm";
+  alertModalConfirmLabel: string | null;
+  alertModalCancelLabel: string | null;
+  alertModalOnConfirm: (() => void | Promise<void>) | null;
+  alertModalTitle: string | null;
   loadingModalIsOpen: boolean;
   viewDataModalIsOpen: boolean;
   itemToView: Key;
