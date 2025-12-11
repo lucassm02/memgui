@@ -35,7 +35,7 @@ const KeyList = () => {
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [maxItems, setMaxItems] = useState(10);
+  const [maxItems, setMaxItems] = useState(5);
   const [autoUpdate, setAutoUpdate] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 

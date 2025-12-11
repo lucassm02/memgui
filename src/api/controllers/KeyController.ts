@@ -31,6 +31,7 @@ class KeyController {
     const limitParam = Number(request.query.limit);
     const limit =
       Number.isFinite(limitParam) && limitParam > 0 ? limitParam : undefined;
+    const inflatedLimit = limit ? Math.ceil(limit * 1.25) : undefined;
 
     try {
       let storedKeys: string[] = [];
@@ -50,7 +51,7 @@ class KeyController {
         const filteredKeys = this.applyKeyFilters(
           storedKeys,
           searchTerm,
-          limit
+          inflatedLimit
         );
         const payload = await this.getKeysValue(
           filteredKeys,
@@ -58,7 +59,9 @@ class KeyController {
           undefined,
           shouldUpdateIndex
         );
-        response.json(payload);
+        const finalPayload = limit ? payload.slice(0, limit) : payload;
+        response.json(finalPayload);
+
         return;
       }
 
@@ -90,7 +93,11 @@ class KeyController {
       const keysInfo = keysInfoArrays.flat();
       const slabKeys = keysInfo.map((info) => info.key);
       const allKeys = Array.from(new Set([...slabKeys, ...storedKeys])).sort();
-      const filteredKeys = this.applyKeyFilters(allKeys, searchTerm, limit);
+      const filteredKeys = this.applyKeyFilters(
+        allKeys,
+        searchTerm,
+        inflatedLimit
+      );
 
       if (filteredKeys.length === 0) {
         response.json([]);
@@ -104,7 +111,15 @@ class KeyController {
         shouldUpdateIndex
       );
 
-      response.json(payload);
+      const finalPayload = limit ? payload.slice(0, limit) : payload;
+      response.json(finalPayload);
+
+      this.getKeysValue(storedKeys, connection, keysInfo).catch((error) => {
+        logger.error(
+          "Erro ao atualizar índice de chaves em segundo plano",
+          error
+        );
+      });
     } catch (error) {
       const message = "Falha ao recuperar chaves";
       logger.error(message, error);

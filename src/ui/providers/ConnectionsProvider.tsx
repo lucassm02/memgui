@@ -169,7 +169,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         return updated;
       });
 
-      await handleLoadKeys(false, undefined, 10);
+      await handleLoadKeys(false, undefined, 5);
       dismissLoading();
       return true;
     } catch (_error) {
@@ -204,7 +204,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
       setIsConnected(true);
       setCurrentConnection(connection);
-      await handleLoadKeys(false, undefined, 10);
+      await handleLoadKeys(false, undefined, 5);
       dismissLoading();
       return true;
     } catch (err) {
