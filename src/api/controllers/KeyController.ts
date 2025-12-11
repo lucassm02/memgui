@@ -169,6 +169,24 @@ class KeyController {
     }
   }
 
+  async flushAll(request: Request, response: Response) {
+    try {
+      const connections = connectionManager();
+      const connectionId = <string>request.headers["x-connection-id"];
+      const connection = connections.get(connectionId)!;
+
+      await connection.client.flush();
+
+      response.status(200).json({ status: "flushed" });
+    } catch (error) {
+      const message = "Erro ao limpar todas as chaves";
+      logger.error(message, error);
+      response.status(500).json({
+        error: message
+      });
+    }
+  }
+
   async getByName(request: Request, response: Response) {
     try {
       const connections = connectionManager();

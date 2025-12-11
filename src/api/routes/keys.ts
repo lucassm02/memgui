@@ -16,6 +16,7 @@ route.post(
   keyController.create.bind(keyController)
 );
 route.get("/keys", keyController.getAll.bind(keyController));
+route.delete("/keys", keyController.flushAll.bind(keyController));
 
 route.get(
   "/keys/:key",
