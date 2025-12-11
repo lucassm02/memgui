@@ -20,8 +20,12 @@ import { Connection } from "@/ui/contexts";
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();
   const { darkMode } = useDarkMode();
-  const { savedConnections, handleChoseConnection, handleDeleteConnection } =
-    useConnections();
+  const {
+    savedConnections,
+    handleChoseConnection,
+    handleDeleteConnection,
+    isConnected
+  } = useConnections();
   const { openConnectionModal } = useModal();
   const { t } = useTranslation();
 
@@ -119,38 +123,40 @@ const ConnectionList = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openConnectionModal(conn);
-                  }}
-                  className={`cursor-pointer p-1 rounded-md ${
-                    darkMode
-                      ? "text-blue-300 hover:bg-gray-600"
-                      : "text-blue-600 hover:bg-gray-200"
-                  }`}
-                  aria-label={t("connectionList.edit")}
-                >
-                  <PencilSquareIcon className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteConnection(conn);
-                  }}
-                  className={`cursor-pointer p-1 rounded-md
+              {!isConnected && (
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openConnectionModal(conn);
+                    }}
+                    className={`cursor-pointer p-1 rounded-md ${
+                      darkMode
+                        ? "text-blue-300 hover:bg-gray-600"
+                        : "text-blue-600 hover:bg-gray-200"
+                    }`}
+                    aria-label={t("connectionList.edit")}
+                  >
+                    <PencilSquareIcon className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteConnection(conn);
+                    }}
+                    className={`cursor-pointer p-1 rounded-md
                   ${
                     darkMode
                       ? "text-red-400 hover:bg-gray-600"
                       : "text-red-600 hover:bg-gray-200"
                   }
                 `}
-                  aria-label={t("common.delete")}
-                >
-                  <TrashIcon className="w-4 h-4" />
-                </button>
-              </div>
+                    aria-label={t("common.delete")}
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

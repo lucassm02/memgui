@@ -99,6 +99,33 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     }
   );
 
+  const handleLoadKeys = useCallback(
+    async (showLoadingModal = true, search?: string, limit?: number) => {
+      try {
+        if (showLoadingModal) showLoading();
+        const response = await api.get("/keys", {
+          params: {
+            search: search || undefined,
+            limit: limit || undefined
+          }
+        });
+        const sortedKeys = [...response.data].sort((a, b) =>
+          a.key.localeCompare(b.key)
+        );
+        setKeys(sortedKeys);
+        if (showLoadingModal) dismissLoading();
+        return true;
+      } catch (_error) {
+        if (showLoadingModal) dismissLoading();
+        showAlert(t("errors.loadKeys"), "error");
+        return false;
+      }
+    },
+    // Only depends on alert/loading handlers; avoid re-creating each render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showAlert, showLoading, dismissLoading]
+  );
+
   const handleConnect = async (params: Omit<Connection, "id">) => {
     try {
       showLoading();
@@ -119,6 +146,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       setIsConnected(true);
 
       const newConnection = { ...params, id: connectionId };
+      setCurrentConnection(newConnection);
       setSavedConnections((prev) => {
         const filtered = prev.filter((c) => c.host !== host || c.port !== port);
         const updated = [newConnection, ...filtered];
@@ -126,6 +154,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         return updated;
       });
 
+      await handleLoadKeys(false, undefined, 10);
       dismissLoading();
       return true;
     } catch (_error) {
@@ -160,6 +189,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
       setIsConnected(true);
       setCurrentConnection(connection);
+      await handleLoadKeys(false, undefined, 10);
       dismissLoading();
       return true;
     } catch (err) {
@@ -240,33 +270,6 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       timeout: 300
     });
   };
-
-  const handleLoadKeys = useCallback(
-    async (showLoadingModal = true, search?: string, limit?: number) => {
-      try {
-        if (showLoadingModal) showLoading();
-        const response = await api.get("/keys", {
-          params: {
-            search: search || undefined,
-            limit: limit || undefined
-          }
-        });
-        const sortedKeys = [...response.data].sort((a, b) =>
-          a.key.localeCompare(b.key)
-        );
-        setKeys(sortedKeys);
-        if (showLoadingModal) dismissLoading();
-        return true;
-      } catch (_error) {
-        if (showLoadingModal) dismissLoading();
-        showAlert(t("errors.loadKeys"), "error");
-        return false;
-      }
-    },
-    // Only depends on alert/loading handlers; avoid re-creating each render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [showAlert, showLoading, dismissLoading]
-  );
 
   const handleCreateKey = async (newKey: KeyData) => {
     try {
