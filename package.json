@@ -2,7 +2,7 @@
   "name": "MemGUI",
   "description": "GUI for managing Memcached",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Santos Código",
     "email": "lucassm02@gmail.com"
@@ -18,9 +18,10 @@
     "dev": "concurrently \"yarn dev:server\" \"wait-on http://localhost:5173 && yarn electron\"",
     "dev:server": "yarn tsx src/server.ts  --start --dev --port 5173",
     "electron": "electron .",
+    "build:electron": "electron-builder",
     "build:server": "node script/build-server.cjs",
     "build:ui": "vite build",
-    "build:all": "yarn clean && yarn build:ui && yarn build:server && electron-builder"
+    "build:all": "yarn clean && yarn build:ui && yarn build:server && yarn build:electron"
   },
   "build": {
     "asar": true,
@@ -40,6 +41,13 @@
       "dist/**/*",
       "src/electron/main.cjs",
       "package.json"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "lucassm02",
+        "repo": "mem-gui"
+      }
     ],
     "win": {
       "icon": "asset/icons/icon.ico"
@@ -64,6 +72,7 @@
     "@uiw/react-codemirror": "^4.23.7",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
+    "electron-updater": "^6.6.2",
     "express": "^4.21.2",
     "i18next": "^25.7.2",
     "i18next-browser-languagedetector": "^8.2.0",

@@ -7,6 +7,7 @@ import ConnectionModal from "@/ui/components/ConnectionModal";
 import SetupGuide from "@/ui/components/SetupGuide";
 import UnconnectedHeader from "@/ui/components/UnconnectedHeader";
 
+import { Connection as ConnectionType } from "@/ui/contexts";
 import { useMenu, useModal } from "@/ui/hooks";
 import { useConnections } from "@/ui/hooks/useConnections";
 import { useDarkMode } from "@/ui/hooks/useDarkMode";
@@ -21,7 +22,12 @@ type SubmitParams = {
 };
 
 export function Connection() {
-  const { handleConnect, savedConnections } = useConnections();
+  const {
+    handleConnect,
+    savedConnections,
+    handleEditConnection,
+    handleTestConnection
+  } = useConnections();
   const navigate = useNavigate();
 
   const { darkMode } = useDarkMode();
@@ -34,7 +40,15 @@ export function Connection() {
     }
   }, [savedConnections]);
 
-  async function handleSubmit(params: SubmitParams) {
+  async function handleSubmit(
+    params: SubmitParams,
+    options: { isEditing: boolean; previousConnection?: ConnectionType }
+  ) {
+    if (options.isEditing) {
+      handleEditConnection({ ...params, id: "" }, options.previousConnection);
+      return;
+    }
+
     const redirect = await handleConnect(params);
 
     if (!redirect) {
@@ -53,7 +67,10 @@ export function Connection() {
       >
         <UnconnectedHeader />
         <main className="flex-1 overflow-hidden">
-          <ConnectionModal onSubmit={handleSubmit} />
+          <ConnectionModal
+            onSubmit={handleSubmit}
+            onTest={handleTestConnection}
+          />
           <ConnectionHome />
           <ConnectionList />
           <SetupGuide />

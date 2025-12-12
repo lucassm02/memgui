@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   ClockIcon,
   CpuChipIcon,
+  KeyIcon,
   DocumentChartBarIcon,
   ExclamationTriangleIcon,
   ServerIcon,
@@ -21,7 +22,7 @@ export function Dashboard() {
   const { darkMode } = useDarkMode();
   const { t } = useTranslation();
 
-  const { serverData, handleLoadServerData } = useConnections();
+  const { serverData, handleLoadServerData, totalKeyCount } = useConnections();
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -52,7 +53,7 @@ export function Dashboard() {
             {t("statistics.title")}
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <InfoCard
               title={t("statistics.host")}
               value={`${serverData.host}:${serverData.port}`}
@@ -67,6 +68,13 @@ export function Dashboard() {
               title={t("statistics.connections")}
               value={`${serverData.serverInfo.curr_connections} / ${serverData.serverInfo.max_connections}`}
               icon={<ChartBarIcon className="w-10 h-10 text-yellow-400" />}
+            />
+            <InfoCard
+              title={t("keyList.title")}
+              value={
+                totalKeyCount === undefined ? "-" : `${totalKeyCount}`
+              }
+              icon={<KeyIcon className="w-10 h-10 text-emerald-400" />}
             />
           </div>
 

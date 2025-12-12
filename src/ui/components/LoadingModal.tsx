@@ -2,17 +2,23 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
+import { useElectron } from "../hooks/useElectron";
 import { useModal } from "../hooks/useModal";
 
 const LoadingModal = () => {
   const { loadingModalIsOpen } = useModal();
   const { darkMode } = useDarkMode();
   const { t } = useTranslation();
+  const { enabled: electronEnabled } = useElectron();
 
   if (!loadingModalIsOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">
+    <div
+      className={`fixed ${
+        electronEnabled ? "top-10 left-0 right-0 bottom-0" : "inset-0"
+      } flex items-center justify-center bg-black/50 backdrop-blur-md z-50`}
+    >
       <div
         className={`p-8 rounded-lg shadow-xl w-40 flex flex-col items-center animate-fadeIn transition-all
         ${darkMode ? "bg-gray-800/80 text-white border-gray-700" : "bg-white/80 text-gray-900 border-gray-300"}`}

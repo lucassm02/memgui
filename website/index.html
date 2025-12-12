@@ -1,311 +1,279 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required Meta Tags for SEO -->
-    <meta charset="UTF-8" />
-    <link
-      rel="icon"
-      type="image/svg+xml"
-      href="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg"
-    />
-    <meta
-      name="description"
-      content="MemGUI: A powerful, intuitive GUI for managing and monitoring Memcached servers. Easily handle keys, monitor performance, and automate tasks."
-    />
-    <meta
-      name="keywords"
-      content="MemGUI, Memcached, GUI, SASL Authentication, Cache, Key Management, Auto-update, Advanced Search"
-    />
-    <meta name="author" content="lucassm02" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://lucassm02.github.io/mem-gui/" />
-    <meta
-      property="og:title"
-      content="MemGUI - The Ultimate GUI for Memcached"
-    />
-    <meta
-      property="og:description"
-      content="Easily manage and monitor your Memcached servers with MemGUI. Supports SASL authentication, auto-update, advanced search, and more."
-    />
-    <meta
-      property="og:image"
-      content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png"
-    />
+<head>
+  <!-- Required Meta Tags for SEO -->
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml"
+    href="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg" />
+  <meta name="description"
+    content="MemGUI 1.1.0: multi-language GUI for Memcached with update notices, bulk key deletion, backend search, and detailed server insights." />
+  <meta name="keywords"
+    content="MemGUI, Memcached, GUI, SASL Authentication, Cache, Key Management, Auto-update, Update Notice, Language Selector, i18n, Advanced Search" />
+  <meta name="author" content="lucassm02" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://lucassm02.github.io/mem-gui/" />
-    <meta
-      name="twitter:title"
-      content="MemGUI - The Ultimate GUI for Memcached"
-    />
-    <meta
-      name="twitter:description"
-      content="Easily manage and monitor your Memcached servers with MemGUI. Supports SASL authentication, auto-update, advanced search, and more."
-    />
-    <meta
-      name="twitter:image"
-      content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png"
-    />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lucassm02.github.io/mem-gui/" />
+  <meta property="og:title" content="MemGUI 1.1.0 - Multi-language GUI for Memcached" />
+  <meta property="og:description"
+    content="Manage and monitor your Memcached servers with MemGUI 1.1.0. New: i18n (pt-BR/en), update notices, bulk key cleanup, and backend search." />
+  <meta property="og:image"
+    content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png" />
 
-    <title>
-      MemGUI - Download Page | Manage Your Memcached Servers Efficiently
-    </title>
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://lucassm02.github.io/mem-gui/" />
+  <meta name="twitter:title" content="MemGUI 1.1.0 - Multi-language GUI for Memcached" />
+  <meta name="twitter:description"
+    content="Manage and monitor your Memcached servers with MemGUI 1.1.0. New: i18n (pt-BR/en), update notices, bulk key cleanup, and backend search." />
+  <meta name="twitter:image"
+    content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png" />
 
-    <!-- Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <!-- HERO / HEADER -->
-    <header class="hero">
-      <img
-        src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg"
-        alt="MemGUI Logo"
-      />
-      <h1>MemGUI</h1>
+  <title>
+    MemGUI 1.1.0 | Manage Your Memcached Servers Efficiently
+  </title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- HERO / HEADER -->
+  <header class="hero" id="top">
+    <div class="version-pill">
+      <span class="pill-dot"></span>
+      <span>Version 1.1.0: i18n, update alerts, bulk actions</span>
+    </div>
+    <img src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg" alt="MemGUI Logo" />
+    <h1>MemGUI</h1>
+    <p>
+      Multi-language GUI for Memcached with SASL, backend key search, inline connection editing, bulk key cleanup, and
+      update notices so you never miss a release.
+    </p>
+    <div class="hero-tags">
+      <span class="tag">pt-BR / en</span>
+      <span class="tag">Update notices</span>
+      <span class="tag">Backend search</span>
+      <span class="tag">Bulk key delete</span>
+    </div>
+    <div class="cta-buttons">
+      <a href="#download">Download 1.1.0</a>
+      <a href="https://github.com/lucassm02/mem-gui" target="_blank">View on GitHub</a>
+      <a class="ghost-link" href="#whats-new">See what is new</a>
+    </div>
+  </header>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#example">Example</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#license">License</a></li>
+      <li><a href="#contact">Contact</a></li>
+      <li><a href="#whats-new">What is new</a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <!-- ABOUT SECTION -->
+    <section id="about">
+      <h2>About MemGUI</h2>
       <p>
-        The all-in-one GUI for Memcached—manage your servers, handle keys,
-        monitor performance, and more!
+        <strong>MemGUI</strong> is a powerful, intuitive graphical interface for <em>Memcached</em> that now speaks
+        English and Portuguese, surfaces update notices, and keeps key searches fast by delegating them to the backend.
+        Manage connections with SASL, switch between servers, and keep every key, stat, and connection in view.
       </p>
-      <div class="cta-buttons">
-        <a href="#download">Download Now</a>
-        <a href="https://github.com/lucassm02/mem-gui" target="_blank"
-          >View on GitHub</a
-        >
+      <p class="sub-heading">
+        Version 1.1.0 introduces i18n with a language selector, inline connection editing, bulk key deletion, server key
+        counts, and safer forms with mandatory field warnings.
+      </p>
+    </section>
+
+    <!-- WHAT'S NEW -->
+    <section id="whats-new">
+      <h2>What is new in 1.1.0</h2>
+      <p class="sub-heading">Released 2025-12-12. Highlights from the latest update.</p>
+      <div class="changelog-grid">
+        <div class="changelog-card">
+          <h3>Added</h3>
+          <ul>
+            <li>Internationalization (i18n) with Portuguese (Brazil) and English resources plus a language selector.</li>
+            <li>Update and auto-update notices in the UI and Electron shell when new builds are available.</li>
+            <li>Connection editing directly from the connection list using the existing modal flow.</li>
+            <li>Bulk key deletion to remove all keys from the current server with a single action.</li>
+            <li>Server key count displayed across the key list and statistics screens.</li>
+            <li>Mandatory field warnings in the create-key form to prevent empty submissions.</li>
+          </ul>
+        </div>
+        <div class="changelog-card">
+          <h3>Changed</h3>
+          <ul>
+            <li>Key search now runs in the backend with optimized queries for faster, consistent results.</li>
+            <li>Connection switching and list UI refined for smoother, clearer transitions.</li>
+            <li>UI text and error messages sourced from translation keys instead of hardcoded strings.</li>
+            <li>Statistics and modals updated to render localized labels, placeholders, and messages.</li>
+            <li>General UI polish across headers, modals, and button tones for better readability.</li>
+          </ul>
+        </div>
+        <div class="changelog-card">
+          <h3>Fixed</h3>
+          <ul>
+            <li>Expiration calculations now handle negative timeUntilExpiration values correctly.</li>
+            <li>Zero-length responses fall back safely to avoid crashes when reading empty payloads.</li>
+            <li>Header alignment adjusted so UI elements stay centered.</li>
+          </ul>
+        </div>
       </div>
-    </header>
+      <a class="changelog-link" href="https://github.com/lucassm02/mem-gui/blob/main/CHANGELOG.md" target="_blank">
+        Read the full changelog
+      </a>
+    </section>
 
-    <!-- NAVIGATION -->
-    <nav>
-      <ul>
-        <li><a href="#about">About</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#download">Download</a></li>
-        <li><a href="#example">Example</a></li>
-        <li><a href="#installation">Installation</a></li>
-        <li><a href="#license">License</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
-
-    <!-- MAIN CONTENT -->
-    <main>
-      <!-- ABOUT SECTION -->
-      <section id="about">
-        <h2>About MemGUI</h2>
-        <p>
-          <strong>MemGUI</strong> is a powerful, intuitive graphical user
-          interface tailored for <em>Memcached</em>—one of the most widely used
-          caching systems for high-performance applications. Our latest release
-          features <strong>SASL authentication</strong>,
-          <strong>auto-update functionality</strong>, and an
-          <strong>advanced search engine</strong>
-          with regex support, ensuring you have all the tools you need to
-          efficiently manage keys and monitor server activity.
-        </p>
-        <p class="sub-heading">
-          Experience a sleek UI, quick setup, and real-time data that keeps you
-          in full control of your Memcached environment.
-        </p>
-      </section>
-
-      <!-- FEATURES SECTION -->
-      <section id="features">
-        <h2>Key Features</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <h3>SASL Authentication</h3>
-            <p>
-              Securely connect using username/password for protected servers.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>Auto-Update</h3>
-            <p>Keep your key listings fresh—no manual refreshes required.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Advanced Search</h3>
-            <p>
-              Filter keys by name, regex pattern, or partial matches for maximum
-              precision.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>Multi-Server Handling</h3>
-            <p>
-              Seamlessly switch between multiple Memcached instances and manage
-              them simultaneously.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>Detailed Statistics</h3>
-            <p>
-              Track uptime, connections, GET/SET counts, memory usage, and slab
-              allocation.
-            </p>
-          </div>
-          <div class="feature-card">
-            <h3>User-Friendly UI</h3>
-            <p>
-              Enjoy a modern interface with dark/light modes, intuitive
-              navigation, and quick shortcuts.
-            </p>
-          </div>
+    <!-- FEATURES SECTION -->
+    <section id="features">
+      <h2>Key Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>i18n and Language Selector</h3>
+          <p>Switch between Portuguese (Brazil) and English with auto-detection and persisted preferences.</p>
         </div>
-      </section>
-
-      <!-- DOWNLOAD SECTION -->
-      <section id="download">
-        <h2>Download</h2>
-        <p>
-          Ready to streamline your Memcached workflow? Get the latest version of
-          MemGUI directly from our
-          <a
-            href="https://github.com/lucassm02/mem-gui/releases/latest"
-            target="_blank"
-            >GitHub Releases</a
-          >. We offer:
-        </p>
-        <ul>
-          <li>
-            <strong>Portable (Unpacked)</strong>: Just unzip and run—no
-            installation needed.
-          </li>
-          <li>
-            <strong>Setup (Installer)</strong>: A guided install for a seamless
-            setup on your system.
-          </li>
-        </ul>
-        <a
-          class="download-button"
-          href="https://github.com/lucassm02/mem-gui/releases/latest"
-          target="_blank"
-        >
-          Download MemGUI
-        </a>
-      </section>
-
-      <!-- EXAMPLE / SCREENSHOT SECTION -->
-      <section id="example">
-        <h2>Example</h2>
-        <p>
-          Dive into our intuitive interface! Below is a sneak peek of the MemGUI
-          dashboard for managing keys and viewing server stats.
-        </p>
-        <div class="screenshot">
-          <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/00-home.png"
-            alt="MemGUI Screenshot - Home"
-          />
+        <div class="feature-card">
+          <h3>Update Notices</h3>
+          <p>Stay informed with in-app update and auto-update alerts whenever a new build is available.</p>
         </div>
-
-        <div class="screenshot">
-          <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/03-advanced-connection.png"
-            alt="MemGUI Screenshot - Connection"
-          />
+        <div class="feature-card">
+          <h3>Backend Key Search</h3>
+          <p>Optimized server-side key search keeps listings fast and consistent across large datasets.</p>
         </div>
-
-        <div class="screenshot">
-          <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/09-auto-refresh.png"
-            alt="MemGUI Screenshot - Key Listing"
-          />
+        <div class="feature-card">
+          <h3>Connection Control</h3>
+          <p>Edit connections directly from the list and switch between servers without losing context.</p>
         </div>
-
-        <div class="screenshot">
-          <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/05-create-key.png"
-            alt="MemGUI Screenshot - Create Key"
-          />
+        <div class="feature-card">
+          <h3>Bulk Key Cleanup</h3>
+          <p>Remove all keys on the current server in one action, with clear safeguards in the UI.</p>
         </div>
-
-        <div class="screenshot">
-          <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/11-statistics.png"
-            alt="MemGUI Screenshot - Server Statistics"
-          />
+        <div class="feature-card">
+          <h3>Server Insights</h3>
+          <p>Track key counts, uptime, memory usage, and more with localized labels and modal details.</p>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- INSTALLATION SECTION -->
-      <section id="installation">
-        <h2>Installation</h2>
-        <p>
-          Whether you opt for the portable version or the setup wizard, you'll
-          be running MemGUI in just a few clicks:
-        </p>
-        <ul>
-          <li>Download your preferred package.</li>
-          <li>Unpack or run the installer.</li>
-          <li>Launch MemGUI and connect to your Memcached servers.</li>
-        </ul>
-        <p>
-          Need more help? Check out the README and our Wiki on GitHub for
-          detailed steps and troubleshooting tips.
-        </p>
-      </section>
-
-      <!-- LICENSE SECTION -->
-      <section id="license">
-        <h2>License</h2>
-        <p>
-          This project is distributed under a
-          <strong>Non-Commercial Use Only License</strong>. You are granted a
-          limited, non-exclusive, and non-transferable license to use this
-          software for personal, educational, or non-commercial research
-          purposes only. Commercial use—including selling, offering paid
-          services, or integrating this software into commercial products—is
-          strictly prohibited. For complete details, see our
-          <a
-            href="https://github.com/lucassm02/mem-gui/blob/main/LICENCE.md"
-            target="_blank"
-            >LICENSE</a
-          >
-          file.
-        </p>
-      </section>
-
-      <!-- CONTACT SECTION -->
-      <section id="contact">
-        <h2>Contact</h2>
-        <p>
-          Have questions or suggestions? Interested in contributing to
-          <strong>MemGUI</strong>? We’d love to hear from you! Please visit:
-        </p>
-        <p>
-          <a href="https://github.com/lucassm02/mem-gui" target="_blank"
-            >Our GitHub Repository</a
-          >
-        </p>
-        <p>
-          Or open an
-          <a href="https://github.com/lucassm02/mem-gui/issues" target="_blank"
-            >issue on GitHub</a
-          >
-          to report bugs or request new features.
-        </p>
-      </section>
-    </main>
-
-    <!-- FOOTER -->
-    <footer>
-      <p>&copy; 2025 MemGUI. All Rights Reserved.</p>
+    <!-- DOWNLOAD SECTION -->
+    <section id="download">
+      <h2>Download</h2>
       <p>
-        <a href="https://github.com/lucassm02/mem-gui" target="_blank"
-          >View on GitHub</a
-        >
-        |
-        <a href="#top">Back to Top</a>
+        Ready to streamline your Memcached workflow? Get MemGUI 1.1.0 directly from our
+        <a href="https://github.com/lucassm02/mem-gui/releases/latest" target="_blank">GitHub Releases</a>. The app now
+        ships with i18n (pt-BR/en), update notices, backend key search, and safer bulk actions.
       </p>
-    </footer>
-    <script src="script.js"></script>
-  </body>
+      <ul>
+        <li><strong>Portable (Unpacked)</strong>: unzip and run, no install required.</li>
+        <li><strong>Setup (Installer)</strong>: guided setup for a seamless install.</li>
+      </ul>
+      <div class="release-meta">
+        <span class="tag">v1.1.0</span>
+        <span class="tag">Dec 12, 2025</span>
+        <span class="tag">pt-BR / en</span>
+      </div>
+      <a class="download-button" href="https://github.com/lucassm02/mem-gui/releases/latest" target="_blank">
+        Download MemGUI
+      </a>
+    </section>
+
+    <!-- EXAMPLE / SCREENSHOT SECTION -->
+    <section id="example">
+      <h2>Example</h2>
+      <p>
+        Dive into our intuitive interface. Below is a snapshot of the MemGUI dashboard for managing keys, viewing server
+        stats, and keeping track of key counts.
+      </p>
+      <div class="screenshot">
+        <img src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/00-home.png"
+          alt="MemGUI Screenshot - Home" />
+      </div>
+
+      <div class="screenshot">
+        <img src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/03-advanced-connection.png"
+          alt="MemGUI Screenshot - Connection" />
+      </div>
+
+      <div class="screenshot">
+        <img src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/05-create-key.png"
+          alt="MemGUI Screenshot - Create Key" />
+      </div>
+
+      <div class="screenshot">
+        <img src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/09-statistics.png"
+          alt="MemGUI Screenshot - Server Statistics" />
+      </div>
+    </section>
+
+    <!-- INSTALLATION SECTION -->
+    <section id="installation">
+      <h2>Installation</h2>
+      <p>
+        Whether you opt for the portable version or the setup wizard, you will be running MemGUI in just a few clicks:
+      </p>
+      <ul>
+        <li>Download your preferred package.</li>
+        <li>Unpack or run the installer.</li>
+        <li>Launch MemGUI and connect to your Memcached servers.</li>
+      </ul>
+      <p>
+        Need more help? Check out the README and our Wiki on GitHub for detailed steps and troubleshooting tips.
+      </p>
+    </section>
+
+    <!-- LICENSE SECTION -->
+    <section id="license">
+      <h2>License</h2>
+      <p>
+        This project is distributed under a
+        <strong>Non-Commercial Use Only License</strong>. You are granted a limited, non-exclusive, and non-transferable
+        license to use this software for personal, educational, or non-commercial research purposes only. Commercial use
+        - including selling, offering paid services, or integrating this software into commercial products - is strictly
+        prohibited. For complete details, see our
+        <a href="https://github.com/lucassm02/mem-gui/blob/main/LICENCE.md" target="_blank">LICENSE</a> file.
+      </p>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>
+        Have questions or suggestions? Interested in contributing to <strong>MemGUI</strong>? We would love to hear from
+        you! Please visit:
+      </p>
+      <p>
+        <a href="https://github.com/lucassm02/mem-gui" target="_blank">Our GitHub Repository</a>
+      </p>
+      <p>
+        Or open an
+        <a href="https://github.com/lucassm02/mem-gui/issues" target="_blank">issue on GitHub</a>
+        to report bugs or request new features.
+      </p>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 MemGUI. All Rights Reserved.</p>
+    <p>
+      <a href="https://github.com/lucassm02/mem-gui" target="_blank">View on GitHub</a>
+      |
+      <a href="#top">Back to Top</a>
+    </p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+
 </html>

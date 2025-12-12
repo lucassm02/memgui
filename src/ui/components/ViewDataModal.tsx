@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 
 const ViewDataModal = () => {
   const [format, setFormat] = useState("TEXT");
@@ -60,7 +61,7 @@ const ViewDataModal = () => {
           <h2 className="text-lg font-medium">{t("viewDataModal.title")}</h2>
           <button
             onClick={closeViewDataModal}
-            className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
+            className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
             aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
@@ -146,8 +147,7 @@ const ViewDataModal = () => {
         <div className="mt-5 flex justify-end">
           <button
             onClick={closeViewDataModal}
-            className={`px-4 py-2 rounded-md font-medium transition-all
-              ${darkMode ? "bg-red-600 hover:bg-red-700 text-white" : "bg-red-500 hover:bg-red-600 text-white"}`}
+            className={toneButton("neutral", darkMode, "sm")}
           >
             {t("viewDataModal.close")}
           </button>

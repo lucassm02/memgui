@@ -5,6 +5,7 @@ const {
   screen,
   globalShortcut
 } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const path = require("path");
 
 const DEV_SERVER_PORT = 5173;
@@ -12,6 +13,34 @@ const DEV_SERVER_PORT = 5173;
 const isDev = !app.isPackaged;
 
 const HOST = "http://localhost";
+
+const normalizeReleaseNotes = (releaseNotes) => {
+  if (!releaseNotes) return "";
+
+  if (Array.isArray(releaseNotes)) {
+    return releaseNotes
+      .map((note) => {
+        if (typeof note === "string") return note;
+        if (note && typeof note === "object" && "note" in note) {
+          return note.note ?? "";
+        }
+        return "";
+      })
+      .filter(Boolean)
+      .join("\n\n");
+  }
+
+  if (typeof releaseNotes === "object" && "note" in releaseNotes) {
+    return releaseNotes.note ?? "";
+  }
+
+  if (typeof releaseNotes === "string") return releaseNotes;
+
+  return "";
+};
+
+const toPlainText = (text) =>
+  text.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "");
 
 app.whenReady().then(async () => {
   let PRODUCTION_PORT = null;
@@ -56,6 +85,41 @@ app.whenReady().then(async () => {
     mainWindow.show();
   }, 1_000);
 
+  if (!isDev) {
+    autoUpdater.autoDownload = true;
+    const sendUpdateEvent = (channel, payload) => {
+      if (!mainWindow || mainWindow.isDestroyed()) return;
+      mainWindow.webContents.send(channel, payload);
+    };
+
+    autoUpdater.on("update-available", (info) => {
+      sendUpdateEvent("auto-update-available", {
+        version: info?.version,
+        releaseDate: info?.releaseDate,
+        releaseName: info?.releaseName,
+        releaseNotes: toPlainText(normalizeReleaseNotes(info?.releaseNotes))
+      });
+    });
+
+    autoUpdater.on("error", (error) => {
+      console.error("Auto update error:", error);
+      sendUpdateEvent("auto-update-error", {
+        message: error?.message ?? "Update error"
+      });
+    });
+
+    autoUpdater.on("update-downloaded", (_event, info) => {
+      sendUpdateEvent("auto-update-downloaded", {
+        version: info?.version,
+        releaseName: info?.releaseName,
+        releaseDate: info?.releaseDate,
+        releaseNotes: toPlainText(normalizeReleaseNotes(info?.releaseNotes))
+      });
+    });
+
+    autoUpdater.checkForUpdatesAndNotify();
+  }
+
   mainWindow.on("maximize", () => {
     mainWindow.webContents.send("window-maximized");
   });
@@ -98,5 +162,11 @@ ipcMain.on("window-unmaximize", () => {
   const win = BrowserWindow.getFocusedWindow();
   if (win && win.isMaximized()) {
     win.unmaximize();
+  }
+});
+
+ipcMain.on("auto-update-install", () => {
+  if (!isDev) {
+    autoUpdater.quitAndInstall();
   }
 });

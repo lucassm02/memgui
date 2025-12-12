@@ -5,11 +5,19 @@
   "language": {
     "label": "Idioma",
     "pt-BR": "Português (Brasil)",
-    "en": "English"
+    "en": "English",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "zh-CN": "Chinês (Simplificado)",
+    "ja": "Japonês",
+    "ko": "Coreano",
+    "ar": "Árabe"
   },
   "common": {
     "close": "Fechar",
     "cancel": "Cancelar",
+    "delete": "Excluir",
     "save": "Salvar",
     "create": "Criar",
     "loading": "Carregando...",
@@ -33,10 +41,12 @@
   },
   "connectionList": {
     "title": "Conexões Salvas",
-    "empty": "Nenhuma conexão encontrada"
+    "empty": "Nenhuma conexão encontrada",
+    "edit": "Editar conexão"
   },
   "connectionModal": {
     "title": "Nova Conexão",
+    "editTitle": "Editar Conexão",
     "fields": {
       "name": "Nome da Conexão",
       "namePlaceholder": "Ex: Produção",
@@ -52,7 +62,11 @@
     },
     "authNote": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
     "cancel": "Cancelar",
-    "connect": "Conectar"
+    "connect": "Conectar",
+    "save": "Salvar Alterações",
+    "test": "Testar",
+    "testing": "Testando...",
+    "testSuccess": "Conexão realizada com sucesso!"
   },
   "setupGuide": {
     "title": "Guia de Configuração",
@@ -89,6 +103,7 @@
     "create": "Criar",
     "refresh": "Atualizar",
     "autoRefresh": "Auto Atualizar",
+    "clearAll": "Limpar Tudo",
     "searchPlaceholder": "Digite uma chave ou regex...",
     "columns": {
       "key": "Chave",
@@ -98,7 +113,14 @@
       "actions": "Ações"
     },
     "empty": "Nenhuma chave armazenada",
-    "authWarning": "Quando o Memcached está configurado com autenticação, apenas as chaves criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas ou excluídas. Isso ocorre devido a uma <strong>limitação do protocolo do Memcached autenticado</strong>, que restringe o acesso a chaves criadas por outras fontes."
+    "authWarning": "Quando o Memcached está configurado com autenticação, apenas as chaves criadas dentro do <strong>MemGUI</strong> poderão ser listadas, editadas ou excluídas. Isso ocorre devido a uma <strong>limitação do protocolo do Memcached autenticado</strong>, que restringe o acesso a chaves criadas por outras fontes.",
+    "flushConfirmation": {
+      "title": "Limpar todas as chaves?",
+      "message": "Esta ação removerá todas as chaves do Memcached imediatamente. Deseja continuar?",
+      "confirm": "Sim, limpar tudo",
+      "cancel": "Cancelar"
+    },
+    "flushSuccess": "Todas as chaves foram removidas com sucesso."
   },
   "createKeyModal": {
     "title": "Nova Chave",
@@ -110,7 +132,10 @@
     },
     "optional": "Opcional",
     "cancel": "Cancelar",
-    "create": "Criar Chave"
+    "create": "Criar Chave",
+    "errors": {
+      "valueRequired": "O campo valor é obrigatório."
+    }
   },
   "editKeyModal": {
     "title": "Editar Chave",
@@ -136,9 +161,15 @@
   "loadingModal": {
     "loading": "Carregando..."
   },
-  "errorModal": {
-    "title": "Erro",
-    "close": "Fechar"
+  "alertModal": {
+    "titles": {
+      "error": "Erro",
+      "success": "Sucesso",
+      "warning": "Aviso"
+    },
+    "close": "OK",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
   },
   "statistics": {
     "title": "Estatísticas do Servidor",
@@ -174,6 +205,7 @@
     "loadKeys": "Erro ao carregar chaves.",
     "createKey": "Erro ao criar chave.",
     "editKey": "Erro ao editar chave.",
-    "deleteKey": "Erro ao excluir chave."
+    "deleteKey": "Erro ao excluir chave.",
+    "flushKeys": "Erro ao limpar chaves."
   }
 }

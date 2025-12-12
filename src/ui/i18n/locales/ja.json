@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "言語",
+    "pt-BR": "ポルトガル語（ブラジル）",
+    "en": "英語",
+    "es": "スペイン語",
+    "fr": "フランス語",
+    "de": "ドイツ語",
+    "zh-CN": "中国語（簡体字）",
+    "ja": "日本語",
+    "ko": "韓国語",
+    "ar": "アラビア語"
+  },
+  "common": {
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "save": "保存",
+    "create": "作成",
+    "loading": "読み込み中...",
+    "actions": "操作",
+    "copied": "コピーしました！",
+    "clickToCopy": "クリックしてコピー",
+    "optional": "任意"
+  },
+  "header": {
+    "back": "戻る",
+    "stats": "統計",
+    "disconnect": "切断"
+  },
+  "connectionHome": {
+    "welcomeTitle": "MemGUIへようこそ",
+    "welcomeDescription": "開始するには、既存のサーバーに接続するか新しい接続を作成してください。",
+    "createButton": "新しい接続を作成",
+    "newHereTitle": "はじめてですか？",
+    "newHereDescription": "サーバーをまだ用意していない場合は、こちらの",
+    "setupGuideLink": "セットアップガイド"
+  },
+  "connectionList": {
+    "title": "保存された接続",
+    "empty": "接続が見つかりません",
+    "edit": "接続を編集"
+  },
+  "connectionModal": {
+    "title": "新しい接続",
+    "editTitle": "接続を編集",
+    "fields": {
+      "name": "接続名",
+      "namePlaceholder": "例: 本番",
+      "address": "サーバーアドレス",
+      "hostPlaceholder": "例: 192.168.1.1",
+      "port": "ポート",
+      "options": "詳細オプション",
+      "username": "ユーザー名（任意）",
+      "usernamePlaceholder": "ユーザー名を入力",
+      "password": "パスワード（任意）",
+      "passwordPlaceholder": "パスワードを入力",
+      "timeout": "タイムアウト（秒、最小 300）"
+    },
+    "authNote": "認証が有効な場合、<strong>MemGUI</strong> 内で作成されたキーのみ管理できます。これは認証済み Memcached プロトコルの制限によるものです。",
+    "cancel": "キャンセル",
+    "connect": "接続",
+    "save": "変更を保存",
+    "test": "テスト",
+    "testing": "テスト中...",
+    "testSuccess": "接続に成功しました！"
+  },
+  "setupGuide": {
+    "title": "セットアップガイド",
+    "disclaimer": "認証が有効な場合、<strong>MemGUI</strong> 内で作成されたキーのみ管理できます。これは認証済み Memcached プロトコルの制限によるものです。",
+    "fields": {
+      "name": {
+        "title": "接続名",
+        "description": "アプリ内で接続を識別するための名前を選択してください。"
+      },
+      "address": {
+        "title": "サーバーアドレス",
+        "description": "Memcached サーバーの IP またはドメインを入力してください。ローカルの場合は <code>127.0.0.1</code> または <code>localhost</code> を使用します。"
+      },
+      "port": {
+        "title": "ポート",
+        "description": "Memcached のデフォルトポートは <strong>11211</strong> です。変更した場合は設定したポートを使用してください。"
+      },
+      "auth": {
+        "title": "認証（任意）",
+        "description": "サーバーが認証を要求する場合にのみユーザー名とパスワードを入力してください。"
+      },
+      "timeout": {
+        "title": "タイムアウト",
+        "description": "タイムアウトは最大応答時間を定義します。"
+      }
+    },
+    "close": "閉じる"
+  },
+  "disclaimer": {
+    "title": "重要："
+  },
+  "keyList": {
+    "title": "保存されたキー",
+    "create": "作成",
+    "refresh": "更新",
+    "autoRefresh": "自動更新",
+    "clearAll": "すべて削除",
+    "searchPlaceholder": "キーまたは正規表現を入力...",
+    "columns": {
+      "key": "キー",
+      "value": "値",
+      "expiration": "有効期限",
+      "size": "サイズ",
+      "actions": "操作"
+    },
+    "empty": "保存されたキーがありません",
+    "authWarning": "Memcached が認証有効で動作している場合、<strong>MemGUI</strong> 内で作成されたキーのみ一覧表示、編集、削除できます。これは <strong>認証済み Memcached プロトコルの制限</strong> で、他で作成されたキーへのアクセスが制限されます。",
+    "flushConfirmation": {
+      "title": "すべてのキーを削除しますか？",
+      "message": "これにより Memcached からすべてのキーが即座に削除されます。続行しますか？",
+      "confirm": "はい、すべて削除",
+      "cancel": "キャンセル"
+    },
+    "flushSuccess": "すべてのキーを正常に削除しました。"
+  },
+  "createKeyModal": {
+    "title": "新しいキー",
+    "fields": {
+      "key": "キー",
+      "expiration": "有効期限（秒）",
+      "format": "フォーマット",
+      "value": "値"
+    },
+    "optional": "任意",
+    "cancel": "キャンセル",
+    "create": "キーを作成",
+    "errors": {
+      "valueRequired": "値は必須です。"
+    }
+  },
+  "editKeyModal": {
+    "title": "キーを編集",
+    "fields": {
+      "key": "キー",
+      "expiration": "有効期限（秒）",
+      "format": "フォーマット",
+      "value": "新しい値"
+    },
+    "cancel": "キャンセル",
+    "save": "変更を保存"
+  },
+  "viewDataModal": {
+    "title": "詳細",
+    "fields": {
+      "key": "キー",
+      "expiration": "有効期限",
+      "size": "サイズ（バイト）"
+    },
+    "format": "フォーマット",
+    "close": "閉じる"
+  },
+  "loadingModal": {
+    "loading": "読み込み中..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "エラー",
+      "success": "成功",
+      "warning": "警告"
+    },
+    "close": "OK",
+    "confirm": "確認",
+    "cancel": "キャンセル"
+  },
+  "statistics": {
+    "title": "サーバー統計",
+    "advanced": "詳細モニタリング",
+    "slabs": "スラブ統計",
+    "host": "ホスト",
+    "uptimeLabel": "稼働時間",
+    "uptime_one": "{{count}} 日",
+    "uptime_other": "{{count}} 日",
+    "connections": "接続",
+    "version": "バージョン",
+    "cacheEfficiency": "キャッシュ効率",
+    "commands": "実行されたコマンド",
+    "getSet": "GET / SET",
+    "memoryUsed": "使用メモリ",
+    "requestsPerSecond": "リクエスト/秒",
+    "bytesWritten": "書き込みバイト",
+    "bytesRead": "読み取りバイト",
+    "expirationsEvictions": "期限切れと削除",
+    "table": {
+      "id": "ID",
+      "size": "サイズ",
+      "total": "合計",
+      "used": "使用",
+      "free": "空き",
+      "hits": "ヒット"
+    }
+  },
+  "errors": {
+    "connectionFailed": "接続に失敗しました。情報を確認して再試行してください。",
+    "chooseConnection": "接続の選択中にエラーが発生しました。",
+    "loadServerData": "サーバー統計を読み込めませんでした。",
+    "loadKeys": "キーの読み込みに失敗しました。",
+    "createKey": "キーの作成に失敗しました。",
+    "editKey": "キーの編集に失敗しました。",
+    "deleteKey": "キーの削除に失敗しました。",
+    "flushKeys": "キーの削除に失敗しました。"
+  }
+}

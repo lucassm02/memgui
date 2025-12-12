@@ -26,8 +26,15 @@ class KeyController {
     const connections = connectionManager();
     const connectionId = <string>request.headers["x-connection-id"];
     const connection = connections.get(connectionId)!;
+    const searchTerm =
+      typeof request.query.search === "string" ? request.query.search : "";
+    const limitParam = Number(request.query.limit);
+    const limit =
+      Number.isFinite(limitParam) && limitParam > 0 ? limitParam : undefined;
+    const inflatedLimit = limit ? Math.ceil(limit * 1.25) : undefined;
 
     try {
+      const serverUnixTime = await this.getServerUnixTime(connection);
       let storedKeys: string[] = [];
       try {
         const reservedData = await connection.client.get(RESERVED_KEY);
@@ -39,9 +46,24 @@ class KeyController {
         logger.error("Erro ao obter chave reservada", err as Error);
       }
 
+      const shouldUpdateIndex = !searchTerm && !limit;
+
       if (connection.authentication) {
-        const payload = await this.getKeysValue(storedKeys, connection);
-        response.json(payload);
+        const filteredKeys = this.applyKeyFilters(
+          storedKeys,
+          searchTerm,
+          inflatedLimit
+        );
+        const payload = await this.getKeysValue(
+          filteredKeys,
+          connection,
+          undefined,
+          shouldUpdateIndex,
+          serverUnixTime
+        );
+        const finalPayload = limit ? payload.slice(0, limit) : payload;
+        response.json(finalPayload);
+
         return;
       }
 
@@ -73,15 +95,40 @@ class KeyController {
       const keysInfo = keysInfoArrays.flat();
       const slabKeys = keysInfo.map((info) => info.key);
       const allKeys = Array.from(new Set([...slabKeys, ...storedKeys])).sort();
+      const filteredKeys = this.applyKeyFilters(
+        allKeys,
+        searchTerm,
+        inflatedLimit
+      );
 
-      if (allKeys.length === 0) {
+      if (filteredKeys.length === 0) {
         response.json([]);
         return;
       }
 
-      const payload = await this.getKeysValue(allKeys, connection, keysInfo);
+      const payload = await this.getKeysValue(
+        filteredKeys,
+        connection,
+        keysInfo,
+        shouldUpdateIndex,
+        serverUnixTime
+      );
 
-      response.json(payload);
+      const finalPayload = limit ? payload.slice(0, limit) : payload;
+      response.json(finalPayload);
+
+      this.getKeysValue(
+        storedKeys,
+        connection,
+        keysInfo,
+        true,
+        serverUnixTime
+      ).catch((error) => {
+        logger.error(
+          "Erro ao atualizar índice de chaves em segundo plano",
+          error
+        );
+      });
     } catch (error) {
       const message = "Falha ao recuperar chaves";
       logger.error(message, error);
@@ -142,6 +189,24 @@ class KeyController {
     }
   }
 
+  async flushAll(request: Request, response: Response) {
+    try {
+      const connections = connectionManager();
+      const connectionId = <string>request.headers["x-connection-id"];
+      const connection = connections.get(connectionId)!;
+
+      await connection.client.flush();
+
+      response.status(200).json({ status: "flushed" });
+    } catch (error) {
+      const message = "Erro ao limpar todas as chaves";
+      logger.error(message, error);
+      response.status(500).json({
+        error: message
+      });
+    }
+  }
+
   async getByName(request: Request, response: Response) {
     try {
       const connections = connectionManager();
@@ -170,12 +235,46 @@ class KeyController {
     }
   }
 
+  private async getServerUnixTime(
+    connection: MemcachedConnection
+  ): Promise<number> {
+    try {
+      const stats = await new Promise<Record<string, string>>(
+        (resolve, reject) => {
+          connection.client.stats((error, _server, stats) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(stats ?? {});
+          });
+        }
+      );
+
+      const serverTime = Number(stats.time);
+
+      if (Number.isFinite(serverTime)) {
+        return serverTime;
+      }
+    } catch (error) {
+      logger.warn(
+        "Falha ao obter o tempo do servidor Memcached, usando horario local",
+        error as Error
+      );
+    }
+
+    return Math.floor(Date.now() / 1000);
+  }
+
   private async getKeysValue(
     keys: string[],
     connection: MemcachedConnection,
-    keysInfo?: Key[]
+    keysInfo?: Key[],
+    updateIndex = true,
+    serverUnixTime?: number
   ): Promise<KeyPayload[]> {
     const limit = pLimit(MAX_CONCURRENT_REQUESTS);
+    const currentUnixTime =
+      serverUnixTime ?? (await this.getServerUnixTime(connection));
 
     const results = await Promise.all(
       keys.map((key) =>
@@ -190,10 +289,11 @@ class KeyController {
             const info = keysInfo?.find((info) => info.key === key);
 
             const expiration = info ? info.expiration : 0;
-            const currentUnixTime = Math.floor(Date.now() / 1000);
 
             const timeUntilExpiration =
-              expiration > 0 ? expiration - currentUnixTime : 0;
+              expiration > 0
+                ? Math.max(expiration - currentUnixTime, 0)
+                : 0;
 
             const valueToString = value.toString();
 
@@ -219,7 +319,9 @@ class KeyController {
       results.filter((item) => item !== null && item!.key !== RESERVED_KEY)
     );
 
-    this.updateKeyIndex(validKeys, connection);
+    if (updateIndex) {
+      this.updateKeyIndex(validKeys, connection);
+    }
 
     return validKeys;
   }
@@ -257,6 +359,31 @@ class KeyController {
     };
 
     handler().catch((error) => logger.error(error));
+  }
+
+  private applyKeyFilters(
+    keys: string[],
+    search: string,
+    limit?: number
+  ): string[] {
+    let filtered = [...keys];
+
+    if (search) {
+      try {
+        const regex = new RegExp(search, "i");
+        filtered = filtered.filter((key) => regex.test(key));
+      } catch {
+        filtered = filtered.filter((key) =>
+          key.toLowerCase().includes(search.toLowerCase())
+        );
+      }
+    }
+
+    if (limit && limit > 0) {
+      filtered = filtered.slice(0, limit);
+    }
+
+    return filtered;
   }
 }
 

@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "Idioma",
+    "pt-BR": "Portugués (Brasil)",
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés",
+    "de": "Alemán",
+    "zh-CN": "Chino (Simplificado)",
+    "ja": "Japonés",
+    "ko": "Coreano",
+    "ar": "Árabe"
+  },
+  "common": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "save": "Guardar",
+    "create": "Crear",
+    "loading": "Cargando...",
+    "actions": "Acciones",
+    "copied": "¡Copiado!",
+    "clickToCopy": "Haz clic para copiar",
+    "optional": "Opcional"
+  },
+  "header": {
+    "back": "Volver",
+    "stats": "Estadísticas",
+    "disconnect": "Desconectar"
+  },
+  "connectionHome": {
+    "welcomeTitle": "Bienvenido a MemGUI",
+    "welcomeDescription": "Para comenzar, conéctate a un servidor existente o crea una nueva conexión.",
+    "createButton": "Crear nueva conexión",
+    "newHereTitle": "¿Nuevo aquí?",
+    "newHereDescription": "Si no tienes un servidor configurado, consulta nuestra",
+    "setupGuideLink": "guía de configuración"
+  },
+  "connectionList": {
+    "title": "Conexiones guardadas",
+    "empty": "No se encontraron conexiones",
+    "edit": "Editar conexión"
+  },
+  "connectionModal": {
+    "title": "Nueva conexión",
+    "editTitle": "Editar conexión",
+    "fields": {
+      "name": "Nombre de la conexión",
+      "namePlaceholder": "Ej: Producción",
+      "address": "Dirección del servidor",
+      "hostPlaceholder": "Ej: 192.168.1.1",
+      "port": "Puerto",
+      "options": "Opciones avanzadas",
+      "username": "Usuario (opcional)",
+      "usernamePlaceholder": "Introduce tu usuario",
+      "password": "Contraseña (opcional)",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "timeout": "Timeout en segundos (mínimo 300)"
+    },
+    "authNote": "Cuando la autenticación está habilitada, solo se pueden gestionar las claves creadas en <strong>MemGUI</strong> debido a una limitación del protocolo de Memcached autenticado.",
+    "cancel": "Cancelar",
+    "connect": "Conectar",
+    "save": "Guardar cambios",
+    "test": "Probar",
+    "testing": "Probando...",
+    "testSuccess": "¡Conexión realizada con éxito!"
+  },
+  "setupGuide": {
+    "title": "Guía de configuración",
+    "disclaimer": "Cuando la autenticación está habilitada, solo se pueden gestionar las claves creadas en <strong>MemGUI</strong> debido a una limitación del protocolo de Memcached autenticado.",
+    "fields": {
+      "name": {
+        "title": "Nombre de la conexión",
+        "description": "Elige un nombre para identificar la conexión dentro de la app."
+      },
+      "address": {
+        "title": "Dirección del servidor",
+        "description": "Introduce la IP o el dominio del servidor Memcached. Para uso local usa <code>127.0.0.1</code> o <code>localhost</code>."
+      },
+      "port": {
+        "title": "Puerto",
+        "description": "El puerto por defecto de Memcached es <strong>11211</strong>. Si lo cambiaste, usa el puerto configurado."
+      },
+      "auth": {
+        "title": "Autenticación (Opcional)",
+        "description": "Completa usuario y contraseña solo si tu servidor requiere autenticación."
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "El timeout define el tiempo máximo de respuesta."
+      }
+    },
+    "close": "Cerrar"
+  },
+  "disclaimer": {
+    "title": "Importante:"
+  },
+  "keyList": {
+    "title": "Claves almacenadas",
+    "create": "Crear",
+    "refresh": "Actualizar",
+    "autoRefresh": "Auto actualizar",
+    "clearAll": "Limpiar todo",
+    "searchPlaceholder": "Escribe una clave o regex...",
+    "columns": {
+      "key": "Clave",
+      "value": "Valor",
+      "expiration": "Expiración",
+      "size": "Tamaño",
+      "actions": "Acciones"
+    },
+    "empty": "No hay claves almacenadas",
+    "authWarning": "Cuando Memcached se ejecuta con autenticación habilitada, solo las claves creadas dentro de <strong>MemGUI</strong> podrán listarse, editarse o eliminarse. Esto es una <strong>limitación del protocolo de Memcached autenticado</strong>, que restringe el acceso a claves creadas en otros lugares.",
+    "flushConfirmation": {
+      "title": "¿Limpiar todas las claves?",
+      "message": "Esto eliminará todas las claves de Memcached inmediatamente. ¿Deseas continuar?",
+      "confirm": "Sí, limpiar todo",
+      "cancel": "Cancelar"
+    },
+    "flushSuccess": "Todas las claves se han eliminado correctamente."
+  },
+  "createKeyModal": {
+    "title": "Nueva clave",
+    "fields": {
+      "key": "Clave",
+      "expiration": "Expiración (segundos)",
+      "format": "Formato",
+      "value": "Valor"
+    },
+    "optional": "Opcional",
+    "cancel": "Cancelar",
+    "create": "Crear clave",
+    "errors": {
+      "valueRequired": "El valor es obligatorio."
+    }
+  },
+  "editKeyModal": {
+    "title": "Editar clave",
+    "fields": {
+      "key": "Clave",
+      "expiration": "Expiración (segundos)",
+      "format": "Formato",
+      "value": "Nuevo valor"
+    },
+    "cancel": "Cancelar",
+    "save": "Guardar cambios"
+  },
+  "viewDataModal": {
+    "title": "Detalles",
+    "fields": {
+      "key": "Clave",
+      "expiration": "Expiración",
+      "size": "Tamaño (bytes)"
+    },
+    "format": "Formato",
+    "close": "Cerrar"
+  },
+  "loadingModal": {
+    "loading": "Cargando..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "Error",
+      "success": "Éxito",
+      "warning": "Advertencia"
+    },
+    "close": "OK",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar"
+  },
+  "statistics": {
+    "title": "Estadísticas del servidor",
+    "advanced": "Monitoreo avanzado",
+    "slabs": "Estadísticas de slabs",
+    "host": "Host",
+    "uptimeLabel": "Tiempo activo",
+    "uptime_one": "{{count}} día",
+    "uptime_other": "{{count}} días",
+    "connections": "Conexiones",
+    "version": "Versión",
+    "cacheEfficiency": "Eficiencia de caché",
+    "commands": "Comandos ejecutados",
+    "getSet": "GET / SET",
+    "memoryUsed": "Memoria usada",
+    "requestsPerSecond": "Solicitudes/s",
+    "bytesWritten": "Bytes escritos",
+    "bytesRead": "Bytes leídos",
+    "expirationsEvictions": "Expiraciones y expulsiones",
+    "table": {
+      "id": "ID",
+      "size": "Tamaño",
+      "total": "Total",
+      "used": "Usado",
+      "free": "Libre",
+      "hits": "Hits"
+    }
+  },
+  "errors": {
+    "connectionFailed": "Conexión fallida. Verifica los datos e intenta de nuevo.",
+    "chooseConnection": "Error al seleccionar la conexión.",
+    "loadServerData": "No se pudieron cargar las estadísticas del servidor.",
+    "loadKeys": "Error al cargar las claves.",
+    "createKey": "Error al crear clave.",
+    "editKey": "Error al editar clave.",
+    "deleteKey": "Error al eliminar clave.",
+    "flushKeys": "Error al limpiar claves."
+  }
+}

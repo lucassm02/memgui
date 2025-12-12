@@ -1,9 +1,9 @@
 import { I18nextProvider } from "react-i18next";
 import { Route, Routes } from "react-router-dom";
-import ErrorModal from "@/ui/components/ErrorModal";
+import AlertModal from "@/ui/components/AlertModal";
 import LoadingModal from "@/ui/components/LoadingModal";
-
 import TitleBar from "@/ui/components/TitleBar";
+import UpdateNotice from "@/ui/components/UpdateNotice";
 import i18n from "@/ui/i18n";
 import { Connection } from "@/ui/pages/Connection";
 import { Panel } from "@/ui/pages/Panel";
@@ -29,8 +29,9 @@ const App = () => (
                 <MenuProvider>
                   <div className="h-screen flex flex-col">
                     <TitleBar />
+                    <UpdateNotice />
                     <LoadingModal />
-                    <ErrorModal />
+                    <AlertModal />
                     <Routes>
                       <Route path="/" element={<Connection />} />
                       <Route path="/panel" element={<Panel />} />

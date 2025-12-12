@@ -3,39 +3,75 @@ import {
   ServerIcon,
   ChevronRightIcon
 } from "@heroicons/react/24/outline";
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect, useRef } from "react";
 import { useTranslation, Trans } from "react-i18next";
 
 import { useDarkMode } from "../hooks/useDarkMode";
+import { useElectron } from "../hooks/useElectron";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 import Disclaimer from "./Disclaimer";
+import { Connection } from "@/ui/contexts";
 
-interface Connection {
-  name: string;
-  host: string;
-  port: number;
-  username?: string;
-  password?: string;
-  timeout: number;
-  id: string;
-}
+type Props = {
+  onSubmit: (
+    connection: Connection,
+    options: { isEditing: boolean; previousConnection?: Connection | null }
+  ) => void;
+  onTest: (connection: Omit<Connection, "id">) => Promise<boolean>;
+};
 
-type Props = { onSubmit: (connection: Connection) => void };
+const defaultForm = {
+  name: "",
+  host: "",
+  port: 11211,
+  username: "",
+  password: "",
+  timeout: 300
+};
 
-const ConnectionModal = ({ onSubmit }: Props) => {
-  const { connectionModalIsOpen, closeConnectionModal } = useModal();
+const ConnectionModal = ({ onSubmit, onTest }: Props) => {
+  const {
+    connectionModalIsOpen,
+    closeConnectionModal,
+    connectionToEdit,
+    isEditingConnection,
+    showAlert
+  } = useModal();
   const { darkMode } = useDarkMode();
+  const { enabled: electronEnabled } = useElectron();
   const { t } = useTranslation();
 
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    host: "",
-    port: 11211,
-    username: "",
-    password: "",
-    timeout: 300
-  });
+  const [formData, setFormData] = useState(defaultForm);
+  const [isTesting, setIsTesting] = useState(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (connectionModalIsOpen && connectionToEdit) {
+      setFormData({
+        name: connectionToEdit.name,
+        host: connectionToEdit.host,
+        port: connectionToEdit.port,
+        username: connectionToEdit.username ?? "",
+        password: connectionToEdit.password ?? "",
+        timeout: connectionToEdit.timeout ?? defaultForm.timeout
+      });
+      setShowAdvanced(
+        !!(
+          connectionToEdit.username ||
+          connectionToEdit.password ||
+          connectionToEdit.timeout !== defaultForm.timeout
+        )
+      );
+      return;
+    }
+
+    if (connectionModalIsOpen && !connectionToEdit) {
+      setFormData(defaultForm);
+      setShowAdvanced(false);
+    }
+  }, [connectionModalIsOpen, connectionToEdit]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const getValue = (event: ChangeEvent<HTMLInputElement>) => {
@@ -58,14 +94,35 @@ const ConnectionModal = ({ onSubmit }: Props) => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    onSubmit({ ...formData, id: "" });
+    onSubmit(
+      { ...formData, id: connectionToEdit?.id ?? "" },
+      { isEditing: isEditingConnection, previousConnection: connectionToEdit }
+    );
     closeConnectionModal();
+  };
+
+  const handleTestConnection = async () => {
+    if (isTesting) return;
+    if (formRef.current && !formRef.current.reportValidity()) return;
+
+    setIsTesting(true);
+    const tested = await onTest({
+      ...formData
+    });
+    if (tested) {
+      showAlert(t("connectionModal.testSuccess"), "success");
+    }
+    setIsTesting(false);
   };
 
   if (!connectionModalIsOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+    <div
+      className={`fixed ${
+        electronEnabled ? "top-10 left-0 right-0 bottom-0" : "inset-0"
+      } flex items-center justify-center bg-black/50 backdrop-blur-sm z-50`}
+    >
       <div
         className={`p-5 rounded-lg shadow-lg w-[90%] max-w-md border transition-all
           ${darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"}`}
@@ -76,19 +133,21 @@ const ConnectionModal = ({ onSubmit }: Props) => {
           <div className="flex items-center gap-2">
             <ServerIcon className="w-6 h-6 text-blue-400" />
             <h2 className="text-lg font-medium">
-              {t("connectionModal.title")}
+              {isEditingConnection
+                ? t("connectionModal.editTitle")
+                : t("connectionModal.title")}
             </h2>
           </div>
           <button
             onClick={closeConnectionModal}
-            className={`transition ${darkMode ? "text-gray-400 hover:text-gray-200" : "text-gray-600 hover:text-gray-900"}`}
+            className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
             aria-label={t("common.close")}
           >
             <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef}>
           <div className="mt-4">
             <label
               className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
@@ -141,7 +200,7 @@ const ConnectionModal = ({ onSubmit }: Props) => {
             <button
               type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-500"
+              className={`${toneButton("primary", darkMode, "sm")} !px-3`}
             >
               <ChevronRightIcon
                 className={`w-5 h-5 transition-transform ${showAdvanced ? "rotate-90" : ""}`}
@@ -221,16 +280,28 @@ const ConnectionModal = ({ onSubmit }: Props) => {
           <div className="mt-5 flex justify-end gap-3">
             <button
               type="button"
+              onClick={handleTestConnection}
+              className={toneButton("neutral", darkMode, "sm")}
+              disabled={isTesting}
+            >
+              {isTesting
+                ? t("connectionModal.testing")
+                : t("connectionModal.test")}
+            </button>
+            <button
+              type="button"
               onClick={closeConnectionModal}
-              className="px-4 py-2 rounded-md bg-red-500 text-white"
+              className={toneButton("neutral", darkMode, "sm")}
             >
               {t("connectionModal.cancel")}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white"
+              className={toneButton("success", darkMode, "sm")}
             >
-              {t("connectionModal.connect")}
+              {isEditingConnection
+                ? t("connectionModal.save")
+                : t("connectionModal.connect")}
             </button>
           </div>
         </form>

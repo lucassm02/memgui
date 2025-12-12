@@ -5,11 +5,19 @@
   "language": {
     "label": "Language",
     "pt-BR": "Portuguese (Brazil)",
-    "en": "English"
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "zh-CN": "Chinese (Simplified)",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "ar": "Arabic"
   },
   "common": {
     "close": "Close",
     "cancel": "Cancel",
+    "delete": "Delete",
     "save": "Save",
     "create": "Create",
     "loading": "Loading...",
@@ -33,10 +41,12 @@
   },
   "connectionList": {
     "title": "Saved Connections",
-    "empty": "No connections found"
+    "empty": "No connections found",
+    "edit": "Edit connection"
   },
   "connectionModal": {
     "title": "New Connection",
+    "editTitle": "Edit Connection",
     "fields": {
       "name": "Connection Name",
       "namePlaceholder": "Ex: Production",
@@ -52,7 +62,11 @@
     },
     "authNote": "When authentication is enabled, only keys created in <strong>MemGUI</strong> can be managed due to a limitation of the authenticated Memcached protocol.",
     "cancel": "Cancel",
-    "connect": "Connect"
+    "connect": "Connect",
+    "save": "Save Changes",
+    "test": "Test",
+    "testing": "Testing...",
+    "testSuccess": "Connection successful!"
   },
   "setupGuide": {
     "title": "Setup Guide",
@@ -89,6 +103,7 @@
     "create": "Create",
     "refresh": "Refresh",
     "autoRefresh": "Auto Refresh",
+    "clearAll": "Clear All",
     "searchPlaceholder": "Type a key or regex...",
     "columns": {
       "key": "Key",
@@ -98,7 +113,14 @@
       "actions": "Actions"
     },
     "empty": "No keys stored",
-    "authWarning": "When Memcached runs with authentication enabled, only keys created inside <strong>MemGUI</strong> can be listed, edited, or removed. This is a <strong>limitation of the authenticated Memcached protocol</strong>, which restricts access to keys created elsewhere."
+    "authWarning": "When Memcached runs with authentication enabled, only keys created inside <strong>MemGUI</strong> can be listed, edited, or removed. This is a <strong>limitation of the authenticated Memcached protocol</strong>, which restricts access to keys created elsewhere.",
+    "flushConfirmation": {
+      "title": "Clear all keys?",
+      "message": "This will remove every key from Memcached right away. Do you want to continue?",
+      "confirm": "Yes, clear all",
+      "cancel": "Cancel"
+    },
+    "flushSuccess": "All keys were cleared successfully."
   },
   "createKeyModal": {
     "title": "New Key",
@@ -110,7 +132,10 @@
     },
     "optional": "Optional",
     "cancel": "Cancel",
-    "create": "Create Key"
+    "create": "Create Key",
+    "errors": {
+      "valueRequired": "Value is required."
+    }
   },
   "editKeyModal": {
     "title": "Edit Key",
@@ -136,9 +161,15 @@
   "loadingModal": {
     "loading": "Loading..."
   },
-  "errorModal": {
-    "title": "Error",
-    "close": "Close"
+  "alertModal": {
+    "titles": {
+      "error": "Error",
+      "success": "Success",
+      "warning": "Warning"
+    },
+    "close": "OK",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "statistics": {
     "title": "Server Statistics",
@@ -174,6 +205,7 @@
     "loadKeys": "Failed to load keys.",
     "createKey": "Failed to create key.",
     "editKey": "Failed to edit key.",
-    "deleteKey": "Failed to delete key."
+    "deleteKey": "Failed to delete key.",
+    "flushKeys": "Failed to clear keys."
   }
 }

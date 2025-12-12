@@ -1,6 +1,6 @@
 import { createContext } from "react";
 
-interface Connection {
+export interface Connection {
   name: string;
   host: string;
   port: number;
@@ -10,7 +10,7 @@ interface Connection {
   id: string;
 }
 
-interface KeyData {
+export interface KeyData {
   key: string;
   value: string;
   size: number;
@@ -65,22 +65,37 @@ export interface ConnectionsContextType {
   currentConnection: Connection;
   isConnected: boolean;
   keys: KeyData[];
+  totalKeyCount: number;
   serverData: ServerData | null;
   error: string;
   handleConnect: (connection: Omit<Connection, "id">) => Promise<boolean>;
+  handleTestConnection: (
+    connection: Omit<Connection, "id">
+  ) => Promise<boolean>;
   handleChoseConnection: (
     connection: Omit<Connection, "id">
   ) => Promise<boolean>;
   handleDisconnect: () => void;
-  handleLoadKeys: (showLoadingModal?: boolean) => Promise<boolean>;
+  handleLoadKeys: (
+    showLoadingModal?: boolean,
+    search?: string,
+    limit?: number
+  ) => Promise<boolean>;
+  handleFlushAllKeys: () => Promise<boolean>;
   handleCreateKey: (newKey: KeyData) => Promise<boolean>;
   handleEditKey: (updatedKey: KeyData) => Promise<boolean>;
   handleDeleteKey: (key: string) => Promise<boolean>;
+  handleEditConnection: (
+    updatedConnection: Connection,
+    previousConnection?: Connection
+  ) => void;
   handleDeleteConnection: (connection: Connection) => void;
   handleLoadServerData: (showLoadingModal?: boolean) => Promise<boolean>;
   handleGetByKey: (
     key: string
   ) => Promise<{ key: string; value: string } | null>;
+  refreshKeyCount: () => Promise<boolean>;
+  totalKeyCount?: number;
 }
 
 export const ConnectionsContext = createContext<

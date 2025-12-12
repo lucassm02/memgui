@@ -6,12 +6,13 @@ import {
   PlusIcon,
   TrashIcon
 } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
 import { useConnections } from "../hooks/useConnections";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
+import { toneButton } from "../utils/buttonTone";
 import CreateKeyModal from "./CreateKeyModal";
 import Disclaimer from "./Disclaimer";
 import EditKeyModal from "./EditKeyModal";
@@ -26,14 +27,16 @@ const KeyList = () => {
     handleCreateKey,
     handleEditKey,
     currentConnection,
-    handleGetByKey
+    handleFlushAllKeys,
+    totalKeyCount
   } = useConnections();
 
-  const { openCreateModal, openEditModal, openViewDataModal } = useModal();
+  const { openCreateModal, openEditModal, openViewDataModal, showConfirm } =
+    useModal();
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [maxItems, setMaxItems] = useState(10);
+  const [maxItems, setMaxItems] = useState(5);
   const [autoUpdate, setAutoUpdate] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
 
@@ -46,48 +49,54 @@ const KeyList = () => {
     let interval: NodeJS.Timeout;
     if (autoUpdate) {
       interval = setInterval(() => {
-        handleLoadKeys(false);
+        handleLoadKeys(false, searchTerm, maxItems);
       }, 5000);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoUpdate, handleLoadKeys]);
+    // handleLoadKeys identity is stable enough; omit from deps to prevent loops
+  }, [autoUpdate, searchTerm, maxItems]);
 
+  const lastLoadParams = useRef<string>("");
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
-    (async () => {
-      if (searchTerm === "") {
-        return;
-      }
-
-      if (!(currentConnection.username && currentConnection.password)) {
-        return;
-      }
-
-      const item = keys.find((item) =>
-        new RegExp(searchTerm, "i").test(item.key)
-      );
-
-      if (!item) {
-        const value = await handleGetByKey(searchTerm);
-        if (value) {
-          await handleLoadKeys();
-        }
-      }
-    })();
-  }, [searchTerm]);
-
-  const filteredKeys = keys.filter((item) => {
-    try {
-      return new RegExp(searchTerm, "i").test(item.key);
-    } catch {
-      return true;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
-  });
+
+    debounceRef.current = setTimeout(() => {
+      const currentKey = `${searchTerm}|${maxItems}`;
+      if (lastLoadParams.current === currentKey) return;
+      lastLoadParams.current = currentKey;
+
+      const showLoading = searchTerm.trim() === "";
+      handleLoadKeys(showLoading, searchTerm, maxItems);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [searchTerm, maxItems]);
+
+  const filteredKeys = keys;
+
+  const handleConfirmFlushAll = () => {
+    showConfirm({
+      title: t("keyList.flushConfirmation.title"),
+      message: t("keyList.flushConfirmation.message"),
+      confirmLabel: t("keyList.flushConfirmation.confirm"),
+      cancelLabel: t("keyList.flushConfirmation.cancel"),
+      type: "error",
+      onConfirm: handleFlushAllKeys
+    });
+  };
 
   return (
     <div
-      className={`w-full px-6 max-w-7xl mx-auto mt-10 transition-all ${
+      className={`w-full px-2 sm:px-3 max-w-none mx-auto mt-10 transition-all ${
         darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
       }`}
     >
@@ -101,52 +110,72 @@ const KeyList = () => {
           components={{ strong: <strong /> }}
         />
       </Disclaimer>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">{t("keyList.title")}</h2>
+      <div className="flex flex-col gap-3 mb-6">
+        <h2 className="text-xl font-semibold">
+          {t("keyList.title")}
+          {totalKeyCount !== undefined ? `\u2068 (${totalKeyCount})\u2069` : ""}
+        </h2>
 
-        <div className="flex gap-2">
-          <button
-            onClick={openCreateModal}
-            className="px-4 py-2 rounded-lg flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white transition-all shadow-sm cursor-pointer"
-          >
-            <PlusIcon className="w-5 h-5" />
-            {t("keyList.create")}
-          </button>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => handleLoadKeys(true, searchTerm, maxItems)}
+              className={toneButton("primary", darkMode)}
+            >
+              <ArrowPathIcon className="w-5 h-5" />
+              {t("keyList.refresh")}
+            </button>
 
-          <button
-            onClick={() => handleLoadKeys()}
-            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-sm ${
-              darkMode
-                ? "bg-gray-700 hover:bg-gray-600 text-white"
-                : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-            } cursor-pointer`}
-          >
-            <ArrowPathIcon className="w-5 h-5" />
-            {t("keyList.refresh")}
-          </button>
+            <button
+              onClick={() => setAutoUpdate((prev) => !prev)}
+              className={`${toneButton(
+                autoUpdate ? "primary" : "neutral",
+                darkMode
+              )} pl-3 pr-4`}
+            >
+              <span
+                className={`w-10 h-5 flex items-center rounded-full transition-all ${
+                  autoUpdate
+                    ? "bg-blue-400"
+                    : darkMode
+                      ? "bg-gray-600"
+                      : "bg-gray-300"
+                }`}
+              >
+                <span
+                  className={`w-4 h-4 bg-white rounded-full shadow transform transition-all ${
+                    autoUpdate ? "translate-x-5" : "translate-x-1"
+                  }`}
+                />
+              </span>
+              <span className="whitespace-nowrap">
+                {t("keyList.autoRefresh")}
+              </span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => setAutoUpdate((prev) => !prev)}
-            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all shadow-sm cursor-pointer ${
-              autoUpdate
-                ? darkMode
-                  ? "bg-blue-700 hover:bg-blue-600 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-                : darkMode
-                  ? "bg-gray-700 hover:bg-gray-600 text-white"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
-            }`}
-          >
-            <ArrowPathIcon
-              className={`w-5 h-5 ${autoUpdate ? "animate-spin" : ""}`}
-            />
-            {t("keyList.autoRefresh")}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openCreateModal}
+              className={toneButton("success", darkMode)}
+            >
+              <PlusIcon className="w-5 h-5" />
+              {t("keyList.create")}
+            </button>
+
+            <button
+              onClick={handleConfirmFlushAll}
+              className={toneButton("danger", darkMode)}
+            >
+              <TrashIcon className="w-5 h-5" />
+              {t("keyList.clearAll")}
+            </button>
+          </div>
         </div>
       </div>
 
       <div
-        className={`p-3 rounded-lg mb-4 flex items-center justify-between ${
+        className={`p-3 rounded-lg mb-6 flex items-center justify-between ${
           darkMode ? "bg-gray-800" : "bg-gray-200"
         } shadow-md`}
       >
@@ -180,7 +209,7 @@ const KeyList = () => {
       </div>
 
       <div
-        className={`overflow-hidden mb-10 rounded-lg shadow ${
+        className={`overflow-hidden mb-8 rounded-lg shadow ${
           darkMode ? "bg-gray-800" : "bg-white"
         }`}
       >
@@ -241,25 +270,27 @@ const KeyList = () => {
                   >
                     {item.size}
                   </td>
-                  <td className="px-6 py-4 truncate max-w-[300px] text-right flex justify-end gap-3">
-                    <button
-                      onClick={() => openViewDataModal(item)}
-                      className="text-blue-400 hover:text-blue-300 cursor-pointer"
-                    >
-                      <DocumentMagnifyingGlassIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => openEditModal(item)}
-                      className="text-blue-400 hover:text-blue-300 cursor-pointer"
-                    >
-                      <PencilSquareIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteKey(item.key)}
-                      className="text-red-400 hover:text-red-300 cursor-pointer"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                  <td className="px-6 py-4 text-right align-middle">
+                    <div className="flex justify-end items-center gap-3">
+                      <button
+                        onClick={() => openViewDataModal(item)}
+                        className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <DocumentMagnifyingGlassIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <PencilSquareIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteKey(item.key)}
+                        className={`${toneButton("danger", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

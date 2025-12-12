@@ -2,6 +2,7 @@ import { Bars3Icon, MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 
 import LanguageSelector from "./LanguageSelector";
 import { useDarkMode, useMenu } from "@/ui/hooks";
+import { toneButton } from "@/ui/utils/buttonTone";
 
 const UnconnectedHeader = () => {
   const { openMenu } = useMenu();
@@ -13,7 +14,7 @@ const UnconnectedHeader = () => {
     >
       <button
         onClick={openMenu}
-        className={`cursor-pointer p-2 rounded-lg ${darkMode ? "text-gray-300 hover:bg-gray-700" : "text-gray-600 hover:bg-gray-200"}`}
+        className={toneButton("neutral", darkMode, "icon")}
       >
         <Bars3Icon className="w-6 h-6" />
       </button>
@@ -22,7 +23,7 @@ const UnconnectedHeader = () => {
         <LanguageSelector />
         <button
           onClick={toggleDarkMode}
-          className={`cursor-pointer p-2 rounded-lg ${darkMode ? "text-blue-400 hover:bg-gray-700" : "text-blue-600 hover:bg-gray-100"}`}
+          className={toneButton("neutral", darkMode, "icon")}
         >
           {darkMode ? (
             <SunIcon className="w-6 h-6" />

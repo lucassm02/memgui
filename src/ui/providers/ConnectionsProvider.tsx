@@ -1,28 +1,11 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import { ConnectionsContext } from "../contexts";
+import { Connection, ConnectionsContext, KeyData } from "../contexts";
 import { useStorage } from "../hooks";
 import { useModal } from "../hooks/useModal";
 import api, { clearConnectionId, setConnectionId } from "@/ui/services/api";
-
-interface Connection {
-  name: string;
-  host: string;
-  port: number;
-  username?: string;
-  password?: string;
-  timeout: number;
-  id: string;
-}
-
-interface KeyData {
-  key: string;
-  value: string;
-  size: number;
-  timeUntilExpiration?: number;
-}
 
 export interface ServerData {
   status: string;
@@ -81,11 +64,14 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const [isConnected, setIsConnected] = useState(false);
   const [keys, setKeys] = useState<KeyData[]>([]);
+  const [totalKeyCount, setTotalKeyCount] = useState<number | undefined>(
+    undefined
+  );
   const [serverData, setServerData] = useState<ServerData | null>(null);
   const [error] = useState("");
 
   const navigate = useNavigate();
-  const { showError, showLoading, dismissLoading } = useModal();
+  const { showAlert, showLoading, dismissLoading } = useModal();
   const { getKey, setKey } = useStorage();
   const { t } = useTranslation();
 
@@ -99,7 +85,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     setSavedConnections(value as Connection[]);
   }, [getKey]);
 
+  const hasLoadedConnections = useRef(false);
   useEffect(() => {
+    if (hasLoadedConnections.current) return;
+    hasLoadedConnections.current = true;
     loadConnections();
   }, [loadConnections]);
 
@@ -112,6 +101,87 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return Promise.reject(err);
     }
   );
+
+  const refreshKeyCount = useCallback(async () => {
+    try {
+      const response = await api.get("/keys");
+      const payload = Array.isArray(response.data) ? response.data : [];
+      setTotalKeyCount(payload.length);
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isConnected || !currentConnection.id) return;
+
+    const refresh = () => {
+      refreshKeyCount();
+    };
+
+    refresh();
+    const interval = setInterval(refresh, 10000);
+
+    return () => clearInterval(interval);
+  }, [isConnected, currentConnection.id, refreshKeyCount]);
+
+  const handleLoadKeys = useCallback(
+    async (showLoadingModal = true, search?: string, limit?: number) => {
+      const fetchKeys = async (attempt: number): Promise<boolean> => {
+        const response = await api.get("/keys", {
+          params: {
+            search: search || undefined,
+            limit: limit || undefined
+          }
+        });
+
+        const payload = Array.isArray(response.data) ? response.data : [];
+
+        if (payload.length === 0 && attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          return fetchKeys(1);
+        }
+
+        const sortedKeys = [...payload].sort((a, b) =>
+          a.key.localeCompare(b.key)
+        );
+        setKeys(sortedKeys);
+        return true;
+      };
+
+      try {
+        if (showLoadingModal) showLoading();
+        const result = await fetchKeys(0);
+        if (showLoadingModal) dismissLoading();
+        return result;
+      } catch (_error) {
+        if (showLoadingModal) dismissLoading();
+        showAlert(t("errors.loadKeys"), "error");
+        return false;
+      }
+    },
+    // Only depends on alert/loading handlers; avoid re-creating each render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [showAlert, showLoading, dismissLoading]
+  );
+
+  const handleFlushAllKeys = async () => {
+    try {
+      showLoading();
+      await api.delete("/keys");
+      setKeys([]);
+      setTotalKeyCount(0);
+      void refreshKeyCount();
+      dismissLoading();
+      showAlert(t("keyList.flushSuccess"), "success");
+      return true;
+    } catch (_error) {
+      dismissLoading();
+      showAlert(t("errors.flushKeys"), "error");
+      return false;
+    }
+  };
 
   const handleConnect = async (params: Omit<Connection, "id">) => {
     try {
@@ -133,6 +203,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       setIsConnected(true);
 
       const newConnection = { ...params, id: connectionId };
+      setCurrentConnection(newConnection);
       setSavedConnections((prev) => {
         const filtered = prev.filter((c) => c.host !== host || c.port !== port);
         const updated = [newConnection, ...filtered];
@@ -140,10 +211,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         return updated;
       });
 
+      await handleLoadKeys(false, undefined, 5);
+      dismissLoading();
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.connectionFailed"));
+      showAlert(t("errors.connectionFailed"), "error");
       return false;
     }
   };
@@ -157,7 +230,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         (c) => c.host === host && c.port === port
       );
 
-      if (!connection) {
+      if (!connection || !connection.id) {
         return await handleConnect({
           host,
           name,
@@ -173,11 +246,14 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
       setIsConnected(true);
       setCurrentConnection(connection);
+      await handleLoadKeys(false, undefined, 5);
       dismissLoading();
       return true;
     } catch (err) {
       dismissLoading();
-      if (err.status === 401) {
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
+      if (status === 401 || status === 400 || status === 404) {
         return await handleConnect({
           host,
           name,
@@ -188,8 +264,39 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         });
       }
 
-      showError(t("errors.chooseConnection"));
+      showAlert(t("errors.chooseConnection"), "error");
       return false;
+    }
+  };
+
+  const handleTestConnection = async (
+    params: Omit<Connection, "id">
+  ): Promise<boolean> => {
+    const { host, port, timeout, password, username } = params;
+    let tempConnectionId = "";
+    try {
+      showLoading();
+      const authentication =
+        username || password ? { password, username } : undefined;
+
+      const response = await api.post("/connections", {
+        host,
+        port,
+        connectionTimeout: timeout,
+        authentication
+      });
+      tempConnectionId = response.data?.connectionId ?? "";
+      if (tempConnectionId) {
+        setConnectionId(tempConnectionId);
+        await api.delete("/connections");
+      }
+      return true;
+    } catch (_error) {
+      showAlert(t("errors.connectionFailed"), "error");
+      return false;
+    } finally {
+      clearConnectionId();
+      dismissLoading();
     }
   };
 
@@ -203,7 +310,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (_error) {
       if (showLoadingModal) dismissLoading();
-      showError(t("errors.loadServerData"));
+      showAlert(t("errors.loadServerData"), "error");
       return false;
     }
   };
@@ -212,6 +319,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     clearConnectionId();
     setIsConnected(false);
     setKeys([]);
+    setTotalKeyCount(undefined);
     setCurrentConnection({
       host: "",
       port: 11211,
@@ -219,23 +327,6 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       id: "",
       timeout: 300
     });
-  };
-
-  const handleLoadKeys = async (showLoadingModal = true) => {
-    try {
-      if (showLoadingModal) showLoading();
-      const response = await api.get("/keys");
-      const sortedKeys = [...response.data].sort((a, b) =>
-        a.key.localeCompare(b.key)
-      );
-      setKeys(sortedKeys);
-      if (showLoadingModal) dismissLoading();
-      return true;
-    } catch (_error) {
-      if (showLoadingModal) dismissLoading();
-      showError(t("errors.loadKeys"));
-      return false;
-    }
   };
 
   const handleCreateKey = async (newKey: KeyData) => {
@@ -254,11 +345,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         value: newKey.value,
         expires: newKey.timeUntilExpiration
       });
+      void refreshKeyCount();
       dismissLoading();
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.createKey"));
+      showAlert(t("errors.createKey"), "error");
       return false;
     }
   };
@@ -282,11 +374,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         value: updatedKey.value,
         expires: updatedKey.timeUntilExpiration
       });
+      void refreshKeyCount();
       dismissLoading();
       return true;
     } catch (_error) {
       dismissLoading();
-      showError(t("errors.editKey"));
+      showAlert(t("errors.editKey"), "error");
       return false;
     }
   };
@@ -295,9 +388,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.delete(`/keys/${key}`);
       setKeys((prevKeys) => prevKeys.filter((k) => k.key !== key));
+      void refreshKeyCount();
       return true;
     } catch (_error) {
-      showError(t("errors.deleteKey"));
+      showAlert(t("errors.deleteKey"), "error");
       return false;
     }
   };
@@ -312,6 +406,43 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     } catch (_error) {
       return null;
     }
+  };
+
+  const handleEditConnection = (
+    updatedConnection: Connection,
+    previousConnection?: Connection
+  ) => {
+    const connectionWithoutId = { ...updatedConnection, id: "" };
+
+    const isSameConnection = (conn?: Connection) => {
+      if (!conn) return false;
+      if (previousConnection?.id) {
+        return conn.id === previousConnection.id;
+      }
+      if (previousConnection) {
+        return (
+          conn.host === previousConnection.host &&
+          conn.port === previousConnection.port
+        );
+      }
+      return conn.id === updatedConnection.id;
+    };
+
+    setSavedConnections((prev) => {
+      const updatedList = prev.map((conn) =>
+        isSameConnection(conn) ? { ...connectionWithoutId } : conn
+      );
+      const hasMatch = prev.some((conn) => isSameConnection(conn));
+      const nextList = hasMatch ? updatedList : [connectionWithoutId, ...prev];
+
+      setKey("CONNECTIONS", nextList);
+
+      if (isSameConnection(currentConnection)) {
+        setCurrentConnection(connectionWithoutId);
+      }
+
+      return nextList;
+    });
   };
 
   const handleDeleteConnection = (connection: Connection) => {
@@ -336,13 +467,18 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         handleChoseConnection,
         handleDisconnect,
         handleLoadKeys,
+        handleFlushAllKeys,
         handleCreateKey,
         handleEditKey,
         handleDeleteKey,
+        handleTestConnection,
+        handleEditConnection,
         handleDeleteConnection,
         handleLoadServerData,
         serverData,
-        handleGetByKey
+        handleGetByKey,
+        totalKeyCount,
+        refreshKeyCount
       }}
     >
       {children}
