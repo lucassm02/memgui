@@ -29,6 +29,7 @@ const UpdateNotice = () => {
   const { enabled, getInstance } = useElectron();
   const [updateState, setUpdateState] = useState<UpdateState | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
+  const [showErrorDetails, setShowErrorDetails] = useState(false);
 
   useEffect(() => {
     if (!enabled) return;
@@ -97,6 +98,15 @@ const UpdateNotice = () => {
     return Number.isNaN(parsed.getTime()) ? "" : parsed.toLocaleDateString();
   }, [updateState?.payload?.releaseDate]);
 
+  const summaryMessage = useMemo(() => {
+    if (!updateState) return "";
+    if (updateState.status !== "error") return description;
+    if (!description) return "";
+    const firstLine = description.split(/\r?\n/)[0] ?? "";
+    if (firstLine.length <= 220) return firstLine;
+    return `${firstLine.slice(0, 220)}…`;
+  }, [updateState, description]);
+
   if (!updateState) return null;
 
   const { status } = updateState;
@@ -156,7 +166,7 @@ const UpdateNotice = () => {
                 {versionLabel && ` • ${versionLabel}`}
               </div>
               <p className={`text-xs leading-relaxed ${softText}`}>
-                {description}
+                {status === "error" ? summaryMessage : description}
               </p>
               {releaseDateLabel && (
                 <p className={`text-[11px] ${mutedText}`}>
@@ -177,7 +187,7 @@ const UpdateNotice = () => {
           </button>
         </div>
 
-        {releaseNotes && (
+        {status !== "error" && releaseNotes && (
           <div
             className={`mt-3 border rounded-lg max-h-48 overflow-auto text-sm whitespace-pre-wrap leading-relaxed ${
               darkMode
@@ -186,6 +196,18 @@ const UpdateNotice = () => {
             }`}
           >
             <div className="p-3">{releaseNotes}</div>
+          </div>
+        )}
+
+        {status === "error" && showErrorDetails && description && (
+          <div
+            className={`mt-3 border rounded-lg max-h-48 overflow-auto text-sm whitespace-pre-wrap leading-relaxed ${
+              darkMode
+                ? "bg-gray-800/70 border-gray-700 text-gray-200"
+                : "bg-gray-50 border-gray-200 text-gray-800"
+            }`}
+          >
+            <div className="p-3">{description}</div>
           </div>
         )}
 
@@ -221,12 +243,22 @@ const UpdateNotice = () => {
               Baixando atualização...
             </div>
           ) : (
-            <button
-              onClick={handleDismiss}
-              className={toneButton("warning", darkMode, "sm")}
-            >
-              Fechar
-            </button>
+            <div className="flex gap-2">
+              {description && description.length > summaryMessage.length && (
+                <button
+                  onClick={() => setShowErrorDetails((prev) => !prev)}
+                  className={toneButton("neutral", darkMode, "sm")}
+                >
+                  {showErrorDetails ? "Ocultar detalhes" : "Ver detalhes"}
+                </button>
+              )}
+              <button
+                onClick={handleDismiss}
+                className={toneButton("warning", darkMode, "sm")}
+              >
+                Fechar
+              </button>
+            </div>
           )}
         </div>
       </div>
