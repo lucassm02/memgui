@@ -270,25 +270,27 @@ const KeyList = () => {
                   >
                     {item.size}
                   </td>
-                  <td className="px-6 py-4 truncate max-w-[300px] text-right flex justify-end gap-3">
-                    <button
-                      onClick={() => openViewDataModal(item)}
-                      className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
-                    >
-                      <DocumentMagnifyingGlassIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => openEditModal(item)}
-                      className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
-                    >
-                      <PencilSquareIcon className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteKey(item.key)}
-                      className={`${toneButton("danger", darkMode, "icon")} !px-2 !py-2`}
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                  <td className="px-6 py-4 text-right align-middle">
+                    <div className="flex justify-end items-center gap-3">
+                      <button
+                        onClick={() => openViewDataModal(item)}
+                        className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <DocumentMagnifyingGlassIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className={`${toneButton("primary", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <PencilSquareIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteKey(item.key)}
+                        className={`${toneButton("danger", darkMode, "icon")} !px-2 !py-2`}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
