@@ -8,6 +8,7 @@ export * from "./LanguageSelector";
 export * from "./KeyList";
 export * from "./LoadingModal";
 export * from "./TitleBar";
+export { default as UpdateNotice } from "./UpdateNotice";
 export * from "./UnconnectedHeader";
 export * from "./ViewDataModal";
 export * from "./ConnectionHome";
