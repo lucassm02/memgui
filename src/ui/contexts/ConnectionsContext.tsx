@@ -65,6 +65,7 @@ export interface ConnectionsContextType {
   currentConnection: Connection;
   isConnected: boolean;
   keys: KeyData[];
+  totalKeyCount: number;
   serverData: ServerData | null;
   error: string;
   handleConnect: (connection: Omit<Connection, "id">) => Promise<boolean>;
@@ -93,6 +94,8 @@ export interface ConnectionsContextType {
   handleGetByKey: (
     key: string
   ) => Promise<{ key: string; value: string } | null>;
+  refreshKeyCount: () => Promise<boolean>;
+  totalKeyCount?: number;
 }
 
 export const ConnectionsContext = createContext<

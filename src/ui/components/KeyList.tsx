@@ -27,7 +27,8 @@ const KeyList = () => {
     handleCreateKey,
     handleEditKey,
     currentConnection,
-    handleFlushAllKeys
+    handleFlushAllKeys,
+    totalKeyCount
   } = useConnections();
 
   const { openCreateModal, openEditModal, openViewDataModal, showConfirm } =
@@ -110,7 +111,10 @@ const KeyList = () => {
         />
       </Disclaimer>
       <div className="flex flex-col gap-3 mb-6">
-        <h2 className="text-xl font-semibold">{t("keyList.title")}</h2>
+        <h2 className="text-xl font-semibold">
+          {t("keyList.title")}
+          {totalKeyCount !== undefined ? ` (${totalKeyCount})` : ""}
+        </h2>
 
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">

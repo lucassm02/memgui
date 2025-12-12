@@ -64,6 +64,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const [isConnected, setIsConnected] = useState(false);
   const [keys, setKeys] = useState<KeyData[]>([]);
+  const [totalKeyCount, setTotalKeyCount] = useState<number | undefined>(
+    undefined
+  );
   const [serverData, setServerData] = useState<ServerData | null>(null);
   const [error] = useState("");
 
@@ -98,6 +101,30 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       return Promise.reject(err);
     }
   );
+
+  const refreshKeyCount = useCallback(async () => {
+    try {
+      const response = await api.get("/keys");
+      const payload = Array.isArray(response.data) ? response.data : [];
+      setTotalKeyCount(payload.length);
+      return true;
+    } catch (_error) {
+      return false;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isConnected || !currentConnection.id) return;
+
+    const refresh = () => {
+      refreshKeyCount();
+    };
+
+    refresh();
+    const interval = setInterval(refresh, 10000);
+
+    return () => clearInterval(interval);
+  }, [isConnected, currentConnection.id, refreshKeyCount]);
 
   const handleLoadKeys = useCallback(
     async (showLoadingModal = true, search?: string, limit?: number) => {
@@ -144,6 +171,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       showLoading();
       await api.delete("/keys");
       setKeys([]);
+      setTotalKeyCount(0);
+      void refreshKeyCount();
       dismissLoading();
       showAlert(t("keyList.flushSuccess"), "success");
       return true;
@@ -290,6 +319,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     clearConnectionId();
     setIsConnected(false);
     setKeys([]);
+    setTotalKeyCount(undefined);
     setCurrentConnection({
       host: "",
       port: 11211,
@@ -315,6 +345,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         value: newKey.value,
         expires: newKey.timeUntilExpiration
       });
+      void refreshKeyCount();
       dismissLoading();
       return true;
     } catch (_error) {
@@ -343,6 +374,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         value: updatedKey.value,
         expires: updatedKey.timeUntilExpiration
       });
+      void refreshKeyCount();
       dismissLoading();
       return true;
     } catch (_error) {
@@ -356,6 +388,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     try {
       await api.delete(`/keys/${key}`);
       setKeys((prevKeys) => prevKeys.filter((k) => k.key !== key));
+      void refreshKeyCount();
       return true;
     } catch (_error) {
       showAlert(t("errors.deleteKey"), "error");
@@ -443,7 +476,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         handleDeleteConnection,
         handleLoadServerData,
         serverData,
-        handleGetByKey
+        handleGetByKey,
+        totalKeyCount,
+        refreshKeyCount
       }}
     >
       {children}
