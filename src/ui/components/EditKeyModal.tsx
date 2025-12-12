@@ -119,6 +119,7 @@ const EditKeyModal = ({ onSave }: Params) => {
             </label>
             <input
               type="number"
+              min={0}
               value={timeUntilExpiration}
               onChange={(e) => setTimeUntilExpiration(e.target.value)}
               placeholder={t("createKeyModal.optional")}

@@ -34,6 +34,7 @@ class KeyController {
     const inflatedLimit = limit ? Math.ceil(limit * 1.25) : undefined;
 
     try {
+      const serverUnixTime = await this.getServerUnixTime(connection);
       let storedKeys: string[] = [];
       try {
         const reservedData = await connection.client.get(RESERVED_KEY);
@@ -57,7 +58,8 @@ class KeyController {
           filteredKeys,
           connection,
           undefined,
-          shouldUpdateIndex
+          shouldUpdateIndex,
+          serverUnixTime
         );
         const finalPayload = limit ? payload.slice(0, limit) : payload;
         response.json(finalPayload);
@@ -108,13 +110,20 @@ class KeyController {
         filteredKeys,
         connection,
         keysInfo,
-        shouldUpdateIndex
+        shouldUpdateIndex,
+        serverUnixTime
       );
 
       const finalPayload = limit ? payload.slice(0, limit) : payload;
       response.json(finalPayload);
 
-      this.getKeysValue(storedKeys, connection, keysInfo).catch((error) => {
+      this.getKeysValue(
+        storedKeys,
+        connection,
+        keysInfo,
+        true,
+        serverUnixTime
+      ).catch((error) => {
         logger.error(
           "Erro ao atualizar índice de chaves em segundo plano",
           error
@@ -226,13 +235,46 @@ class KeyController {
     }
   }
 
+  private async getServerUnixTime(
+    connection: MemcachedConnection
+  ): Promise<number> {
+    try {
+      const stats = await new Promise<Record<string, string>>(
+        (resolve, reject) => {
+          connection.client.stats((error, _server, stats) => {
+            if (error) {
+              return reject(error);
+            }
+            resolve(stats ?? {});
+          });
+        }
+      );
+
+      const serverTime = Number(stats.time);
+
+      if (Number.isFinite(serverTime)) {
+        return serverTime;
+      }
+    } catch (error) {
+      logger.warn(
+        "Falha ao obter o tempo do servidor Memcached, usando horario local",
+        error as Error
+      );
+    }
+
+    return Math.floor(Date.now() / 1000);
+  }
+
   private async getKeysValue(
     keys: string[],
     connection: MemcachedConnection,
     keysInfo?: Key[],
-    updateIndex = true
+    updateIndex = true,
+    serverUnixTime?: number
   ): Promise<KeyPayload[]> {
     const limit = pLimit(MAX_CONCURRENT_REQUESTS);
+    const currentUnixTime =
+      serverUnixTime ?? (await this.getServerUnixTime(connection));
 
     const results = await Promise.all(
       keys.map((key) =>
@@ -247,10 +289,11 @@ class KeyController {
             const info = keysInfo?.find((info) => info.key === key);
 
             const expiration = info ? info.expiration : 0;
-            const currentUnixTime = Math.floor(Date.now() / 1000);
 
             const timeUntilExpiration =
-              expiration > 0 ? expiration - currentUnixTime : 0;
+              expiration > 0
+                ? Math.max(expiration - currentUnixTime, 0)
+                : 0;
 
             const valueToString = value.toString();
 

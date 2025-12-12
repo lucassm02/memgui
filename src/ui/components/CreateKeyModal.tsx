@@ -128,6 +128,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
             </label>
             <input
               type="number"
+              min={0}
               value={formData.timeUntilExpiration ?? ""}
               onChange={(e) =>
                 setFormData({
