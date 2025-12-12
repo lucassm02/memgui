@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "Langue",
+    "pt-BR": "Portugais (Brésil)",
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français",
+    "de": "Allemand",
+    "zh-CN": "Chinois (simplifié)",
+    "ja": "Japonais",
+    "ko": "Coréen",
+    "ar": "Arabe"
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "loading": "Chargement...",
+    "actions": "Actions",
+    "copied": "Copié !",
+    "clickToCopy": "Cliquer pour copier",
+    "optional": "Optionnel"
+  },
+  "header": {
+    "back": "Retour",
+    "stats": "Statistiques",
+    "disconnect": "Déconnecter"
+  },
+  "connectionHome": {
+    "welcomeTitle": "Bienvenue dans MemGUI",
+    "welcomeDescription": "Pour commencer, connectez-vous à un serveur existant ou créez une nouvelle connexion.",
+    "createButton": "Créer une nouvelle connexion",
+    "newHereTitle": "Nouveau ici ?",
+    "newHereDescription": "Si vous n'avez pas de serveur configuré, consultez notre",
+    "setupGuideLink": "guide de configuration"
+  },
+  "connectionList": {
+    "title": "Connexions enregistrées",
+    "empty": "Aucune connexion trouvée",
+    "edit": "Modifier la connexion"
+  },
+  "connectionModal": {
+    "title": "Nouvelle connexion",
+    "editTitle": "Modifier la connexion",
+    "fields": {
+      "name": "Nom de la connexion",
+      "namePlaceholder": "Ex : Production",
+      "address": "Adresse du serveur",
+      "hostPlaceholder": "Ex : 192.168.1.1",
+      "port": "Port",
+      "options": "Options avancées",
+      "username": "Nom d'utilisateur (optionnel)",
+      "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "password": "Mot de passe (optionnel)",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "timeout": "Timeout en secondes (minimum 300)"
+    },
+    "authNote": "Lorsque l'authentification est activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être gérées en raison d'une limitation du protocole Memcached authentifié.",
+    "cancel": "Annuler",
+    "connect": "Connecter",
+    "save": "Enregistrer les modifications",
+    "test": "Tester",
+    "testing": "Test en cours...",
+    "testSuccess": "Connexion réussie !"
+  },
+  "setupGuide": {
+    "title": "Guide de configuration",
+    "disclaimer": "Lorsque l'authentification est activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être gérées en raison d'une limitation du protocole Memcached authentifié.",
+    "fields": {
+      "name": {
+        "title": "Nom de la connexion",
+        "description": "Choisissez un nom pour identifier la connexion dans l'application."
+      },
+      "address": {
+        "title": "Adresse du serveur",
+        "description": "Saisissez l'IP ou le domaine du serveur Memcached. Pour un usage local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>."
+      },
+      "port": {
+        "title": "Port",
+        "description": "Le port par défaut de Memcached est <strong>11211</strong>. Si vous l'avez modifié, utilisez le port configuré."
+      },
+      "auth": {
+        "title": "Authentification (Optionnel)",
+        "description": "Renseignez l'utilisateur et le mot de passe uniquement si votre serveur requiert une authentification."
+      },
+      "timeout": {
+        "title": "Timeout",
+        "description": "Le timeout définit le temps de réponse maximum."
+      }
+    },
+    "close": "Fermer"
+  },
+  "disclaimer": {
+    "title": "Important :"
+  },
+  "keyList": {
+    "title": "Clés stockées",
+    "create": "Créer",
+    "refresh": "Actualiser",
+    "autoRefresh": "Actualisation auto",
+    "clearAll": "Tout effacer",
+    "searchPlaceholder": "Tapez une clé ou une regex...",
+    "columns": {
+      "key": "Clé",
+      "value": "Valeur",
+      "expiration": "Expiration",
+      "size": "Taille",
+      "actions": "Actions"
+    },
+    "empty": "Aucune clé stockée",
+    "authWarning": "Lorsque Memcached tourne avec l'authentification activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être listées, modifiées ou supprimées. C'est une <strong>limitation du protocole Memcached authentifié</strong> qui restreint l'accès aux clés créées ailleurs.",
+    "flushConfirmation": {
+      "title": "Effacer toutes les clés ?",
+      "message": "Cela supprimera immédiatement toutes les clés de Memcached. Voulez-vous continuer ?",
+      "confirm": "Oui, tout effacer",
+      "cancel": "Annuler"
+    },
+    "flushSuccess": "Toutes les clés ont été supprimées avec succès."
+  },
+  "createKeyModal": {
+    "title": "Nouvelle clé",
+    "fields": {
+      "key": "Clé",
+      "expiration": "Expiration (secondes)",
+      "format": "Format",
+      "value": "Valeur"
+    },
+    "optional": "Optionnel",
+    "cancel": "Annuler",
+    "create": "Créer la clé",
+    "errors": {
+      "valueRequired": "La valeur est obligatoire."
+    }
+  },
+  "editKeyModal": {
+    "title": "Modifier la clé",
+    "fields": {
+      "key": "Clé",
+      "expiration": "Expiration (secondes)",
+      "format": "Format",
+      "value": "Nouvelle valeur"
+    },
+    "cancel": "Annuler",
+    "save": "Enregistrer les modifications"
+  },
+  "viewDataModal": {
+    "title": "Détails",
+    "fields": {
+      "key": "Clé",
+      "expiration": "Expiration",
+      "size": "Taille (octets)"
+    },
+    "format": "Format",
+    "close": "Fermer"
+  },
+  "loadingModal": {
+    "loading": "Chargement..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "Erreur",
+      "success": "Succès",
+      "warning": "Avertissement"
+    },
+    "close": "OK",
+    "confirm": "Confirmer",
+    "cancel": "Annuler"
+  },
+  "statistics": {
+    "title": "Statistiques du serveur",
+    "advanced": "Surveillance avancée",
+    "slabs": "Statistiques des slabs",
+    "host": "Hôte",
+    "uptimeLabel": "Temps d'activité",
+    "uptime_one": "{{count}} jour",
+    "uptime_other": "{{count}} jours",
+    "connections": "Connexions",
+    "version": "Version",
+    "cacheEfficiency": "Efficacité du cache",
+    "commands": "Commandes exécutées",
+    "getSet": "GET / SET",
+    "memoryUsed": "Mémoire utilisée",
+    "requestsPerSecond": "Requêtes/s",
+    "bytesWritten": "Octets écrits",
+    "bytesRead": "Octets lus",
+    "expirationsEvictions": "Expirations & expulsions",
+    "table": {
+      "id": "ID",
+      "size": "Taille",
+      "total": "Total",
+      "used": "Utilisé",
+      "free": "Libre",
+      "hits": "Hits"
+    }
+  },
+  "errors": {
+    "connectionFailed": "Échec de la connexion. Vérifiez les données et réessayez.",
+    "chooseConnection": "Erreur lors de la sélection de la connexion.",
+    "loadServerData": "Impossible de charger les statistiques du serveur.",
+    "loadKeys": "Échec du chargement des clés.",
+    "createKey": "Échec de la création de la clé.",
+    "editKey": "Échec de la modification de la clé.",
+    "deleteKey": "Échec de la suppression de la clé.",
+    "flushKeys": "Échec de l'effacement des clés."
+  }
+}

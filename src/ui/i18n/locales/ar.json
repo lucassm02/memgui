@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "اللغة",
+    "pt-BR": "البرتغالية (البرازيل)",
+    "en": "الإنجليزية",
+    "es": "الإسبانية",
+    "fr": "الفرنسية",
+    "de": "الألمانية",
+    "zh-CN": "الصينية (المبسطة)",
+    "ja": "اليابانية",
+    "ko": "الكورية",
+    "ar": "العربية"
+  },
+  "common": {
+    "close": "إغلاق",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "save": "حفظ",
+    "create": "إنشاء",
+    "loading": "جارٍ التحميل...",
+    "actions": "الإجراءات",
+    "copied": "تم النسخ!",
+    "clickToCopy": "اضغط للنسخ",
+    "optional": "اختياري"
+  },
+  "header": {
+    "back": "رجوع",
+    "stats": "الإحصائيات",
+    "disconnect": "قطع الاتصال"
+  },
+  "connectionHome": {
+    "welcomeTitle": "مرحبًا بك في MemGUI",
+    "welcomeDescription": "للبدء، اتصل بخادم موجود أو أنشئ اتصالًا جديدًا.",
+    "createButton": "إنشاء اتصال جديد",
+    "newHereTitle": "هل أنت جديد هنا؟",
+    "newHereDescription": "إذا لم يكن لديك خادم مُعد، اطّلع على",
+    "setupGuideLink": "دليل الإعداد"
+  },
+  "connectionList": {
+    "title": "الاتصالات المحفوظة",
+    "empty": "لا توجد اتصالات",
+    "edit": "تعديل الاتصال"
+  },
+  "connectionModal": {
+    "title": "اتصال جديد",
+    "editTitle": "تعديل الاتصال",
+    "fields": {
+      "name": "اسم الاتصال",
+      "namePlaceholder": "مثال: الإنتاج",
+      "address": "عنوان الخادم",
+      "hostPlaceholder": "مثال: 192.168.1.1",
+      "port": "المنفذ",
+      "options": "خيارات متقدمة",
+      "username": "اسم المستخدم (اختياري)",
+      "usernamePlaceholder": "أدخل اسم المستخدم",
+      "password": "كلمة المرور (اختياري)",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "timeout": "المهلة بالثواني (300 كحد أدنى)"
+    },
+    "authNote": "عند تفعيل المصادقة، لا يمكن إدارة سوى المفاتيح التي تم إنشاؤها في <strong>MemGUI</strong> بسبب قيود بروتوكول Memcached الموثّق.",
+    "cancel": "إلغاء",
+    "connect": "اتصال",
+    "save": "حفظ التغييرات",
+    "test": "اختبار",
+    "testing": "جارٍ الاختبار...",
+    "testSuccess": "تم الاتصال بنجاح!"
+  },
+  "setupGuide": {
+    "title": "دليل الإعداد",
+    "disclaimer": "عند تفعيل المصادقة، لا يمكن إدارة سوى المفاتيح التي تم إنشاؤها في <strong>MemGUI</strong> بسبب قيود بروتوكول Memcached الموثّق.",
+    "fields": {
+      "name": {
+        "title": "اسم الاتصال",
+        "description": "اختر اسمًا للتعرّف على الاتصال داخل التطبيق."
+      },
+      "address": {
+        "title": "عنوان الخادم",
+        "description": "أدخل عنوان IP أو النطاق الخاص بخادم Memcached. للاستخدام المحلي استخدم <code>127.0.0.1</code> أو <code>localhost</code>."
+      },
+      "port": {
+        "title": "المنفذ",
+        "description": "المنفذ الافتراضي لـ Memcached هو <strong>11211</strong>. إذا كنت قد غيّرته، استخدم المنفذ المُكوَّن."
+      },
+      "auth": {
+        "title": "المصادقة (اختياري)",
+        "description": "املأ اسم المستخدم وكلمة المرور فقط إذا كان الخادم يتطلب مصادقة."
+      },
+      "timeout": {
+        "title": "المهلة",
+        "description": "تحدد المهلة أقصى زمن للاستجابة."
+      }
+    },
+    "close": "إغلاق"
+  },
+  "disclaimer": {
+    "title": "مهم:"
+  },
+  "keyList": {
+    "title": "المفاتيح المخزنة",
+    "create": "إنشاء",
+    "refresh": "تحديث",
+    "autoRefresh": "تحديث تلقائي",
+    "clearAll": "مسح الكل",
+    "searchPlaceholder": "اكتب مفتاحًا أو تعبيرًا نظاميًا...",
+    "columns": {
+      "key": "المفتاح",
+      "value": "القيمة",
+      "expiration": "انتهاء الصلاحية",
+      "size": "الحجم",
+      "actions": "الإجراءات"
+    },
+    "empty": "لا توجد مفاتيح مخزنة",
+    "authWarning": "عند تشغيل Memcached مع تفعيل المصادقة، لا يمكن إلا للمفاتيح التي تم إنشاؤها داخل <strong>MemGUI</strong> أن تُعرض أو تُعدّل أو تُحذف. هذه <strong>قيود في بروتوكول Memcached الموثّق</strong> تحدّ من الوصول إلى المفاتيح التي أُنشئت في أماكن أخرى.",
+    "flushConfirmation": {
+      "title": "مسح كل المفاتيح؟",
+      "message": "سيؤدي ذلك إلى إزالة جميع المفاتيح من Memcached فورًا. هل تريد المتابعة؟",
+      "confirm": "نعم، مسح الكل",
+      "cancel": "إلغاء"
+    },
+    "flushSuccess": "تم مسح جميع المفاتيح بنجاح."
+  },
+  "createKeyModal": {
+    "title": "مفتاح جديد",
+    "fields": {
+      "key": "المفتاح",
+      "expiration": "مدة الصلاحية (ثوانٍ)",
+      "format": "التنسيق",
+      "value": "القيمة"
+    },
+    "optional": "اختياري",
+    "cancel": "إلغاء",
+    "create": "إنشاء مفتاح",
+    "errors": {
+      "valueRequired": "القيمة مطلوبة."
+    }
+  },
+  "editKeyModal": {
+    "title": "تعديل المفتاح",
+    "fields": {
+      "key": "المفتاح",
+      "expiration": "مدة الصلاحية (ثوانٍ)",
+      "format": "التنسيق",
+      "value": "قيمة جديدة"
+    },
+    "cancel": "إلغاء",
+    "save": "حفظ التغييرات"
+  },
+  "viewDataModal": {
+    "title": "التفاصيل",
+    "fields": {
+      "key": "المفتاح",
+      "expiration": "انتهاء الصلاحية",
+      "size": "الحجم (بايت)"
+    },
+    "format": "التنسيق",
+    "close": "إغلاق"
+  },
+  "loadingModal": {
+    "loading": "جارٍ التحميل..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "خطأ",
+      "success": "تم بنجاح",
+      "warning": "تحذير"
+    },
+    "close": "موافق",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
+  },
+  "statistics": {
+    "title": "إحصاءات الخادم",
+    "advanced": "مراقبة متقدمة",
+    "slabs": "إحصاءات الـ Slab",
+    "host": "المضيف",
+    "uptimeLabel": "مدة التشغيل",
+    "uptime_one": "{{count}} يوم",
+    "uptime_other": "{{count}} أيام",
+    "connections": "الاتصالات",
+    "version": "الإصدار",
+    "cacheEfficiency": "كفاءة الذاكرة المؤقتة",
+    "commands": "الأوامر المنفذة",
+    "getSet": "GET / SET",
+    "memoryUsed": "الذاكرة المستخدمة",
+    "requestsPerSecond": "الطلبات/ثانية",
+    "bytesWritten": "البايتات المكتوبة",
+    "bytesRead": "البايتات المقروءة",
+    "expirationsEvictions": "انتهاء الصلاحية والإزاحات",
+    "table": {
+      "id": "المعرّف",
+      "size": "الحجم",
+      "total": "الإجمالي",
+      "used": "المستخدم",
+      "free": "المتاح",
+      "hits": "الزيارات"
+    }
+  },
+  "errors": {
+    "connectionFailed": "فشل الاتصال. تحقق من البيانات وحاول مرة أخرى.",
+    "chooseConnection": "حدث خطأ أثناء اختيار الاتصال.",
+    "loadServerData": "تعذر تحميل إحصاءات الخادم.",
+    "loadKeys": "فشل تحميل المفاتيح.",
+    "createKey": "فشل إنشاء المفتاح.",
+    "editKey": "فشل تعديل المفتاح.",
+    "deleteKey": "فشل حذف المفتاح.",
+    "flushKeys": "فشل مسح المفاتيح."
+  }
+}

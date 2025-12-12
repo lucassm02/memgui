@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "语言",
+    "pt-BR": "葡萄牙语（巴西）",
+    "en": "英语",
+    "es": "西班牙语",
+    "fr": "法语",
+    "de": "德语",
+    "zh-CN": "中文（简体）",
+    "ja": "日语",
+    "ko": "韩语",
+    "ar": "阿拉伯语"
+  },
+  "common": {
+    "close": "关闭",
+    "cancel": "取消",
+    "delete": "删除",
+    "save": "保存",
+    "create": "创建",
+    "loading": "加载中...",
+    "actions": "操作",
+    "copied": "已复制！",
+    "clickToCopy": "点击复制",
+    "optional": "可选"
+  },
+  "header": {
+    "back": "返回",
+    "stats": "统计",
+    "disconnect": "断开连接"
+  },
+  "connectionHome": {
+    "welcomeTitle": "欢迎使用 MemGUI",
+    "welcomeDescription": "开始之前，连接到现有服务器或创建新连接。",
+    "createButton": "创建新连接",
+    "newHereTitle": "新用户？",
+    "newHereDescription": "如果你还没有服务器，请查看我们的",
+    "setupGuideLink": "配置指南"
+  },
+  "connectionList": {
+    "title": "已保存的连接",
+    "empty": "未找到连接",
+    "edit": "编辑连接"
+  },
+  "connectionModal": {
+    "title": "新连接",
+    "editTitle": "编辑连接",
+    "fields": {
+      "name": "连接名称",
+      "namePlaceholder": "例如：生产",
+      "address": "服务器地址",
+      "hostPlaceholder": "例如：192.168.1.1",
+      "port": "端口",
+      "options": "高级选项",
+      "username": "用户名（可选）",
+      "usernamePlaceholder": "输入用户名",
+      "password": "密码（可选）",
+      "passwordPlaceholder": "输入密码",
+      "timeout": "超时时间（秒，最少 300）"
+    },
+    "authNote": "启用身份验证时，由于已验证的 Memcached 协议限制，只能管理在 <strong>MemGUI</strong> 中创建的键。",
+    "cancel": "取消",
+    "connect": "连接",
+    "save": "保存更改",
+    "test": "测试",
+    "testing": "正在测试...",
+    "testSuccess": "连接成功！"
+  },
+  "setupGuide": {
+    "title": "配置指南",
+    "disclaimer": "启用身份验证时，由于已验证的 Memcached 协议限制，只能管理在 <strong>MemGUI</strong> 中创建的键。",
+    "fields": {
+      "name": {
+        "title": "连接名称",
+        "description": "选择一个名称以便在应用中识别连接。"
+      },
+      "address": {
+        "title": "服务器地址",
+        "description": "输入 Memcached 服务器的 IP 或域名。用于本地时，请使用 <code>127.0.0.1</code> 或 <code>localhost</code>。"
+      },
+      "port": {
+        "title": "端口",
+        "description": "Memcached 默认端口为 <strong>11211</strong>。如果已更改，请使用配置的端口。"
+      },
+      "auth": {
+        "title": "身份验证（可选）",
+        "description": "仅在服务器需要身份验证时填写用户名和密码。"
+      },
+      "timeout": {
+        "title": "超时",
+        "description": "超时时间定义最大响应时间。"
+      }
+    },
+    "close": "关闭"
+  },
+  "disclaimer": {
+    "title": "重要："
+  },
+  "keyList": {
+    "title": "已存储的键",
+    "create": "创建",
+    "refresh": "刷新",
+    "autoRefresh": "自动刷新",
+    "clearAll": "全部清除",
+    "searchPlaceholder": "输入键或正则...",
+    "columns": {
+      "key": "键",
+      "value": "值",
+      "expiration": "过期",
+      "size": "大小",
+      "actions": "操作"
+    },
+    "empty": "没有存储的键",
+    "authWarning": "当 Memcached 在启用身份验证的情况下运行时，只能列出、编辑或删除在 <strong>MemGUI</strong> 中创建的键。这是 <strong>已验证的 Memcached 协议的限制</strong>，会限制访问其他来源创建的键。",
+    "flushConfirmation": {
+      "title": "清除所有键？",
+      "message": "这将立即移除 Memcached 中的所有键。要继续吗？",
+      "confirm": "是，全部清除",
+      "cancel": "取消"
+    },
+    "flushSuccess": "所有键已成功清除。"
+  },
+  "createKeyModal": {
+    "title": "新建键",
+    "fields": {
+      "key": "键",
+      "expiration": "过期时间（秒）",
+      "format": "格式",
+      "value": "值"
+    },
+    "optional": "可选",
+    "cancel": "取消",
+    "create": "创建键",
+    "errors": {
+      "valueRequired": "值为必填项。"
+    }
+  },
+  "editKeyModal": {
+    "title": "编辑键",
+    "fields": {
+      "key": "键",
+      "expiration": "过期时间（秒）",
+      "format": "格式",
+      "value": "新值"
+    },
+    "cancel": "取消",
+    "save": "保存更改"
+  },
+  "viewDataModal": {
+    "title": "详情",
+    "fields": {
+      "key": "键",
+      "expiration": "过期",
+      "size": "大小（字节）"
+    },
+    "format": "格式",
+    "close": "关闭"
+  },
+  "loadingModal": {
+    "loading": "加载中..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "错误",
+      "success": "成功",
+      "warning": "警告"
+    },
+    "close": "确定",
+    "confirm": "确认",
+    "cancel": "取消"
+  },
+  "statistics": {
+    "title": "服务器统计",
+    "advanced": "高级监控",
+    "slabs": "Slab 统计",
+    "host": "主机",
+    "uptimeLabel": "运行时间",
+    "uptime_one": "{{count}} 天",
+    "uptime_other": "{{count}} 天",
+    "connections": "连接",
+    "version": "版本",
+    "cacheEfficiency": "缓存效率",
+    "commands": "执行的命令",
+    "getSet": "GET / SET",
+    "memoryUsed": "已用内存",
+    "requestsPerSecond": "请求/秒",
+    "bytesWritten": "写入字节",
+    "bytesRead": "读取字节",
+    "expirationsEvictions": "过期与驱逐",
+    "table": {
+      "id": "ID",
+      "size": "大小",
+      "total": "总计",
+      "used": "已用",
+      "free": "空闲",
+      "hits": "命中"
+    }
+  },
+  "errors": {
+    "connectionFailed": "连接失败。请检查数据后重试。",
+    "chooseConnection": "选择连接时出错。",
+    "loadServerData": "无法加载服务器统计。",
+    "loadKeys": "加载键失败。",
+    "createKey": "创建键失败。",
+    "editKey": "编辑键失败。",
+    "deleteKey": "删除键失败。",
+    "flushKeys": "清除键失败。"
+  }
+}

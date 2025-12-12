@@ -1,0 +1,211 @@
+{
+  "app": {
+    "name": "MemGUI"
+  },
+  "language": {
+    "label": "언어",
+    "pt-BR": "포르투갈어 (브라질)",
+    "en": "영어",
+    "es": "스페인어",
+    "fr": "프랑스어",
+    "de": "독일어",
+    "zh-CN": "중국어 (간체)",
+    "ja": "일본어",
+    "ko": "한국어",
+    "ar": "아랍어"
+  },
+  "common": {
+    "close": "닫기",
+    "cancel": "취소",
+    "delete": "삭제",
+    "save": "저장",
+    "create": "생성",
+    "loading": "불러오는 중...",
+    "actions": "작업",
+    "copied": "복사됨!",
+    "clickToCopy": "클릭하여 복사",
+    "optional": "선택 사항"
+  },
+  "header": {
+    "back": "뒤로",
+    "stats": "통계",
+    "disconnect": "연결 해제"
+  },
+  "connectionHome": {
+    "welcomeTitle": "MemGUI에 오신 것을 환영합니다",
+    "welcomeDescription": "시작하려면 기존 서버에 연결하거나 새 연결을 만드세요.",
+    "createButton": "새 연결 만들기",
+    "newHereTitle": "처음이신가요?",
+    "newHereDescription": "서버가 없다면 다음을 확인하세요",
+    "setupGuideLink": "설정 가이드"
+  },
+  "connectionList": {
+    "title": "저장된 연결",
+    "empty": "연결이 없습니다",
+    "edit": "연결 편집"
+  },
+  "connectionModal": {
+    "title": "새 연결",
+    "editTitle": "연결 편집",
+    "fields": {
+      "name": "연결 이름",
+      "namePlaceholder": "예: 프로덕션",
+      "address": "서버 주소",
+      "hostPlaceholder": "예: 192.168.1.1",
+      "port": "포트",
+      "options": "고급 옵션",
+      "username": "사용자 이름 (선택 사항)",
+      "usernamePlaceholder": "사용자 이름 입력",
+      "password": "비밀번호 (선택 사항)",
+      "passwordPlaceholder": "비밀번호 입력",
+      "timeout": "타임아웃(초, 최소 300)"
+    },
+    "authNote": "인증이 활성화된 경우, 인증된 Memcached 프로토콜의 제한으로 인해 <strong>MemGUI</strong>에서 생성된 키만 관리할 수 있습니다.",
+    "cancel": "취소",
+    "connect": "연결",
+    "save": "변경 사항 저장",
+    "test": "테스트",
+    "testing": "테스트 중...",
+    "testSuccess": "연결에 성공했습니다!"
+  },
+  "setupGuide": {
+    "title": "설정 가이드",
+    "disclaimer": "인증이 활성화된 경우, 인증된 Memcached 프로토콜의 제한으로 인해 <strong>MemGUI</strong>에서 생성된 키만 관리할 수 있습니다.",
+    "fields": {
+      "name": {
+        "title": "연결 이름",
+        "description": "앱에서 연결을 식별할 이름을 선택하세요."
+      },
+      "address": {
+        "title": "서버 주소",
+        "description": "Memcached 서버의 IP 또는 도메인을 입력하세요. 로컬에서는 <code>127.0.0.1</code> 또는 <code>localhost</code>를 사용하세요."
+      },
+      "port": {
+        "title": "포트",
+        "description": "Memcached 기본 포트는 <strong>11211</strong>입니다. 변경했다면 설정된 포트를 사용하세요."
+      },
+      "auth": {
+        "title": "인증 (선택 사항)",
+        "description": "서버가 인증을 요구할 때만 사용자 이름과 비밀번호를 입력하세요."
+      },
+      "timeout": {
+        "title": "타임아웃",
+        "description": "타임아웃은 최대 응답 시간을 정의합니다."
+      }
+    },
+    "close": "닫기"
+  },
+  "disclaimer": {
+    "title": "중요:"
+  },
+  "keyList": {
+    "title": "저장된 키",
+    "create": "생성",
+    "refresh": "새로고침",
+    "autoRefresh": "자동 새로고침",
+    "clearAll": "모두 지우기",
+    "searchPlaceholder": "키 또는 정규식을 입력...",
+    "columns": {
+      "key": "키",
+      "value": "값",
+      "expiration": "만료",
+      "size": "크기",
+      "actions": "작업"
+    },
+    "empty": "저장된 키가 없습니다",
+    "authWarning": "Memcached가 인증 활성화 상태로 실행 중이면 <strong>MemGUI</strong>에서 생성된 키만 목록, 편집, 삭제할 수 있습니다. 이는 다른 곳에서 생성된 키 접근을 제한하는 <strong>인증된 Memcached 프로토콜의 제한</strong> 때문입니다.",
+    "flushConfirmation": {
+      "title": "모든 키를 지울까요?",
+      "message": "이는 Memcached의 모든 키를 즉시 제거합니다. 계속하시겠습니까?",
+      "confirm": "예, 모두 지우기",
+      "cancel": "취소"
+    },
+    "flushSuccess": "모든 키를 성공적으로 삭제했습니다."
+  },
+  "createKeyModal": {
+    "title": "새 키",
+    "fields": {
+      "key": "키",
+      "expiration": "만료 시간(초)",
+      "format": "형식",
+      "value": "값"
+    },
+    "optional": "선택 사항",
+    "cancel": "취소",
+    "create": "키 생성",
+    "errors": {
+      "valueRequired": "값은 필수입니다."
+    }
+  },
+  "editKeyModal": {
+    "title": "키 편집",
+    "fields": {
+      "key": "키",
+      "expiration": "만료 시간(초)",
+      "format": "형식",
+      "value": "새 값"
+    },
+    "cancel": "취소",
+    "save": "변경 사항 저장"
+  },
+  "viewDataModal": {
+    "title": "세부 정보",
+    "fields": {
+      "key": "키",
+      "expiration": "만료",
+      "size": "크기(바이트)"
+    },
+    "format": "형식",
+    "close": "닫기"
+  },
+  "loadingModal": {
+    "loading": "불러오는 중..."
+  },
+  "alertModal": {
+    "titles": {
+      "error": "오류",
+      "success": "성공",
+      "warning": "경고"
+    },
+    "close": "확인",
+    "confirm": "확인",
+    "cancel": "취소"
+  },
+  "statistics": {
+    "title": "서버 통계",
+    "advanced": "고급 모니터링",
+    "slabs": "슬랩 통계",
+    "host": "호스트",
+    "uptimeLabel": "업타임",
+    "uptime_one": "{{count}}일",
+    "uptime_other": "{{count}}일",
+    "connections": "연결",
+    "version": "버전",
+    "cacheEfficiency": "캐시 효율",
+    "commands": "실행된 명령",
+    "getSet": "GET / SET",
+    "memoryUsed": "사용된 메모리",
+    "requestsPerSecond": "요청/초",
+    "bytesWritten": "기록된 바이트",
+    "bytesRead": "읽은 바이트",
+    "expirationsEvictions": "만료 및 제거",
+    "table": {
+      "id": "ID",
+      "size": "크기",
+      "total": "총계",
+      "used": "사용",
+      "free": "여유",
+      "hits": "히트"
+    }
+  },
+  "errors": {
+    "connectionFailed": "연결에 실패했습니다. 정보를 확인하고 다시 시도하세요.",
+    "chooseConnection": "연결을 선택하는 동안 오류가 발생했습니다.",
+    "loadServerData": "서버 통계를 불러오지 못했습니다.",
+    "loadKeys": "키를 불러오지 못했습니다.",
+    "createKey": "키 생성에 실패했습니다.",
+    "editKey": "키 편집에 실패했습니다.",
+    "deleteKey": "키 삭제에 실패했습니다.",
+    "flushKeys": "키 삭제에 실패했습니다."
+  }
+}

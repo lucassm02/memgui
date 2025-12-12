@@ -4,8 +4,25 @@ import { initReactI18next } from "react-i18next";
 
 import en from "./locales/en.json";
 import ptBR from "./locales/pt-BR.json";
+import es from "./locales/es.json";
+import fr from "./locales/fr.json";
+import de from "./locales/de.json";
+import zhCN from "./locales/zh-CN.json";
+import ja from "./locales/ja.json";
+import ko from "./locales/ko.json";
+import ar from "./locales/ar.json";
 
-export const supportedLanguages = ["pt-BR", "en"];
+export const supportedLanguages = [
+  "pt-BR",
+  "en",
+  "es",
+  "fr",
+  "de",
+  "zh-CN",
+  "ja",
+  "ko",
+  "ar"
+];
 
 i18n
   .use(LanguageDetector)
@@ -13,7 +30,14 @@ i18n
   .init({
     resources: {
       en: { translation: en },
-      "pt-BR": { translation: ptBR }
+      "pt-BR": { translation: ptBR },
+      es: { translation: es },
+      fr: { translation: fr },
+      de: { translation: de },
+      "zh-CN": { translation: zhCN },
+      ja: { translation: ja },
+      ko: { translation: ko },
+      ar: { translation: ar }
     },
     fallbackLng: "pt-BR",
     supportedLngs: supportedLanguages,

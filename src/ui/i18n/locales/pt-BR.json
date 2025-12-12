@@ -5,7 +5,14 @@
   "language": {
     "label": "Idioma",
     "pt-BR": "Português (Brasil)",
-    "en": "English"
+    "en": "English",
+    "es": "Espanhol",
+    "fr": "Francês",
+    "de": "Alemão",
+    "zh-CN": "Chinês (Simplificado)",
+    "ja": "Japonês",
+    "ko": "Coreano",
+    "ar": "Árabe"
   },
   "common": {
     "close": "Fechar",
