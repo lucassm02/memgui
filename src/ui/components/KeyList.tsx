@@ -113,7 +113,7 @@ const KeyList = () => {
       <div className="flex flex-col gap-3 mb-6">
         <h2 className="text-xl font-semibold">
           {t("keyList.title")}
-          {totalKeyCount !== undefined ? ` (${totalKeyCount})` : ""}
+          {totalKeyCount !== undefined ? `\u2068 (${totalKeyCount})\u2069` : ""}
         </h2>
 
         <div className="flex items-center justify-between flex-wrap gap-3">

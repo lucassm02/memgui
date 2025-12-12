@@ -77,7 +77,11 @@ const ConnectedHeader = () => {
                 >
                   {currentConnection.name || t("app.name")}
                 </h1>
-                <span className="text-xs font-normal opacity-75">
+                <span
+                  className={`text-xs font-normal opacity-75 ${
+                    darkMode ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
                   {currentConnection.id?.slice(0, 8)}
                 </span>
               </div>
