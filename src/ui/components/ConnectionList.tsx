@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import {
   LinkIcon,
   PencilSquareIcon,
@@ -25,6 +26,7 @@ const ConnectionList = () => {
     savedConnections,
     handleChoseConnection,
     handleDeleteConnection,
+    currentConnection,
     isConnected
   } = useConnections();
   const { openConnectionModal } = useModal();
@@ -39,6 +41,25 @@ const ConnectionList = () => {
       navigate("/panel");
     }
   }
+
+  const sortedConnections = useMemo(
+    () =>
+      [...savedConnections].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+      ),
+    [savedConnections]
+  );
+
+  const isConnectionActive = (connection: Connection) => {
+    if (!isConnected) return false;
+    const matchById =
+      currentConnection.id !== "" && connection.id === currentConnection.id;
+    const matchByAddress =
+      connection.host === currentConnection.host &&
+      connection.port === currentConnection.port;
+
+    return matchById || matchByAddress;
+  };
 
   return (
     <>
@@ -90,66 +111,75 @@ const ConnectionList = () => {
             </div>
           )}
 
-          {savedConnections.map((conn) => (
-            <div
-              key={`${conn.host}-${conn.port}`}
-              className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer
-                ${
-                  darkMode
-                    ? "border-gray-600 hover:bg-gray-700/40"
-                    : "border-gray-200 hover:bg-gray-50"
-                }
-                transition-all duration-200 shadow-sm
-              `}
-              onClick={() => choseConnection(conn)}
-            >
-              <div className="flex-1">
-                <div
-                  className={`flex items-center gap-2 ${
-                    darkMode ? "text-gray-100" : "text-gray-900"
-                  }`}
-                >
-                  <LinkIcon className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm font-medium">{conn.name}</span>
+          {sortedConnections.map((conn) => {
+            const isActive = isConnectionActive(conn);
+            return (
+              <div
+                key={`${conn.host}-${conn.port}`}
+                className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer
+                  ${darkMode ? "border-gray-600 hover:bg-gray-700/40" : "border-gray-200 hover:bg-gray-50"}
+                  ${
+                    isActive
+                      ? darkMode
+                        ? "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/15"
+                        : "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/20"
+                      : ""
+                  }
+                  transition-all duration-200 shadow-sm`}
+                onClick={() => choseConnection(conn)}
+              >
+                <div className="flex-1">
+                  <div
+                    className={`flex items-center gap-2 ${
+                      darkMode ? "text-gray-100" : "text-gray-900"
+                    }`}
+                  >
+                    <LinkIcon
+                      className={`w-4 h-4 ${
+                        isActive ? "text-emerald-400" : "text-blue-400"
+                      }`}
+                    />
+                    <span className="text-sm font-medium">{conn.name}</span>
+                  </div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    {conn.host}:{conn.port}
+                    <span className="ml-2 opacity-75">
+                      ID: {conn.id?.slice(0, 8)}
+                    </span>
+                  </div>
                 </div>
-                <div
-                  className={`text-xs mt-1 ${
-                    darkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  {conn.host}:{conn.port}
-                  <span className="ml-2 opacity-75">
-                    ID: {conn.id?.slice(0, 8)}
-                  </span>
-                </div>
-              </div>
 
-              {!isConnected && (
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openConnectionModal(conn);
-                    }}
-                    className={`${toneButton("primary", darkMode, "icon")} !p-1`}
-                    aria-label={t("connectionList.edit")}
-                  >
-                    <PencilSquareIcon className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteConnection(conn);
-                    }}
-                    className={`${toneButton("danger", darkMode, "icon")} !p-1`}
-                    aria-label={t("common.delete")}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
+                {!isConnected && (
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openConnectionModal(conn);
+                      }}
+                      className={`${toneButton("primary", darkMode, "icon")} !p-1`}
+                      aria-label={t("connectionList.edit")}
+                    >
+                      <PencilSquareIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteConnection(conn);
+                      }}
+                      className={`${toneButton("danger", darkMode, "icon")} !p-1`}
+                      aria-label={t("common.delete")}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </>
