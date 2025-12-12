@@ -125,7 +125,10 @@
     },
     "optional": "Opcional",
     "cancel": "Cancelar",
-    "create": "Criar Chave"
+    "create": "Criar Chave",
+    "errors": {
+      "valueRequired": "O campo valor é obrigatório."
+    }
   },
   "editKeyModal": {
     "title": "Editar Chave",

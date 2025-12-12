@@ -125,7 +125,10 @@
     },
     "optional": "Optional",
     "cancel": "Cancel",
-    "create": "Create Key"
+    "create": "Create Key",
+    "errors": {
+      "valueRequired": "Value is required."
+    }
   },
   "editKeyModal": {
     "title": "Edit Key",

@@ -28,6 +28,7 @@ const CreateKeyModal = ({ onSave }: Params) => {
     timeUntilExpiration: undefined
   });
   const [format, setFormat] = useState("TEXT");
+  const [valueError, setValueError] = useState("");
 
   const { createModalIsOpen, closeCreateModal } = useModal();
   const { darkMode } = useDarkMode();
@@ -51,11 +52,19 @@ const CreateKeyModal = ({ onSave }: Params) => {
   useEffect(() => {
     if (createModalIsOpen) {
       document.getElementById("key-input")?.focus();
+      setValueError("");
     }
   }, [createModalIsOpen]);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    if (!formData.value) {
+      setValueError(t("createKeyModal.errors.valueRequired"));
+      return;
+    }
+
+    setValueError("");
+
     if (formData.key && formData.value) {
       onSave(formData);
       closeCreateModal();
@@ -163,16 +172,30 @@ const CreateKeyModal = ({ onSave }: Params) => {
             </label>
             <div
               className={`p-3 rounded-md border mt-1 max-h-72 overflow-auto transition
-                ${darkMode ? "bg-gray-700 border-gray-600" : "bg-gray-100 border-gray-300"}`}
+                ${darkMode ? "bg-gray-700" : "bg-gray-100"}
+                ${
+                  valueError
+                    ? "border-red-500 shadow-[0_0_0_1px_rgba(239,68,68,0.6)]"
+                    : darkMode
+                      ? "border-gray-600"
+                      : "border-gray-300"
+                }`}
+              aria-invalid={!!valueError}
             >
               <CodeMirror
                 value={formData.value}
-                onChange={(value) => setFormData({ ...formData, value })}
+                onChange={(value) => {
+                  setFormData({ ...formData, value });
+                  if (valueError) setValueError("");
+                }}
                 extensions={languageExtension ? [languageExtension] : undefined}
                 theme={darkMode ? "dark" : "light"}
                 basicSetup={{ lineNumbers: true }}
               />
             </div>
+            {valueError && (
+              <p className="mt-1 text-xs text-red-500">{valueError}</p>
+            )}
           </div>
 
           <div className="mt-5 flex justify-end gap-3">
