@@ -2,10 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/) and uses the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
-## [1.1.0] - 2025-12-10
+## [1.1.0] - 2025-12-12
 
 ### Added
 
+- **Connection editing** directly from the connection list via the existing modal flow.
+- **Bulk key deletion** endpoint and UI action to remove all keys from the current server.
+- **Update and auto-update notices** surfaced in the UI/Electron shell when new builds are available.
+- **Server key count** displayed across the key list and statistics screens.
+- **Mandatory field warnings** in the create-key form to prevent empty submissions.
 - **Internationalization (i18n)** across the UI using i18next with language auto-detection (browser) and persistence via storage.
 - **Language Selector** in the header (connected and disconnected views) to switch between Portuguese (Brazil) and English.
 - **Locale Files & Provider**: structured translation resources for `pt-BR` and `en`, plus a dedicated provider/hook to manage language changes.
@@ -13,8 +18,17 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
+- **Key search** now handled in the backend with optimized queries and a refreshed key list experience.
+- **Connection switching and list UI** refined for smoother transitions and clearer presentation.
+- **General UI polish** across headers, modals, and button tones for better layout and readability.
 - **UI Text & Error Messages** now sourced from translation keys instead of hardcoded strings.
 - **Statistics & Modals** updated to render translated labels, placeholders, and messages using the translation hooks.
+
+### Fixed
+
+- **Expiration calculations** now handle negative `timeUntilExpiration` values correctly.
+- **Zero-length responses** fallback added to avoid crashes when reading empty payloads.
+- **Header alignment** adjusted to keep UI elements centered.
 
 ## [1.0.0] - 2025-02-11
 
