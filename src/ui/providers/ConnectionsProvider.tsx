@@ -101,20 +101,33 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const handleLoadKeys = useCallback(
     async (showLoadingModal = true, search?: string, limit?: number) => {
-      try {
-        if (showLoadingModal) showLoading();
+      const fetchKeys = async (attempt: number): Promise<boolean> => {
         const response = await api.get("/keys", {
           params: {
             search: search || undefined,
             limit: limit || undefined
           }
         });
-        const sortedKeys = [...response.data].sort((a, b) =>
+
+        const payload = Array.isArray(response.data) ? response.data : [];
+
+        if (payload.length === 0 && attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+          return fetchKeys(1);
+        }
+
+        const sortedKeys = [...payload].sort((a, b) =>
           a.key.localeCompare(b.key)
         );
         setKeys(sortedKeys);
-        if (showLoadingModal) dismissLoading();
         return true;
+      };
+
+      try {
+        if (showLoadingModal) showLoading();
+        const result = await fetchKeys(0);
+        if (showLoadingModal) dismissLoading();
+        return result;
       } catch (_error) {
         if (showLoadingModal) dismissLoading();
         showAlert(t("errors.loadKeys"), "error");
