@@ -18,9 +18,10 @@
     "dev": "concurrently \"yarn dev:server\" \"wait-on http://localhost:5173 && yarn electron\"",
     "dev:server": "yarn tsx src/server.ts  --start --dev --port 5173",
     "electron": "electron .",
+    "build:electron": "electron-builder",
     "build:server": "node script/build-server.cjs",
     "build:ui": "vite build",
-    "build:all": "yarn clean && yarn build:ui && yarn build:server && electron-builder"
+    "build:all": "yarn clean && yarn build:ui && yarn build:server && yarn build:electron"
   },
   "build": {
     "asar": true,
