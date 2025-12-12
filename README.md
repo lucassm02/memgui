@@ -51,9 +51,7 @@ Pick the format you prefer and launch **MemGUI** to begin managing your Memcache
 ![List](./screenshot/06-list.png)
 ![Details](./screenshot/07-details.png)
 ![Edit key](./screenshot/08-edit-key.png)
-![Auto refresh](./screenshot/09-auto-refresh.png)
-![Filters](./screenshot/10-filter.png)
-![Statistics](./screenshot/11-statistics.png)
+![Statistics](./screenshot/09-statistics.png)
 
 ---
 
@@ -63,6 +61,7 @@ Pick the format you prefer and launch **MemGUI** to begin managing your Memcache
 - A language selector is always visible in the top bar (both connected and disconnected states), and preferences persist automatically.
 
 **Adding a new language**
+
 1. Copy an existing locale file (e.g., `src/ui/i18n/locales/pt-BR.json`) to `src/ui/i18n/locales/<language>.json` and translate the values.
 2. Add the new language code to `supportedLanguages` in `src/ui/i18n/index.ts`.
 3. In every locale file, include a label for the new code inside the `language` section so it appears correctly in the selector.
