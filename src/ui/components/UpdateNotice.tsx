@@ -1,8 +1,3 @@
-import {
-  ArrowPathIcon,
-  SparklesIcon,
-  XMarkIcon
-} from "@heroicons/react/24/outline";
 import { useEffect, useMemo, useState } from "react";
 
 import { useDarkMode } from "../hooks/useDarkMode";
@@ -98,15 +93,6 @@ const UpdateNotice = () => {
     return Number.isNaN(parsed.getTime()) ? "" : parsed.toLocaleDateString();
   }, [updateState?.payload?.releaseDate]);
 
-  const summaryMessage = useMemo(() => {
-    if (!updateState) return "";
-    if (updateState.status !== "error") return description;
-    if (!description) return "";
-    const firstLine = description.split(/\r?\n/)[0] ?? "";
-    if (firstLine.length <= 220) return firstLine;
-    return `${firstLine.slice(0, 220)}…`;
-  }, [updateState, description]);
-
   if (!updateState) return null;
 
   const { status } = updateState;
@@ -116,6 +102,14 @@ const UpdateNotice = () => {
       : status === "available"
         ? "Baixando em segundo plano, você pode continuar usando o app."
         : (updateState.payload.message ?? "Falha ao verificar atualização.");
+
+  const summaryMessage = useMemo(() => {
+    if (status !== "error") return description;
+    if (!description) return "";
+    const firstLine = description.split(/\r?\n/)[0] ?? "";
+    if (firstLine.length <= 220) return firstLine;
+    return `${firstLine.slice(0, 220)}…`;
+  }, [status, description]);
 
   const cardSurface = darkMode
     ? "bg-gray-900 border-gray-700 text-white"
@@ -136,13 +130,6 @@ const UpdateNotice = () => {
     electron.ipcRenderer.send("auto-update-install");
   };
 
-  const iconColor =
-    status === "downloaded"
-      ? "text-green-400"
-      : status === "available"
-        ? "text-blue-400"
-        : "text-amber-400";
-
   return (
     <div className="fixed top-14 right-4 z-[70] w-[28rem] max-w-[calc(100%-1.5rem)]">
       <div
@@ -150,30 +137,23 @@ const UpdateNotice = () => {
         style={{ WebkitAppRegion: "no-drag" }}
       >
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3">
-            {status === "downloaded" ? (
-              <ArrowPathIcon className={`w-6 h-6 ${iconColor}`} />
-            ) : (
-              <SparklesIcon className={`w-6 h-6 ${iconColor}`} />
-            )}
-            <div className="space-y-1">
-              <div className="text-sm font-semibold">
-                {status === "downloaded"
-                  ? "Atualização pronta para instalar"
-                  : status === "available"
-                    ? "Nova versão disponível"
-                    : "Atualização falhou"}
-                {versionLabel && ` • ${versionLabel}`}
-              </div>
-              <p className={`text-xs leading-relaxed ${softText}`}>
-                {status === "error" ? summaryMessage : description}
-              </p>
-              {releaseDateLabel && (
-                <p className={`text-[11px] ${mutedText}`}>
-                  Publicado em {releaseDateLabel}
-                </p>
-              )}
+          <div className="space-y-1">
+            <div className="text-sm font-semibold">
+              {status === "downloaded"
+                ? "Atualização pronta para instalar"
+                : status === "available"
+                  ? "Nova versão disponível"
+                  : "Atualização falhou"}
+              {versionLabel && ` • ${versionLabel}`}
             </div>
+            <p className={`text-xs leading-relaxed ${softText}`}>
+              {status === "error" ? summaryMessage : description}
+            </p>
+            {releaseDateLabel && (
+              <p className={`text-[11px] ${mutedText}`}>
+                Publicado em {releaseDateLabel}
+              </p>
+            )}
           </div>
 
           <button
@@ -183,7 +163,7 @@ const UpdateNotice = () => {
             }`}
             aria-label="Fechar aviso de atualização"
           >
-            <XMarkIcon className="w-5 h-5" />
+            ×
           </button>
         </div>
 
