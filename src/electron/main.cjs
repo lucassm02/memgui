@@ -14,12 +14,12 @@ const isDev = !app.isPackaged;
 
 const HOST = "http://localhost";
 
-const normalizeReleaseNotes = releaseNotes => {
+const normalizeReleaseNotes = (releaseNotes) => {
   if (!releaseNotes) return "";
 
   if (Array.isArray(releaseNotes)) {
     return releaseNotes
-      .map(note => {
+      .map((note) => {
         if (typeof note === "string") return note;
         if (note && typeof note === "object" && "note" in note) {
           return note.note ?? "";
@@ -39,7 +39,7 @@ const normalizeReleaseNotes = releaseNotes => {
   return "";
 };
 
-const toPlainText = text =>
+const toPlainText = (text) =>
   text.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "");
 
 app.whenReady().then(async () => {
@@ -92,7 +92,7 @@ app.whenReady().then(async () => {
       mainWindow.webContents.send(channel, payload);
     };
 
-    autoUpdater.on("update-available", info => {
+    autoUpdater.on("update-available", (info) => {
       sendUpdateEvent("auto-update-available", {
         version: info?.version,
         releaseDate: info?.releaseDate,
@@ -101,7 +101,7 @@ app.whenReady().then(async () => {
       });
     });
 
-    autoUpdater.on("error", error => {
+    autoUpdater.on("error", (error) => {
       console.error("Auto update error:", error);
       sendUpdateEvent("auto-update-error", {
         message: error?.message ?? "Update error"

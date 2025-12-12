@@ -75,6 +75,14 @@ const UpdateNotice = () => {
     };
   }, [enabled, getInstance]);
 
+  const status = updateState?.status ?? null;
+  const description =
+    status === "downloaded"
+      ? "Download concluído. Reinicie para aplicar a atualização."
+      : status === "available"
+        ? "Baixando em segundo plano, você pode continuar usando o app."
+        : (updateState?.payload?.message ?? "Falha ao verificar atualização.");
+
   const releaseNotes = useMemo(() => {
     if (!updateState?.payload?.releaseNotes) return "";
     return updateState.payload.releaseNotes.trim();
@@ -93,16 +101,6 @@ const UpdateNotice = () => {
     return Number.isNaN(parsed.getTime()) ? "" : parsed.toLocaleDateString();
   }, [updateState?.payload?.releaseDate]);
 
-  if (!updateState) return null;
-
-  const { status } = updateState;
-  const description =
-    status === "downloaded"
-      ? "Download concluído. Reinicie para aplicar a atualização."
-      : status === "available"
-        ? "Baixando em segundo plano, você pode continuar usando o app."
-        : (updateState.payload.message ?? "Falha ao verificar atualização.");
-
   const summaryMessage = useMemo(() => {
     if (status !== "error") return description;
     if (!description) return "";
@@ -110,6 +108,8 @@ const UpdateNotice = () => {
     if (firstLine.length <= 220) return firstLine;
     return `${firstLine.slice(0, 220)}…`;
   }, [status, description]);
+
+  if (!updateState) return null;
 
   const cardSurface = darkMode
     ? "bg-gray-900 border-gray-700 text-white"
@@ -121,6 +121,7 @@ const UpdateNotice = () => {
   const handleDismiss = () => {
     setUpdateState(null);
     setIsInstalling(false);
+    setShowErrorDetails(false);
   };
 
   const handleInstall = () => {
