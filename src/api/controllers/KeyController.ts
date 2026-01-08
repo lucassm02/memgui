@@ -7,8 +7,10 @@ import {
   extractUsedChunksFromSlabs,
   logger,
   MAX_CONCURRENT_REQUESTS,
+  MEMCACHED_MAX_VALUE_BYTES,
   ONE_DAY_IN_SECONDS,
-  RESERVED_KEY
+  RESERVED_KEYS,
+  isReservedKey
 } from "@/api/utils";
 import { executeMemcachedCommand } from "@/api/utils/executeMemcachedCommand";
 
@@ -50,13 +52,9 @@ class KeyController {
       const serverUnixTime = await this.getServerUnixTime(connection);
       let storedKeys: string[] = [];
       try {
-        const reservedData = await connection.client.get(RESERVED_KEY);
-
-        if (reservedData.value) {
-          storedKeys = JSON.parse(reservedData.value.toString());
-        }
+        storedKeys = await this.getStoredKeysFromIndex(connection);
       } catch (err) {
-        logger.error("Erro ao obter chave reservada", err as Error);
+        logger.error("Erro ao obter indice de chaves", err as Error);
       }
 
       const shouldUpdateIndex = !searchTerm && !limit;
@@ -206,7 +204,7 @@ class KeyController {
         ttl: options?.expires
       });
 
-      if (key !== RESERVED_KEY) {
+      if (!isReservedKey(key)) {
         this.updateKeyIndex([key], connection, false);
       }
     } catch (error) {
@@ -270,7 +268,7 @@ class KeyController {
 
       response.json({ key, value: value.toString() });
 
-      if (key !== RESERVED_KEY) {
+      if (!isReservedKey(key)) {
         this.updateKeyIndex([key], connection, false);
       }
     } catch (error) {
@@ -322,9 +320,10 @@ class KeyController {
     const limit = pLimit(MAX_CONCURRENT_REQUESTS);
     const currentUnixTime =
       serverUnixTime ?? (await this.getServerUnixTime(connection));
+    const filteredKeys = keys.filter((key) => !isReservedKey(key));
 
     const results = await Promise.all(
-      keys.map((key) =>
+      filteredKeys.map((key) =>
         limit(async () => {
           try {
             const { value } = await connection.client.get(key);
@@ -361,7 +360,7 @@ class KeyController {
     );
 
     const validKeys = <KeyPayload[]>(
-      results.filter((item) => item !== null && item!.key !== RESERVED_KEY)
+      results.filter((item) => item !== null && !isReservedKey(item!.key))
     );
 
     if (updateIndex) {
@@ -369,6 +368,168 @@ class KeyController {
     }
 
     return validKeys;
+  }
+
+  private formatShardKey(index: number) {
+    const padded = index.toString().padStart(2, "0");
+    return `${RESERVED_KEYS.SHARD_PREFIX}${padded}${RESERVED_KEYS.SHARD_SUFFIX}`;
+  }
+
+  private buildIndexShards(keys: string[]): {
+    indexKeys: string[];
+    payloads: Record<string, string[]>;
+  } {
+    const payloads: Record<string, string[]> = {};
+    const indexKeys: string[] = [];
+    if (keys.length === 0) {
+      return { indexKeys, payloads };
+    }
+
+    const payloadBytes = Buffer.byteLength(JSON.stringify(keys), "utf8");
+
+    if (payloadBytes <= MEMCACHED_MAX_VALUE_BYTES) {
+      const shardKey = this.formatShardKey(1);
+      payloads[shardKey] = keys;
+      return { indexKeys: [shardKey], payloads };
+    }
+
+    let shard: string[] = [];
+    let shardIndex = 1;
+
+    for (const key of keys) {
+      shard.push(key);
+      const shardBytes = Buffer.byteLength(JSON.stringify(shard), "utf8");
+
+      if (shardBytes > MEMCACHED_MAX_VALUE_BYTES && shard.length > 1) {
+        shard.pop();
+        const shardKey = this.formatShardKey(shardIndex++);
+        payloads[shardKey] = shard;
+        indexKeys.push(shardKey);
+        shard = [key];
+      } else if (shardBytes > MEMCACHED_MAX_VALUE_BYTES) {
+        const shardKey = this.formatShardKey(shardIndex++);
+        payloads[shardKey] = shard;
+        indexKeys.push(shardKey);
+        shard = [];
+      }
+    }
+
+    if (shard.length > 0) {
+      const shardKey = this.formatShardKey(shardIndex);
+      payloads[shardKey] = shard;
+      indexKeys.push(shardKey);
+    }
+
+    return { indexKeys, payloads };
+  }
+
+  private async writeIndexShards(
+    keys: string[],
+    connection: MemcachedConnection
+  ): Promise<void> {
+    const uniqueKeys = Array.from(new Set(keys))
+      .filter((key) => !isReservedKey(key))
+      .sort();
+    const previousIndexKeys = await this.getIndexKeyList(connection);
+    const { indexKeys, payloads } = this.buildIndexShards(uniqueKeys);
+
+    await Promise.all(
+      indexKeys.map((indexKey) =>
+        connection.client.set(
+          indexKey,
+          JSON.stringify(payloads[indexKey] ?? []),
+          {
+            expires: ONE_DAY_IN_SECONDS
+          }
+        )
+      )
+    );
+
+    await connection.client.set(
+      RESERVED_KEYS.INDEXES,
+      JSON.stringify(indexKeys),
+      {
+        expires: ONE_DAY_IN_SECONDS
+      }
+    );
+
+    const staleKeys = previousIndexKeys.filter(
+      (key) => !indexKeys.includes(key)
+    );
+
+    await Promise.all(
+      Array.from(new Set(staleKeys)).map((key) =>
+        connection.client.delete(key).catch(() => false)
+      )
+    );
+  }
+
+  private async getIndexKeyList(
+    connection: MemcachedConnection
+  ): Promise<string[]> {
+    const response = await connection.client.get(RESERVED_KEYS.INDEXES);
+    if (!response?.value) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(response.value.toString());
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return Array.from(
+        new Set(
+          parsed.filter(
+            (key): key is string =>
+              typeof key === "string" &&
+              key.startsWith(RESERVED_KEYS.SHARD_PREFIX)
+          )
+        )
+      );
+    } catch (error) {
+      logger.error("Erro ao ler indice de chaves", error as Error);
+      return [];
+    }
+  }
+
+  private async getKeysFromIndexKey(
+    connection: MemcachedConnection,
+    indexKey: string
+  ): Promise<string[]> {
+    const response = await connection.client.get(indexKey);
+    if (!response?.value) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(response.value.toString());
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed.filter(
+        (key): key is string => typeof key === "string" && !isReservedKey(key)
+      );
+    } catch (error) {
+      logger.error("Erro ao ler indice de chaves", error as Error);
+      return [];
+    }
+  }
+
+  private async getStoredKeysFromIndex(
+    connection: MemcachedConnection
+  ): Promise<string[]> {
+    const indexKeys = await this.getIndexKeyList(connection);
+    if (indexKeys.length === 0) {
+      return [];
+    }
+
+    const keyLists = await Promise.all(
+      indexKeys.map((indexKey) => this.getKeysFromIndexKey(connection, indexKey))
+    );
+
+    return Array.from(new Set(keyLists.flat())).sort();
   }
 
   private updateKeyIndex(
@@ -385,12 +546,7 @@ class KeyController {
       let keysToStore: string[] = <string[]>keys;
 
       if (!replace) {
-        const response = await connection.client.get(RESERVED_KEY);
-
-        const storedKeys = response?.value
-          ? JSON.parse(response?.value.toString())
-          : [];
-
+        const storedKeys = await this.getStoredKeysFromIndex(connection);
         const allKeys: string[] = Array.from(
           new Set([...storedKeys, ...keys])
         ).sort();
@@ -398,9 +554,7 @@ class KeyController {
         keysToStore = allKeys;
       }
 
-      await connection.client.set(RESERVED_KEY, JSON.stringify(keysToStore), {
-        expires: ONE_DAY_IN_SECONDS
-      });
+      await this.writeIndexShards(keysToStore, connection);
     };
 
     handler().catch((error) => logger.error(error));
