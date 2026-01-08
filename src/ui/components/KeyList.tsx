@@ -13,6 +13,7 @@ import { useConnections } from "../hooks/useConnections";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useModal } from "../hooks/useModal";
 import { toneButton } from "../utils/buttonTone";
+import { formatBytes } from "../utils/formatBytes";
 import CreateKeyModal from "./CreateKeyModal";
 import Disclaimer from "./Disclaimer";
 import EditKeyModal from "./EditKeyModal";
@@ -282,8 +283,9 @@ const KeyList = () => {
                     className={`px-6 py-4 truncate max-w-[300px] ${
                       darkMode ? "text-gray-300" : "text-gray-700"
                     }`}
+                    title={`${item.size} B`}
                   >
-                    {item.size}
+                    {formatBytes(item.size)}
                   </td>
                   <td className="px-6 py-4 text-right align-middle">
                     <div className="flex justify-end items-center gap-3">
