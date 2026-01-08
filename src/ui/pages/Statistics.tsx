@@ -71,9 +71,7 @@ export function Dashboard() {
             />
             <InfoCard
               title={t("keyList.title")}
-              value={
-                totalKeyCount === undefined ? "-" : `${totalKeyCount}`
-              }
+              value={totalKeyCount === undefined ? "-" : `${totalKeyCount}`}
               icon={<KeyIcon className="w-10 h-10 text-emerald-400" />}
             />
           </div>

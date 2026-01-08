@@ -69,6 +69,13 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   );
   const [serverData, setServerData] = useState<ServerData | null>(null);
   const [error] = useState("");
+  const activeConnectionIdRef = useRef(currentConnection.id);
+  const isLoadingKeysRef = useRef(false);
+  const loadingKeysConnectionRef = useRef<string>("");
+  const isRefreshingKeyCountRef = useRef(false);
+  const refreshingKeyCountConnectionRef = useRef<string>("");
+  const initialKeyLoadPendingRef = useRef(false);
+  const initialKeyLoadConnectionRef = useRef<string>("");
 
   const navigate = useNavigate();
   const { showAlert, showLoading, dismissLoading } = useModal();
@@ -92,6 +99,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     loadConnections();
   }, [loadConnections]);
 
+  useEffect(() => {
+    activeConnectionIdRef.current = currentConnection.id;
+  }, [currentConnection.id]);
+
   api.interceptors.response.use(
     (response) => response,
     (err) => {
@@ -103,13 +114,37 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   );
 
   const refreshKeyCount = useCallback(async () => {
+    const connectionId = activeConnectionIdRef.current;
+    if (!connectionId) return false;
+
+    // Skip if a count refresh is already in-flight for this connection
+    if (
+      isRefreshingKeyCountRef.current &&
+      refreshingKeyCountConnectionRef.current === connectionId
+    ) {
+      return false;
+    }
+
+    isRefreshingKeyCountRef.current = true;
+    refreshingKeyCountConnectionRef.current = connectionId;
+
     try {
-      const response = await api.get("/keys");
-      const payload = Array.isArray(response.data) ? response.data : [];
-      setTotalKeyCount(payload.length);
+      const response = await api.get("/keys/count");
+      const count = Number(response.data?.count);
+      if (!Number.isFinite(count)) {
+        throw new Error("Invalid key count response");
+      }
+      if (connectionId === activeConnectionIdRef.current) {
+        setTotalKeyCount(count);
+      }
       return true;
     } catch (_error) {
       return false;
+    } finally {
+      if (refreshingKeyCountConnectionRef.current === connectionId) {
+        isRefreshingKeyCountRef.current = false;
+        refreshingKeyCountConnectionRef.current = "";
+      }
     }
   }, []);
 
@@ -128,7 +163,30 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const handleLoadKeys = useCallback(
     async (showLoadingModal = true, search?: string, limit?: number) => {
-      const fetchKeys = async (attempt: number): Promise<boolean> => {
+      const connectionId = activeConnectionIdRef.current;
+      // Avoid stacking identical key fetches for the same connection context
+      if (
+        connectionId &&
+        isLoadingKeysRef.current &&
+        loadingKeysConnectionRef.current === connectionId
+      ) {
+        return true;
+      }
+
+      // Skip if a key-count refresh is already in-flight for this connection
+      if (
+        connectionId &&
+        isRefreshingKeyCountRef.current &&
+        refreshingKeyCountConnectionRef.current === connectionId &&
+        !(
+          initialKeyLoadPendingRef.current &&
+          initialKeyLoadConnectionRef.current === connectionId
+        )
+      ) {
+        return true;
+      }
+
+      const fetchKeys = async (attempt: number): Promise<KeyData[]> => {
         const response = await api.get("/keys", {
           params: {
             search: search || undefined,
@@ -143,22 +201,36 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
           return fetchKeys(1);
         }
 
-        const sortedKeys = [...payload].sort((a, b) =>
-          a.key.localeCompare(b.key)
-        );
-        setKeys(sortedKeys);
-        return true;
+        return [...payload].sort((a, b) => a.key.localeCompare(b.key));
       };
 
       try {
+        isLoadingKeysRef.current = true;
+        loadingKeysConnectionRef.current = connectionId;
         if (showLoadingModal) showLoading();
-        const result = await fetchKeys(0);
+        const sortedKeys = await fetchKeys(0);
+        if (connectionId === activeConnectionIdRef.current) {
+          setKeys(sortedKeys);
+        }
         if (showLoadingModal) dismissLoading();
-        return result;
+        return true;
       } catch (_error) {
         if (showLoadingModal) dismissLoading();
         showAlert(t("errors.loadKeys"), "error");
         return false;
+      } finally {
+        if (
+          initialKeyLoadPendingRef.current &&
+          initialKeyLoadConnectionRef.current === connectionId
+        ) {
+          initialKeyLoadPendingRef.current = false;
+          initialKeyLoadConnectionRef.current = "";
+          dismissLoading();
+        }
+        if (loadingKeysConnectionRef.current === connectionId) {
+          isLoadingKeysRef.current = false;
+          loadingKeysConnectionRef.current = "";
+        }
       }
     },
     // Only depends on alert/loading handlers; avoid re-creating each render
@@ -200,7 +272,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       });
       const { connectionId } = response.data;
       setConnectionId(connectionId);
+      activeConnectionIdRef.current = connectionId;
       setIsConnected(true);
+      initialKeyLoadPendingRef.current = true;
+      initialKeyLoadConnectionRef.current = connectionId;
 
       const newConnection = { ...params, id: connectionId };
       setCurrentConnection(newConnection);
@@ -211,8 +286,6 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         return updated;
       });
 
-      await handleLoadKeys(false, undefined, 5);
-      dismissLoading();
       return true;
     } catch (_error) {
       dismissLoading();
@@ -242,12 +315,13 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       }
 
       setConnectionId(connection.id);
+      activeConnectionIdRef.current = connection.id;
       await api.get("/connections");
 
       setIsConnected(true);
       setCurrentConnection(connection);
-      await handleLoadKeys(false, undefined, 5);
-      dismissLoading();
+      initialKeyLoadPendingRef.current = true;
+      initialKeyLoadConnectionRef.current = connection.id;
       return true;
     } catch (err) {
       dismissLoading();
@@ -317,6 +391,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const handleDisconnect = () => {
     clearConnectionId();
+    activeConnectionIdRef.current = "";
     setIsConnected(false);
     setKeys([]);
     setTotalKeyCount(undefined);

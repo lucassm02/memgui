@@ -28,10 +28,23 @@ class KeyController {
     const connection = connections.get(connectionId)!;
     const searchTerm =
       typeof request.query.search === "string" ? request.query.search : "";
-    const limitParam = Number(request.query.limit);
-    const limit =
-      Number.isFinite(limitParam) && limitParam > 0 ? limitParam : undefined;
-    const inflatedLimit = limit ? Math.ceil(limit * 1.25) : undefined;
+    const limitParam = request.query.limit;
+    if (typeof limitParam !== "string") {
+      response.status(400).json({
+        error: "Parâmetro limit obrigatório"
+      });
+      return;
+    }
+
+    const limit = Number(limitParam);
+    if (!Number.isFinite(limit) || limit <= 0) {
+      response.status(400).json({
+        error: "Parâmetro limit invalido"
+      });
+      return;
+    }
+
+    const inflatedLimit = Math.ceil(limit * 1.25);
 
     try {
       const serverUnixTime = await this.getServerUnixTime(connection);
@@ -131,6 +144,40 @@ class KeyController {
       });
     } catch (error) {
       const message = "Falha ao recuperar chaves";
+      logger.error(message, error);
+      response.status(500).json({
+        error: message
+      });
+    }
+  }
+
+  async count(request: Request, response: Response) {
+    try {
+      const connections = connectionManager();
+      const connectionId = <string>request.headers["x-connection-id"];
+      const connection = connections.get(connectionId)!;
+
+      const stats = await new Promise<Record<string, string>>(
+        (resolve, reject) => {
+          connection.client.stats((error, _server, serverStats) => {
+            if (error) {
+              return reject(error);
+            }
+
+            resolve(serverStats ?? {});
+          });
+        }
+      );
+
+      const count = Number.parseInt(stats.curr_items ?? "", 10);
+
+      if (!Number.isFinite(count)) {
+        throw new Error("Valor curr_items invalido");
+      }
+
+      response.json({ count });
+    } catch (error) {
+      const message = "Falha ao contar chaves";
       logger.error(message, error);
       response.status(500).json({
         error: message
@@ -291,9 +338,7 @@ class KeyController {
             const expiration = info ? info.expiration : 0;
 
             const timeUntilExpiration =
-              expiration > 0
-                ? Math.max(expiration - currentUnixTime, 0)
-                : 0;
+              expiration > 0 ? Math.max(expiration - currentUnixTime, 0) : 0;
 
             const valueToString = value.toString();
 

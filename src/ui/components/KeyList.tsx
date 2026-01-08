@@ -59,18 +59,33 @@ const KeyList = () => {
   }, [autoUpdate, searchTerm, maxItems]);
 
   const lastLoadParams = useRef<string>("");
+  const lastConnectionIdRef = useRef<string>("");
+  const skipNextLoadRef = useRef(true);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
+    if (lastConnectionIdRef.current !== currentConnection.id) {
+      lastConnectionIdRef.current = currentConnection.id;
+      skipNextLoadRef.current = true;
+      lastLoadParams.current = "";
+    }
+
+    if (!currentConnection.id) {
+      lastLoadParams.current = "";
+      return;
+    }
+
     debounceRef.current = setTimeout(() => {
-      const currentKey = `${searchTerm}|${maxItems}`;
+      const currentKey = `${currentConnection.id}|${searchTerm}|${maxItems}`;
       if (lastLoadParams.current === currentKey) return;
       lastLoadParams.current = currentKey;
 
-      const showLoading = searchTerm.trim() === "";
+      const showLoading =
+        searchTerm.trim() === "" && !skipNextLoadRef.current;
+      skipNextLoadRef.current = false;
       handleLoadKeys(showLoading, searchTerm, maxItems);
     }, 300);
 
@@ -79,7 +94,7 @@ const KeyList = () => {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [searchTerm, maxItems]);
+  }, [searchTerm, maxItems, currentConnection.id]);
 
   const filteredKeys = keys;
 
