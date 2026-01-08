@@ -34,6 +34,11 @@ type AuthIndexEventPayload = {
   clearAll?: boolean;
 };
 
+type IndexRefreshPayload = {
+  connection: MemcachedConnection;
+  keysInfo?: Key[];
+};
+
 class KeyController {
   private static indexUpdateEmitter = new EventEmitter();
   private static indexUpdateLocks = new Set<string>();
@@ -47,8 +52,8 @@ class KeyController {
       KeyController.indexUpdateListenerRegistered = true;
       KeyController.indexUpdateEmitter.on(
         INDEX_REFRESH_EVENT,
-        (connection: MemcachedConnection) => {
-          const connectionKey = this.getConnectionKey(connection);
+        (payload: IndexRefreshPayload) => {
+          const connectionKey = this.getConnectionKey(payload.connection);
           if (KeyController.indexUpdateLocks.has(connectionKey)) {
             return;
           }
@@ -57,7 +62,10 @@ class KeyController {
 
           const run = async () => {
             try {
-              await this.refreshIndexFromCachedump(connection);
+              await this.refreshIndexFromCachedump(
+                payload.connection,
+                payload.keysInfo
+              );
             } catch (error) {
               logger.error(
                 "Erro ao atualizar indice via cachedump",
@@ -220,16 +228,17 @@ class KeyController {
           : finalPayload.length;
 
         if (!searchTerm && nonReservedCount === 0) {
-          const fallbackPayload = await this.fetchKeysFromCachedump(
-            connection,
-            searchTerm,
-            limit,
-            inflatedLimit,
-            allowReservedKeys,
-            serverUnixTime
-          );
+          const { payload: fallbackPayload, keysInfo } =
+            await this.fetchKeysFromCachedump(
+              connection,
+              searchTerm,
+              limit,
+              inflatedLimit,
+              allowReservedKeys,
+              serverUnixTime
+            );
           response.json(fallbackPayload);
-          this.emitIndexRefresh(connection);
+          this.emitIndexRefresh(connection, keysInfo);
           return;
         }
         response.json(finalPayload);
@@ -238,16 +247,17 @@ class KeyController {
         return;
       }
 
-      const cachedumpPayload = await this.fetchKeysFromCachedump(
-        connection,
-        searchTerm,
-        limit,
-        inflatedLimit,
-        allowReservedKeys,
-        serverUnixTime
-      );
+      const { payload: cachedumpPayload, keysInfo } =
+        await this.fetchKeysFromCachedump(
+          connection,
+          searchTerm,
+          limit,
+          inflatedLimit,
+          allowReservedKeys,
+          serverUnixTime
+        );
       response.json(cachedumpPayload);
-      this.emitIndexRefresh(connection);
+      this.emitIndexRefresh(connection, keysInfo);
     } catch (error) {
       const message = "Falha ao recuperar chaves";
       logger.error(message, error);
@@ -407,13 +417,19 @@ class KeyController {
     }
   }
 
-  private emitIndexRefresh(connection: MemcachedConnection) {
+  private emitIndexRefresh(
+    connection: MemcachedConnection,
+    keysInfo?: Key[]
+  ) {
     if (connection.authentication) {
       return;
     }
 
     setImmediate(() => {
-      KeyController.indexUpdateEmitter.emit(INDEX_REFRESH_EVENT, connection);
+      KeyController.indexUpdateEmitter.emit(INDEX_REFRESH_EVENT, {
+        connection,
+        keysInfo
+      });
     });
   }
 
@@ -460,38 +476,17 @@ class KeyController {
     KeyController.authIndexQueues.set(queueKey, next);
   }
 
-  private async refreshIndexFromCachedump(connection: MemcachedConnection) {
+  private async refreshIndexFromCachedump(
+    connection: MemcachedConnection,
+    keysInfo?: Key[]
+  ) {
     if (connection.authentication) {
       return;
     }
 
-    const slabsOutput = await executeMemcachedCommand(
-      "stats slabs",
-      connection
-    );
-    const slabUsedMap = extractUsedChunksFromSlabs(slabsOutput);
-    const slabIds = Array.from(slabUsedMap.entries())
-      .filter(([, usedChunks]) => usedChunks > 0)
-      .map(([slabId]) => slabId);
-
-    const keysInfoArrays = await Promise.all(
-      slabIds.map(async (slabId) => {
-        try {
-          const dumpOutput = await executeMemcachedCommand(
-            `stats cachedump ${slabId} 1000`,
-            connection
-          );
-
-          return extractKeysInfoFromDump(dumpOutput, slabId);
-        } catch (error) {
-          logger.error(`Erro ao processar slab ${slabId}`, error as Error);
-          return [];
-        }
-      })
-    );
-
-    const keysInfo = keysInfoArrays.flat();
-    const cachedumpKeys = keysInfo
+    const cachedumpKeysInfo =
+      keysInfo ?? (await this.getCachedumpKeysInfo(connection));
+    const cachedumpKeys = cachedumpKeysInfo
       .map((info) => info.key)
       .filter((key) => !isReservedKey(key));
     const storedKeys = await this.getStoredKeysFromIndex(connection);
@@ -502,28 +497,23 @@ class KeyController {
     await this.writeIndexShards(allKeys, connection);
   }
 
-  private async fetchKeysFromCachedump(
-    connection: MemcachedConnection,
-    searchTerm: string,
-    limit: number,
-    inflatedLimit: number,
-    allowReservedKeys: boolean,
-    serverUnixTime: number
-  ): Promise<KeyPayload[]> {
+  private async getCachedumpKeysInfo(
+    connection: MemcachedConnection
+  ): Promise<Key[]> {
     const slabsOutput = await executeMemcachedCommand(
       "stats slabs",
       connection
     );
     const slabUsedMap = extractUsedChunksFromSlabs(slabsOutput);
-    const slabIds = Array.from(slabUsedMap.entries())
-      .filter(([, usedChunks]) => usedChunks > 0)
-      .map(([slabId]) => slabId);
+    const slabEntries = Array.from(slabUsedMap.entries()).filter(
+      ([, usedChunks]) => usedChunks > 0
+    );
 
     const keysInfoArrays = await Promise.all(
-      slabIds.map(async (slabId) => {
+      slabEntries.map(async ([slabId, usedChunks]) => {
         try {
           const dumpOutput = await executeMemcachedCommand(
-            `stats cachedump ${slabId} 1000`,
+            `stats cachedump ${slabId} ${usedChunks}`,
             connection
           );
 
@@ -535,14 +525,20 @@ class KeyController {
       })
     );
 
-    const keysInfo = keysInfoArrays.flat();
+    return keysInfoArrays.flat();
+  }
+
+  private async fetchKeysFromCachedump(
+    connection: MemcachedConnection,
+    searchTerm: string,
+    limit: number,
+    inflatedLimit: number,
+    allowReservedKeys: boolean,
+    serverUnixTime: number
+  ): Promise<{ payload: KeyPayload[]; keysInfo: Key[] }> {
+    const keysInfo = await this.getCachedumpKeysInfo(connection);
     const slabKeys = keysInfo.map((info) => info.key);
-    const allKeysRaw = Array.from(new Set(slabKeys));
-    const allKeys = (
-      allowReservedKeys
-        ? allKeysRaw
-        : allKeysRaw.filter((key) => !isReservedKey(key))
-    ).sort();
+    const allKeys = Array.from(new Set(slabKeys)).sort();
     const filteredKeys = this.applyKeyFilters(
       allKeys,
       searchTerm,
@@ -551,7 +547,7 @@ class KeyController {
     );
 
     if (filteredKeys.length === 0) {
-      return [];
+      return { payload: [], keysInfo };
     }
 
     const payload = await this.getKeysValue(
@@ -561,7 +557,7 @@ class KeyController {
       serverUnixTime
     );
 
-    return limit ? payload.slice(0, limit) : payload;
+    return { payload: limit ? payload.slice(0, limit) : payload, keysInfo };
   }
 
   private async getServerUnixTime(
