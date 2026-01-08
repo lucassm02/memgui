@@ -72,6 +72,7 @@
     "@uiw/react-codemirror": "^4.23.7",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "electron-updater": "^6.6.2",
     "express": "^4.21.2",
     "i18next": "^25.7.2",

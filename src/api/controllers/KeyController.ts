@@ -36,7 +36,7 @@ type AuthIndexEventPayload = {
 
 class KeyController {
   private static indexUpdateEmitter = new EventEmitter();
-  private static isIndexUpdateInProgress = false;
+  private static indexUpdateLocks = new Set<string>();
   private static indexUpdateListenerRegistered = false;
   private static authIndexEmitter = new EventEmitter();
   private static authIndexListenerRegistered = false;
@@ -48,11 +48,12 @@ class KeyController {
       KeyController.indexUpdateEmitter.on(
         INDEX_REFRESH_EVENT,
         (connection: MemcachedConnection) => {
-          if (KeyController.isIndexUpdateInProgress) {
+          const connectionKey = this.getConnectionKey(connection);
+          if (KeyController.indexUpdateLocks.has(connectionKey)) {
             return;
           }
 
-          KeyController.isIndexUpdateInProgress = true;
+          KeyController.indexUpdateLocks.add(connectionKey);
 
           const run = async () => {
             try {
@@ -63,7 +64,7 @@ class KeyController {
                 error as Error
               );
             } finally {
-              KeyController.isIndexUpdateInProgress = false;
+              KeyController.indexUpdateLocks.delete(connectionKey);
             }
           };
 
@@ -80,7 +81,11 @@ class KeyController {
         (payload: AuthIndexEventPayload) => {
           this.enqueueAuthIndexUpdate(payload.connection, async () => {
             if (payload.key) {
-              await this.updateKeyIndex([payload.key], payload.connection, false);
+              await this.updateKeyIndex(
+                [payload.key],
+                payload.connection,
+                false
+              );
             }
           });
         }
@@ -91,7 +96,11 @@ class KeyController {
         (payload: AuthIndexEventPayload) => {
           this.enqueueAuthIndexUpdate(payload.connection, async () => {
             if (payload.key) {
-              await this.updateKeyIndex([payload.key], payload.connection, false);
+              await this.updateKeyIndex(
+                [payload.key],
+                payload.connection,
+                false
+              );
             }
           });
         }
@@ -149,11 +158,26 @@ class KeyController {
         logger.error("Erro ao obter indice de chaves", err as Error);
       }
 
+      const allowReservedKeys = this.shouldExposeReservedKeys();
+      const reservedIndexKeys = allowReservedKeys
+        ? await this.getIndexKeyList(connection)
+        : [];
+      const listKeys = allowReservedKeys
+        ? Array.from(
+            new Set([
+              RESERVED_KEYS.INDEXES,
+              ...reservedIndexKeys,
+              ...storedKeys
+            ])
+          )
+        : storedKeys;
+
       if (connection.authentication) {
         const filteredKeys = this.applyKeyFilters(
-          storedKeys,
+          listKeys,
           searchTerm,
-          inflatedLimit
+          inflatedLimit,
+          allowReservedKeys
         );
         const payload = await this.getKeysValue(
           filteredKeys,
@@ -167,11 +191,15 @@ class KeyController {
         return;
       }
 
-      if (storedKeys.length > 0) {
+      const shouldBypassIndex =
+        storedKeys.length > 0 && !searchTerm && storedKeys.length < limit;
+
+      if (storedKeys.length > 0 && !shouldBypassIndex) {
         const filteredKeys = this.applyKeyFilters(
-          storedKeys,
+          listKeys,
           searchTerm,
-          inflatedLimit
+          inflatedLimit,
+          allowReservedKeys
         );
 
         if (filteredKeys.length === 0) {
@@ -187,63 +215,38 @@ class KeyController {
           serverUnixTime
         );
         const finalPayload = limit ? payload.slice(0, limit) : payload;
+        const nonReservedCount = allowReservedKeys
+          ? finalPayload.filter((item) => !isReservedKey(item.key)).length
+          : finalPayload.length;
+
+        if (!searchTerm && nonReservedCount === 0) {
+          const fallbackPayload = await this.fetchKeysFromCachedump(
+            connection,
+            searchTerm,
+            limit,
+            inflatedLimit,
+            allowReservedKeys,
+            serverUnixTime
+          );
+          response.json(fallbackPayload);
+          this.emitIndexRefresh(connection);
+          return;
+        }
         response.json(finalPayload);
         this.emitIndexRefresh(connection);
 
         return;
       }
 
-      const slabsOutput = await executeMemcachedCommand(
-        "stats slabs",
-        connection
-      );
-
-      const slabUsedMap = extractUsedChunksFromSlabs(slabsOutput);
-
-      const slabIds = Array.from(slabUsedMap.entries())
-        .filter(([, usedChunks]) => usedChunks > 0)
-        .map(([slabId]) => slabId);
-
-      const keysInfoArrays = await Promise.all(
-        slabIds.map(async (slabId) => {
-          try {
-            const dumpOutput = await executeMemcachedCommand(
-              `stats cachedump ${slabId} 1000`,
-              connection
-            );
-
-            return extractKeysInfoFromDump(dumpOutput, slabId);
-          } catch (error) {
-            logger.error(`Erro ao processar slab ${slabId}`, error as Error);
-            return [];
-          }
-        })
-      );
-
-      const keysInfo = keysInfoArrays.flat();
-      const slabKeys = keysInfo.map((info) => info.key);
-      const allKeys = Array.from(new Set([...slabKeys, ...storedKeys])).sort();
-      const filteredKeys = this.applyKeyFilters(
-        allKeys,
-        searchTerm,
-        inflatedLimit
-      );
-
-      if (filteredKeys.length === 0) {
-        response.json([]);
-        this.emitIndexRefresh(connection);
-        return;
-      }
-
-      const payload = await this.getKeysValue(
-        filteredKeys,
+      const cachedumpPayload = await this.fetchKeysFromCachedump(
         connection,
-        keysInfo,
+        searchTerm,
+        limit,
+        inflatedLimit,
+        allowReservedKeys,
         serverUnixTime
       );
-
-      const finalPayload = limit ? payload.slice(0, limit) : payload;
-      response.json(finalPayload);
+      response.json(cachedumpPayload);
       this.emitIndexRefresh(connection);
     } catch (error) {
       const message = "Falha ao recuperar chaves";
@@ -430,7 +433,7 @@ class KeyController {
     });
   }
 
-  private getAuthQueueKey(connection: MemcachedConnection) {
+  private getConnectionKey(connection: MemcachedConnection) {
     return connection.id || `${connection.host}:${connection.port}`;
   }
 
@@ -438,7 +441,7 @@ class KeyController {
     connection: MemcachedConnection,
     task: () => Promise<void>
   ) {
-    const queueKey = this.getAuthQueueKey(connection);
+    const queueKey = this.getConnectionKey(connection);
     const previous =
       KeyController.authIndexQueues.get(queueKey) ?? Promise.resolve();
 
@@ -499,6 +502,68 @@ class KeyController {
     await this.writeIndexShards(allKeys, connection);
   }
 
+  private async fetchKeysFromCachedump(
+    connection: MemcachedConnection,
+    searchTerm: string,
+    limit: number,
+    inflatedLimit: number,
+    allowReservedKeys: boolean,
+    serverUnixTime: number
+  ): Promise<KeyPayload[]> {
+    const slabsOutput = await executeMemcachedCommand(
+      "stats slabs",
+      connection
+    );
+    const slabUsedMap = extractUsedChunksFromSlabs(slabsOutput);
+    const slabIds = Array.from(slabUsedMap.entries())
+      .filter(([, usedChunks]) => usedChunks > 0)
+      .map(([slabId]) => slabId);
+
+    const keysInfoArrays = await Promise.all(
+      slabIds.map(async (slabId) => {
+        try {
+          const dumpOutput = await executeMemcachedCommand(
+            `stats cachedump ${slabId} 1000`,
+            connection
+          );
+
+          return extractKeysInfoFromDump(dumpOutput, slabId);
+        } catch (error) {
+          logger.error(`Erro ao processar slab ${slabId}`, error as Error);
+          return [];
+        }
+      })
+    );
+
+    const keysInfo = keysInfoArrays.flat();
+    const slabKeys = keysInfo.map((info) => info.key);
+    const allKeysRaw = Array.from(new Set(slabKeys));
+    const allKeys = (
+      allowReservedKeys
+        ? allKeysRaw
+        : allKeysRaw.filter((key) => !isReservedKey(key))
+    ).sort();
+    const filteredKeys = this.applyKeyFilters(
+      allKeys,
+      searchTerm,
+      inflatedLimit,
+      allowReservedKeys
+    );
+
+    if (filteredKeys.length === 0) {
+      return [];
+    }
+
+    const payload = await this.getKeysValue(
+      filteredKeys,
+      connection,
+      keysInfo,
+      serverUnixTime
+    );
+
+    return limit ? payload.slice(0, limit) : payload;
+  }
+
   private async getServerUnixTime(
     connection: MemcachedConnection
   ): Promise<number> {
@@ -529,6 +594,13 @@ class KeyController {
     return Math.floor(Date.now() / 1000);
   }
 
+  private shouldExposeReservedKeys(): boolean {
+    return (
+      process.env.MEMGUI_DEV === "true" &&
+      process.env.MEMGUI_DEBUG_RESERVED_KEYS === "true"
+    );
+  }
+
   private async getKeysValue(
     keys: string[],
     connection: MemcachedConnection,
@@ -538,7 +610,10 @@ class KeyController {
     const limit = pLimit(MAX_CONCURRENT_REQUESTS);
     const currentUnixTime =
       serverUnixTime ?? (await this.getServerUnixTime(connection));
-    const filteredKeys = keys.filter((key) => !isReservedKey(key));
+    const allowReservedKeys = this.shouldExposeReservedKeys();
+    const filteredKeys = allowReservedKeys
+      ? keys
+      : keys.filter((key) => !isReservedKey(key));
 
     const results = await Promise.all(
       filteredKeys.map((key) =>
@@ -578,7 +653,10 @@ class KeyController {
     );
 
     const validKeys = <KeyPayload[]>(
-      results.filter((item) => item !== null && !isReservedKey(item!.key))
+      results.filter(
+        (item) =>
+          item !== null && (allowReservedKeys || !isReservedKey(item!.key))
+      )
     );
 
     return validKeys;
@@ -807,9 +885,12 @@ class KeyController {
   private applyKeyFilters(
     keys: string[],
     search: string,
-    limit?: number
+    limit: number | undefined,
+    allowReservedKeys: boolean
   ): string[] {
-    let filtered = [...keys];
+    let filtered = allowReservedKeys
+      ? [...keys]
+      : keys.filter((key) => !isReservedKey(key));
 
     if (search) {
       try {

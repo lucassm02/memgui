@@ -1,5 +1,6 @@
 import http from "http";
 import path from "path";
+import dotenv from "dotenv";
 import express from "express";
 
 import yargs from "yargs";
@@ -10,8 +11,16 @@ import keysRoutes from "./api/routes/keys";
 import storagesRoutes from "./api/routes/storages";
 import { logger } from "./api/utils";
 
+function loadEnvFile() {
+  const envPath = path.resolve(process.cwd(), ".env");
+  dotenv.config({ path: envPath });
+}
+
+loadEnvFile();
+
 export async function server(port = 0, dev: boolean = false, host?: string) {
   try {
+    process.env.MEMGUI_DEV = dev ? "true" : "false";
     const app = express();
 
     app.use(express.json());
