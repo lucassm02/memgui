@@ -78,6 +78,31 @@ class KeyController {
         return;
       }
 
+      if (storedKeys.length > 0) {
+        const filteredKeys = this.applyKeyFilters(
+          storedKeys,
+          searchTerm,
+          inflatedLimit
+        );
+
+        if (filteredKeys.length === 0) {
+          response.json([]);
+          return;
+        }
+
+        const payload = await this.getKeysValue(
+          filteredKeys,
+          connection,
+          undefined,
+          false,
+          serverUnixTime
+        );
+        const finalPayload = limit ? payload.slice(0, limit) : payload;
+        response.json(finalPayload);
+
+        return;
+      }
+
       const slabsOutput = await executeMemcachedCommand(
         "stats slabs",
         connection
@@ -85,7 +110,9 @@ class KeyController {
 
       const slabUsedMap = extractUsedChunksFromSlabs(slabsOutput);
 
-      const slabIds = Array.from(slabUsedMap.keys());
+      const slabIds = Array.from(slabUsedMap.entries())
+        .filter(([, usedChunks]) => usedChunks > 0)
+        .map(([slabId]) => slabId);
 
       const keysInfoArrays = await Promise.all(
         slabIds.map(async (slabId) => {
@@ -128,18 +155,9 @@ class KeyController {
       const finalPayload = limit ? payload.slice(0, limit) : payload;
       response.json(finalPayload);
 
-      this.getKeysValue(
-        storedKeys,
-        connection,
-        keysInfo,
-        true,
-        serverUnixTime
-      ).catch((error) => {
-        logger.error(
-          "Erro ao atualizar índice de chaves em segundo plano",
-          error
-        );
-      });
+      if (allKeys.length > 0) {
+        this.updateKeyIndex(allKeys, connection, true);
+      }
     } catch (error) {
       const message = "Falha ao recuperar chaves";
       logger.error(message, error);
@@ -223,8 +241,13 @@ class KeyController {
 
       const connection = connections.get(connectionId)!;
 
-      await connection.client.delete(<string>request.params.key);
+      const key = <string>request.params.key;
+      await connection.client.delete(key);
       response.status(204).send();
+
+      if (!isReservedKey(key)) {
+        this.removeKeysFromIndex([key], connection);
+      }
     } catch (error) {
       const message = `Erro ao deletar chave ${request.params.key}`;
       logger.error(message, error);
@@ -241,6 +264,7 @@ class KeyController {
       const connection = connections.get(connectionId)!;
 
       await connection.client.flush();
+      this.updateKeyIndex([], connection, true);
 
       response.status(200).json({ status: "flushed" });
     } catch (error) {
@@ -321,6 +345,7 @@ class KeyController {
     const currentUnixTime =
       serverUnixTime ?? (await this.getServerUnixTime(connection));
     const filteredKeys = keys.filter((key) => !isReservedKey(key));
+    const missingKeys: string[] = [];
 
     const results = await Promise.all(
       filteredKeys.map((key) =>
@@ -329,6 +354,7 @@ class KeyController {
             const { value } = await connection.client.get(key);
 
             if (!value) {
+              missingKeys.push(key);
               return null;
             }
 
@@ -362,6 +388,10 @@ class KeyController {
     const validKeys = <KeyPayload[]>(
       results.filter((item) => item !== null && !isReservedKey(item!.key))
     );
+
+    if (missingKeys.length > 0) {
+      this.removeKeysFromIndex(missingKeys, connection);
+    }
 
     if (updateIndex) {
       this.updateKeyIndex(validKeys, connection);
@@ -560,6 +590,36 @@ class KeyController {
     handler().catch((error) => logger.error(error));
   }
 
+  private removeKeysFromIndex(
+    keysToRemove: string[],
+    connection: MemcachedConnection
+  ) {
+    if (keysToRemove.length === 0) {
+      return;
+    }
+
+    const handler = async (): Promise<void> => {
+      const storedKeys = await this.getStoredKeysFromIndex(connection);
+
+      if (storedKeys.length === 0) {
+        return;
+      }
+
+      const removalSet = new Set(
+        keysToRemove.filter((key) => !isReservedKey(key))
+      );
+      const nextKeys = storedKeys.filter((key) => !removalSet.has(key));
+
+      if (nextKeys.length === storedKeys.length) {
+        return;
+      }
+
+      await this.writeIndexShards(nextKeys, connection);
+    };
+
+    handler().catch((error) => logger.error(error));
+  }
+
   private applyKeyFilters(
     keys: string[],
     search: string,
@@ -587,3 +647,4 @@ class KeyController {
 }
 
 export const makeKeyController = () => new KeyController();
+
