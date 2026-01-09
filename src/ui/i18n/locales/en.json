@@ -53,12 +53,23 @@
       "address": "Server Address",
       "hostPlaceholder": "Ex: 192.168.1.1",
       "port": "Port",
+      "memcachedPort": "Port",
       "options": "Advanced Options",
       "username": "Username (optional)",
       "usernamePlaceholder": "Enter your username",
       "password": "Password (optional)",
       "passwordPlaceholder": "Enter your password",
-      "timeout": "Timeout in seconds (minimum 300)"
+      "timeout": "Timeout in seconds (minimum 300)",
+      "sshToggle": "Connect via SSH",
+      "sshHost": "SSH Host",
+      "sshHostPlaceholder": "Ex: server.example.com",
+      "sshPort": "SSH Port",
+      "sshUsername": "SSH Username",
+      "sshUsernamePlaceholder": "Enter your SSH username",
+      "sshPassword": "SSH Password (optional)",
+      "sshPasswordPlaceholder": "Enter your SSH password",
+      "sshPrivateKey": "SSH Private Key (optional)",
+      "sshPrivateKeyPlaceholder": "Paste your private key"
     },
     "authNote": "When authentication is enabled, only keys created in <strong>MemGUI</strong> can be managed due to a limitation of the authenticated Memcached protocol.",
     "cancel": "Cancel",
@@ -66,7 +77,8 @@
     "save": "Save Changes",
     "test": "Test",
     "testing": "Testing...",
-    "testSuccess": "Connection successful!"
+    "testSuccess": "Connection successful!",
+    "sshAuthRequired": "Provide an SSH password or private key."
   },
   "setupGuide": {
     "title": "Setup Guide",

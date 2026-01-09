@@ -53,12 +53,23 @@
       "address": "Endereço do Servidor",
       "hostPlaceholder": "Ex: 192.168.1.1",
       "port": "Porta",
+      "memcachedPort": "Porta",
       "options": "Opções Avançadas",
       "username": "Usuário (opcional)",
       "usernamePlaceholder": "Digite seu usuário",
       "password": "Senha (opcional)",
       "passwordPlaceholder": "Digite sua senha",
-      "timeout": "Timeout em segundos (mínimo 300)"
+      "timeout": "Timeout em segundos (mínimo 300)",
+      "sshToggle": "Conectar via SSH",
+      "sshHost": "Servidor SSH",
+      "sshHostPlaceholder": "Ex: servidor.exemplo.com",
+      "sshPort": "Porta SSH",
+      "sshUsername": "Usuário SSH",
+      "sshUsernamePlaceholder": "Digite seu usuário SSH",
+      "sshPassword": "Senha SSH (opcional)",
+      "sshPasswordPlaceholder": "Digite sua senha SSH",
+      "sshPrivateKey": "Chave privada SSH (opcional)",
+      "sshPrivateKeyPlaceholder": "Cole sua chave privada"
     },
     "authNote": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
     "cancel": "Cancelar",
@@ -66,7 +77,8 @@
     "save": "Salvar Alterações",
     "test": "Testar",
     "testing": "Testando...",
-    "testSuccess": "Conexão realizada com sucesso!"
+    "testSuccess": "Conexão realizada com sucesso!",
+    "sshAuthRequired": "Informe a senha ou a chave privada do SSH."
   },
   "setupGuide": {
     "title": "Guia de Configuração",

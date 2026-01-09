@@ -27,7 +27,12 @@ const defaultForm = {
   port: 11211,
   username: "",
   password: "",
-  timeout: 300
+  timeout: 300,
+  sshEnabled: false,
+  sshPort: 22,
+  sshUsername: "",
+  sshPassword: "",
+  sshPrivateKey: ""
 };
 
 const ConnectionModal = ({ onSubmit, onTest }: Props) => {
@@ -47,21 +52,59 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   const [isTesting, setIsTesting] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
 
+  const buildSshConfig = () => {
+    if (!formData.sshEnabled) return undefined;
+
+    const passwordValue = formData.sshPassword;
+    const privateKeyValue = formData.sshPrivateKey.trim();
+    const hasPassword = passwordValue.trim().length > 0;
+    const hasPrivateKey = privateKeyValue.length > 0;
+
+    return {
+      port: formData.sshPort,
+      username: formData.sshUsername.trim(),
+      ...(hasPassword ? { password: passwordValue } : {}),
+      ...(hasPrivateKey ? { privateKey: privateKeyValue } : {})
+    };
+  };
+
+  const isSshAuthMissing =
+    formData.sshEnabled &&
+    !formData.sshPassword.trim() &&
+    !formData.sshPrivateKey.trim();
+
+  const buildConnectionPayload = (): Omit<Connection, "id"> => ({
+    name: formData.name,
+    host: formData.host,
+    port: formData.port,
+    username: formData.username,
+    password: formData.password,
+    timeout: formData.timeout,
+    ssh: buildSshConfig()
+  });
+
   useEffect(() => {
     if (connectionModalIsOpen && connectionToEdit) {
+      const sshConfig = connectionToEdit.ssh;
       setFormData({
         name: connectionToEdit.name,
         host: connectionToEdit.host,
         port: connectionToEdit.port,
         username: connectionToEdit.username ?? "",
         password: connectionToEdit.password ?? "",
-        timeout: connectionToEdit.timeout ?? defaultForm.timeout
+        timeout: connectionToEdit.timeout ?? defaultForm.timeout,
+        sshEnabled: !!sshConfig,
+        sshPort: sshConfig?.port ?? defaultForm.sshPort,
+        sshUsername: sshConfig?.username ?? "",
+        sshPassword: sshConfig?.password ?? "",
+        sshPrivateKey: sshConfig?.privateKey ?? ""
       });
       setShowAdvanced(
         !!(
           connectionToEdit.username ||
           connectionToEdit.password ||
-          connectionToEdit.timeout !== defaultForm.timeout
+          connectionToEdit.timeout !== defaultForm.timeout ||
+          sshConfig
         )
       );
       return;
@@ -73,29 +116,39 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
     }
   }, [connectionModalIsOpen, connectionToEdit]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const getValue = (event: ChangeEvent<HTMLInputElement>) => {
-      if (event.target.type === "number") {
-        return Number(event.target.value);
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const target = event.target;
+    const value = (() => {
+      if (target instanceof HTMLInputElement) {
+        if (target.type === "number") {
+          return Number(target.value);
+        }
+
+        if (target.type === "checkbox") {
+          return target.checked;
+        }
       }
 
-      if (event.target.type === "checkbox") {
-        return event.target.checked;
-      }
-
-      return event.target.value;
-    };
+      return target.value;
+    })();
 
     setFormData((prev) => ({
       ...prev,
-      [event.target.name]: getValue(event)
+      [target.name]: value
     }));
   };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
+    if (formRef.current && !formRef.current.reportValidity()) return;
+    if (isSshAuthMissing) {
+      showAlert(t("connectionModal.sshAuthRequired"), "error");
+      return;
+    }
     onSubmit(
-      { ...formData, id: connectionToEdit?.id ?? "" },
+      { ...buildConnectionPayload(), id: connectionToEdit?.id ?? "" },
       { isEditing: isEditingConnection, previousConnection: connectionToEdit }
     );
     closeConnectionModal();
@@ -104,11 +157,13 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   const handleTestConnection = async () => {
     if (isTesting) return;
     if (formRef.current && !formRef.current.reportValidity()) return;
+    if (isSshAuthMissing) {
+      showAlert(t("connectionModal.sshAuthRequired"), "error");
+      return;
+    }
 
     setIsTesting(true);
-    const tested = await onTest({
-      ...formData
-    });
+    const tested = await onTest(buildConnectionPayload());
     if (tested) {
       showAlert(t("connectionModal.testSuccess"), "success");
     }
@@ -117,6 +172,16 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
 
   if (!connectionModalIsOpen) return null;
 
+  const hostLabel = formData.sshEnabled
+    ? t("connectionModal.fields.sshHost")
+    : t("connectionModal.fields.address");
+  const hostPlaceholder = formData.sshEnabled
+    ? t("connectionModal.fields.sshHostPlaceholder")
+    : t("connectionModal.fields.hostPlaceholder");
+  const memcachedPortLabel = formData.sshEnabled
+    ? t("connectionModal.fields.memcachedPort")
+    : t("connectionModal.fields.port");
+
   return (
     <div
       className={`fixed ${
@@ -124,7 +189,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
       } flex items-center justify-center bg-black/50 backdrop-blur-sm z-50`}
     >
       <div
-        className={`p-5 rounded-lg shadow-lg w-[90%] max-w-md border transition-all
+        className={`p-5 rounded-lg shadow-lg w-[90%] max-w-md border transition-all max-h-[90vh] overflow-y-auto
           ${darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"}`}
       >
         <div
@@ -167,32 +232,42 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
           </div>
 
           <div className="mt-4">
-            <label
-              className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-            >
-              {t("connectionModal.fields.address")}:
-            </label>
             <div className="flex gap-3">
-              <input
-                type="text"
-                name="host"
-                placeholder={t("connectionModal.fields.hostPlaceholder")}
-                value={formData.host}
-                onChange={handleChange}
-                className={`flex-1 p-2 rounded-md border focus:outline-none transition
-                  ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
-                required
-              />
-              <input
-                type="number"
-                name="port"
-                aria-label={t("connectionModal.fields.port")}
-                value={formData.port}
-                onChange={handleChange}
-                className={`w-24 p-2 rounded-md border focus:outline-none transition
-                  ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
-                required
-              />
+              <div className="flex-1">
+                <label
+                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {hostLabel}:
+                </label>
+                <input
+                  type="text"
+                  name="host"
+                  placeholder={hostPlaceholder}
+                  value={formData.host}
+                  onChange={handleChange}
+                  className={`mt-1 w-full p-2 rounded-md border focus:outline-none transition
+                    ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
+                  required
+                />
+              </div>
+              <div className="w-24">
+                <label
+                  className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                >
+                  {memcachedPortLabel}:
+                </label>
+                <input
+                  type="number"
+                  name="port"
+                  aria-label={memcachedPortLabel}
+                  title={memcachedPortLabel}
+                  value={formData.port}
+                  onChange={handleChange}
+                  className={`mt-1 w-full p-2 rounded-md border focus:outline-none transition
+                    ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
+                  required
+                />
+              </div>
             </div>
           </div>
 
@@ -266,6 +341,99 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
                     className="w-full p-2 rounded-md border"
                   />
                 </div>
+              </div>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="sshEnabled"
+                    checked={formData.sshEnabled}
+                    onChange={handleChange}
+                    className="h-4 w-4"
+                  />
+                  <span
+                    className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}
+                  >
+                    {t("connectionModal.fields.sshToggle")}
+                  </span>
+                </div>
+
+                {formData.sshEnabled && (
+                  <div className="space-y-3">
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.sshPort")}:
+                      </label>
+                      <input
+                        type="number"
+                        name="sshPort"
+                        value={formData.sshPort}
+                        min={1}
+                        max={65535}
+                        required={formData.sshEnabled}
+                        onChange={handleChange}
+                        className="w-full p-2 rounded-md border"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.sshUsername")}:
+                      </label>
+                      <input
+                        type="text"
+                        name="sshUsername"
+                        placeholder={t(
+                          "connectionModal.fields.sshUsernamePlaceholder"
+                        )}
+                        value={formData.sshUsername}
+                        required={formData.sshEnabled}
+                        onChange={handleChange}
+                        className={`w-full p-2 rounded-md border focus:outline-none transition
+                  ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.sshPassword")}:
+                      </label>
+                      <input
+                        type="password"
+                        name="sshPassword"
+                        placeholder={t(
+                          "connectionModal.fields.sshPasswordPlaceholder"
+                        )}
+                        value={formData.sshPassword}
+                        onChange={handleChange}
+                        className={`w-full p-2 rounded-md border focus:outline-none transition
+                  ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.sshPrivateKey")}:
+                      </label>
+                      <textarea
+                        name="sshPrivateKey"
+                        placeholder={t(
+                          "connectionModal.fields.sshPrivateKeyPlaceholder"
+                        )}
+                        value={formData.sshPrivateKey}
+                        onChange={handleChange}
+                        rows={4}
+                        className={`w-full p-2 rounded-md border focus:outline-none transition
+                  ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <Disclaimer className="mt-5 mb-5" showDisclaimer={true}>

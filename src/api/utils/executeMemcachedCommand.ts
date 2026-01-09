@@ -48,6 +48,19 @@ function buildBinaryStatsSlabsRequest(): Buffer {
   return buildBinaryRequest(0x10, key, Buffer.alloc(0), Buffer.alloc(0));
 }
 
+function resolveMemcachedEndpoint(connection: MemcachedConnection): {
+  host: string;
+  port: number;
+} {
+  if (connection.tunnel) {
+    return {
+      host: connection.tunnel.localHost,
+      port: connection.tunnel.localPort
+    };
+  }
+  return { host: connection.host, port: connection.port };
+}
+
 const DEFAULT_REQUEST_TIMEOUT_SECONDS = 5;
 
 function resolveTimeouts(timeoutSeconds: number): {
@@ -233,6 +246,7 @@ export async function executeMemcachedBinaryCommand(
       settled: false
     };
     const bufferState = { buffer: Buffer.alloc(0) };
+    const endpoint = resolveMemcachedEndpoint(connection);
     const { requestTimeoutMs, connectTimeoutMs } = resolveTimeouts(
       connection.connectionTimeout
     );
@@ -275,7 +289,7 @@ export async function executeMemcachedBinaryCommand(
       );
     }, connectTimeoutMs);
 
-    client.connect(connection.port, connection.host, () => {
+    client.connect(endpoint.port, endpoint.host, () => {
       if (state.settled) {
         return;
       }
@@ -412,6 +426,7 @@ export async function executeMemcachedAsciiCommand(
     const client = new net.Socket();
     client.setNoDelay(true);
     let dataBuffer = "";
+    const endpoint = resolveMemcachedEndpoint(connection);
     const { requestTimeoutMs, connectTimeoutMs } = resolveTimeouts(
       connection.connectionTimeout
     );
@@ -456,7 +471,7 @@ export async function executeMemcachedAsciiCommand(
       );
     }, connectTimeoutMs);
 
-    client.connect(connection.port, connection.host, () => {
+    client.connect(endpoint.port, endpoint.host, () => {
       if (settled) {
         return;
       }

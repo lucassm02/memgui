@@ -1,5 +1,12 @@
 import { createContext } from "react";
 
+export interface SshConfig {
+  port: number;
+  username: string;
+  password?: string;
+  privateKey?: string;
+}
+
 export interface Connection {
   name: string;
   host: string;
@@ -8,6 +15,7 @@ export interface Connection {
   password?: string;
   timeout: number;
   id: string;
+  ssh?: SshConfig;
 }
 
 export interface KeyData {

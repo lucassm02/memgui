@@ -6,6 +6,10 @@ import { Connection, ConnectionsContext, KeyData } from "../contexts";
 import { useStorage } from "../hooks";
 import { useModal } from "../hooks/useModal";
 import api, { clearConnectionId, setConnectionId } from "@/ui/services/api";
+import {
+  getConnectionIdentity,
+  isSameConnection as isSameConnectionByIdentity
+} from "@/ui/utils/connectionIdentity";
 
 export interface ServerData {
   status: string;
@@ -59,7 +63,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     id: "",
     timeout: 300,
     username: "",
-    password: ""
+    password: "",
+    ssh: undefined
   });
 
   const [isConnected, setIsConnected] = useState(false);
@@ -81,6 +86,24 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const { showAlert, showLoading, dismissLoading } = useModal();
   const { getKey, setKey, storageVersion } = useStorage();
   const { t } = useTranslation();
+
+  const getIdentity = (
+    connection: Omit<Connection, "id"> | Connection
+  ): string => getConnectionIdentity({ ...connection, id: "" } as Connection);
+
+  const buildSshPayload = (ssh?: Connection["ssh"]) => {
+    if (!ssh) return undefined;
+    const passwordValue = ssh.password;
+    const privateKeyValue = ssh.privateKey?.trim();
+    const hasPassword = !!passwordValue && passwordValue.trim().length > 0;
+    const hasPrivateKey = !!privateKeyValue;
+    return {
+      port: ssh.port,
+      username: ssh.username,
+      ...(hasPassword ? { password: passwordValue } : {}),
+      ...(hasPrivateKey ? { privateKey: privateKeyValue } : {})
+    };
+  };
 
   const loadConnections = useCallback(async () => {
     const data = await getKey("CONNECTIONS");
@@ -256,17 +279,23 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     try {
       showLoading();
 
-      const { host, port, timeout, password, username } = params;
+      const { host, port, timeout, password, username, ssh } = params;
 
       const authentication =
         username || password ? { password, username } : undefined;
+      const sshPayload = buildSshPayload(ssh);
 
-      const response = await api.post("/connections", {
+      const payload: Record<string, unknown> = {
         host,
         port,
         connectionTimeout: timeout,
         authentication
-      });
+      };
+      if (sshPayload) {
+        payload.ssh = sshPayload;
+      }
+
+      const response = await api.post("/connections", payload);
       const { connectionId } = response.data;
       setConnectionId(connectionId);
       activeConnectionIdRef.current = connectionId;
@@ -277,7 +306,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       const newConnection = { ...params, id: connectionId };
       setCurrentConnection(newConnection);
       setSavedConnections((prev) => {
-        const filtered = prev.filter((c) => c.host !== host || c.port !== port);
+        const filtered = prev.filter(
+          (c) => getIdentity(c) !== getIdentity(newConnection)
+        );
         const updated = [newConnection, ...filtered];
         setKey("CONNECTIONS", updated);
         return updated;
@@ -292,12 +323,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleChoseConnection = async (params: Omit<Connection, "id">) => {
-    const { host, name, port, timeout, password, username } = params;
+    const { host, name, port, timeout, password, username, ssh } = params;
     try {
       showLoading();
 
       const connection = savedConnections.find(
-        (c) => c.host === host && c.port === port
+        (c) => getIdentity(c) === getIdentity(params)
       );
 
       if (!connection || !connection.id) {
@@ -307,7 +338,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
           port,
           timeout,
           password,
-          username
+          username,
+          ssh
         });
       }
 
@@ -331,7 +363,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
           port,
           timeout,
           password,
-          username
+          username,
+          ssh
         });
       }
 
@@ -343,19 +376,25 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const handleTestConnection = async (
     params: Omit<Connection, "id">
   ): Promise<boolean> => {
-    const { host, port, timeout, password, username } = params;
+    const { host, port, timeout, password, username, ssh } = params;
     let tempConnectionId = "";
     try {
       showLoading();
       const authentication =
         username || password ? { password, username } : undefined;
+      const sshPayload = buildSshPayload(ssh);
 
-      const response = await api.post("/connections", {
+      const payload: Record<string, unknown> = {
         host,
         port,
         connectionTimeout: timeout,
         authentication
-      });
+      };
+      if (sshPayload) {
+        payload.ssh = sshPayload;
+      }
+
+      const response = await api.post("/connections", payload);
       tempConnectionId = response.data?.connectionId ?? "";
       if (tempConnectionId) {
         setConnectionId(tempConnectionId);
@@ -397,7 +436,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       port: 11211,
       name: "",
       id: "",
-      timeout: 300
+      timeout: 300,
+      ssh: undefined
     });
   };
 
@@ -486,30 +526,30 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     const connectionWithoutId = { ...updatedConnection, id: "" };
 
-    const isSameConnection = (conn?: Connection) => {
+    const isSameConnectionEntry = (conn?: Connection) => {
       if (!conn) return false;
       if (previousConnection?.id) {
         return conn.id === previousConnection.id;
       }
       if (previousConnection) {
-        return (
-          conn.host === previousConnection.host &&
-          conn.port === previousConnection.port
-        );
+        return isSameConnectionByIdentity(conn, previousConnection);
       }
-      return conn.id === updatedConnection.id;
+      return (
+        conn.id === updatedConnection.id ||
+        isSameConnectionByIdentity(conn, updatedConnection)
+      );
     };
 
     setSavedConnections((prev) => {
       const updatedList = prev.map((conn) =>
-        isSameConnection(conn) ? { ...connectionWithoutId } : conn
+        isSameConnectionEntry(conn) ? { ...connectionWithoutId } : conn
       );
-      const hasMatch = prev.some((conn) => isSameConnection(conn));
+      const hasMatch = prev.some((conn) => isSameConnectionEntry(conn));
       const nextList = hasMatch ? updatedList : [connectionWithoutId, ...prev];
 
       setKey("CONNECTIONS", nextList);
 
-      if (isSameConnection(currentConnection)) {
+      if (isSameConnectionEntry(currentConnection)) {
         setCurrentConnection(connectionWithoutId);
       }
 
@@ -520,7 +560,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const handleDeleteConnection = (connection: Connection) => {
     setSavedConnections((prev) => {
       const updated = prev.filter(
-        (c) => c.host !== connection.host || c.port !== connection.port
+        (c) => !isSameConnectionByIdentity(c, connection)
       );
       setKey("CONNECTIONS", updated);
       return updated;

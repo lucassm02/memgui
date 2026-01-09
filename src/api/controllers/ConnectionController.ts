@@ -15,6 +15,7 @@ import {
   touchConnection
 } from "@/api/utils";
 import { executeMemcachedCommand } from "@/api/utils/executeMemcachedCommand";
+import { closeSshTunnel, createSshTunnel } from "@/api/utils/sshTunnel";
 import { connectionSchema } from "@/api/utils/validationSchema";
 
 class ConnectionController {
@@ -93,11 +94,12 @@ class ConnectionController {
   async create(request: Request, response: Response): Promise<void> {
     const connections = connectionManager();
     let client: memjs.Client | null = null;
+    let tunnel: MemcachedConnection["tunnel"] | null = null;
 
     try {
       type Body = z.infer<typeof connectionSchema>["body"];
 
-      const { host, port, connectionTimeout, authentication } = <Body>(
+      const { host, port, connectionTimeout, authentication, ssh } = <Body>(
         request.body
       );
 
@@ -118,15 +120,40 @@ class ConnectionController {
         MEMCACHED_CONNECT_TIMEOUT_SECONDS
       );
 
-      const memcachedClient = memjs.Client.create(`${host}:${port}`, {
-        retries: 1,
-        username: auth?.username,
-        password: auth?.password,
-        timeout: connectionTimeout,
-        conntimeout: connectTimeoutSeconds,
-        keepAlive: true,
-        keepAliveDelay: MEMCACHED_KEEPALIVE_DELAY_SECONDS
-      });
+      const sshConfig = ssh
+        ? {
+            port: ssh.port,
+            username: ssh.username.trim(),
+            password: ssh.password,
+            privateKey: ssh.privateKey
+          }
+        : undefined;
+
+      if (sshConfig) {
+        tunnel = await createSshTunnel({
+          sshHost: host,
+          ssh: sshConfig,
+          remoteHost: "127.0.0.1",
+          remotePort: Number(port),
+          readyTimeoutMs: connectionTimeout * 1000
+        });
+      }
+
+      const targetHost = tunnel ? tunnel.localHost : host;
+      const targetPort = tunnel ? tunnel.localPort : port;
+
+      const memcachedClient = memjs.Client.create(
+        `${targetHost}:${targetPort}`,
+        {
+          retries: 1,
+          username: auth?.username,
+          password: auth?.password,
+          timeout: connectionTimeout,
+          conntimeout: connectTimeoutSeconds,
+          keepAlive: true,
+          keepAliveDelay: MEMCACHED_KEEPALIVE_DELAY_SECONDS
+        }
+      );
       client = memcachedClient;
 
       await new Promise<void>((resolve, reject) => {
@@ -143,7 +170,9 @@ class ConnectionController {
         lastActive: new Date(),
         authentication: auth,
         connectionTimeout,
-        timer: setTimeout(() => undefined, 0)
+        timer: setTimeout(() => undefined, 0),
+        ssh: sshConfig,
+        tunnel: tunnel ?? undefined
       };
 
       connections.set(connectionId, newConnection);
@@ -165,6 +194,9 @@ class ConnectionController {
     } catch (error) {
       if (client) {
         client.close();
+      }
+      if (tunnel) {
+        closeSshTunnel(tunnel);
       }
       const message = "Falha ao criar conexão";
       logger.error(message, error);

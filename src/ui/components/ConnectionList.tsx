@@ -19,6 +19,7 @@ import {
   useModal
 } from "@/ui/hooks";
 import { toneButton } from "@/ui/utils/buttonTone";
+import { getConnectionIdentity } from "@/ui/utils/connectionIdentity";
 
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();
@@ -56,8 +57,8 @@ const ConnectionList = () => {
     const matchById =
       currentConnection.id !== "" && connection.id === currentConnection.id;
     const matchByAddress =
-      connection.host === currentConnection.host &&
-      connection.port === currentConnection.port;
+      getConnectionIdentity(connection) ===
+      getConnectionIdentity(currentConnection);
 
     return matchById || matchByAddress;
   };
@@ -116,7 +117,7 @@ const ConnectionList = () => {
             const isActive = isConnectionActive(conn);
             return (
               <div
-                key={`${conn.host}-${conn.port}`}
+                key={getConnectionIdentity(conn)}
                 className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer
                   ${darkMode ? "border-gray-600 hover:bg-gray-700/40" : "border-gray-200 hover:bg-gray-50"}
                   ${

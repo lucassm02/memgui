@@ -14,7 +14,7 @@ export function checkConnectionMiddleware(
   const connectionId = <string>request.headers["x-connection-id"];
 
   if (!connectionId) {
-    response.status(400).json({ error: "ID de conex?o n?o fornecido" });
+    response.status(400).json({ error: "ID de conexao nao fornecido" });
     return;
   }
 
@@ -24,7 +24,7 @@ export function checkConnectionMiddleware(
   if (!connection) {
     response
       .status(401)
-      .json({ error: "N?o autorizado, conex?o n?o encontrada" });
+      .json({ error: "Nao autorizado, conexao nao encontrada" });
     return;
   }
 
@@ -33,8 +33,8 @@ export function checkConnectionMiddleware(
 
     next();
   } catch (error) {
-    logger.error(`Conex?o ${connectionId} inativa`, error as Error);
+    logger.error(`Conexao ${connectionId} inativa`, error as Error);
     closeConnection(connection);
-    response.status(503).json({ error: "Conex?o com Memcached perdida" });
+    response.status(503).json({ error: "Conexao com Memcached perdida" });
   }
 }

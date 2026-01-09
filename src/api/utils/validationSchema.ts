@@ -1,5 +1,42 @@
 import { z } from "zod";
 
+const sshSchema = z
+  .object({
+    port: z
+      .number({
+        required_error: "A porta SSH é obrigatória.",
+        invalid_type_error: "A porta SSH deve ser um número."
+      })
+      .int({ message: "A porta SSH deve ser um número inteiro." })
+      .min(1, { message: "A porta SSH deve ser no mínimo 1." })
+      .max(65535, { message: "A porta SSH deve ser no máximo 65535." }),
+    username: z
+      .string({
+        required_error: "O usuário SSH é obrigatório.",
+        invalid_type_error: "O usuário SSH deve ser uma string."
+      })
+      .trim()
+      .min(1, { message: "O usuário SSH não pode ser vazio." }),
+    password: z
+      .string({
+        invalid_type_error: "A senha SSH deve ser uma string."
+      })
+      .trim()
+      .min(1, { message: "A senha SSH não pode ser vazia." })
+      .optional(),
+    privateKey: z
+      .string({
+        invalid_type_error: "A chave privada deve ser uma string."
+      })
+      .trim()
+      .min(1, { message: "A chave privada não pode ser vazia." })
+      .optional()
+  })
+  .refine((value) => value.password || value.privateKey, {
+    message: "Informe a senha ou a chave privada do SSH.",
+    path: ["password"]
+  });
+
 const connectionSchema = z.object({
   body: z.object({
     host: z
@@ -29,6 +66,7 @@ const connectionSchema = z.object({
       .max(3600, {
         message: "O timeout de conexão deve ser no máximo 3600 segundos."
       }),
+    ssh: sshSchema.optional(),
     authentication: z
       .object({
         username: z

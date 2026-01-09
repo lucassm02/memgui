@@ -1,5 +1,6 @@
 import { logger } from "./logger";
 import { MemcachedConnection } from "@/api/types";
+import { closeSshTunnel } from "./sshTunnel";
 
 class ConnectionManager {
   private static instance: ConnectionManager;
@@ -58,6 +59,7 @@ export function touchConnection(connection: MemcachedConnection) {
 
 export function closeConnection(connection: MemcachedConnection) {
   clearTimeout(connection.timer);
+  closeSshTunnel(connection.tunnel);
   try {
     connection.client.close();
   } catch {
