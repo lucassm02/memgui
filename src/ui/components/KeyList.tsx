@@ -249,7 +249,7 @@ const KeyList = () => {
           </thead>
           <tbody>
             {filteredKeys.length > 0 ? (
-              filteredKeys.slice(0, maxItems).map((item) => (
+              filteredKeys.map((item) => (
                 <tr
                   key={item.key}
                   className={`border-b transition-all ${
