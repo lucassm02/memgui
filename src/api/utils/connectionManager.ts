@@ -1,3 +1,4 @@
+import { logger } from "./logger";
 import { MemcachedConnection } from "@/api/types";
 
 class ConnectionManager {
@@ -28,4 +29,39 @@ class ConnectionManager {
 
 export function connectionManager() {
   return ConnectionManager.getInstance();
+}
+
+const MIN_IDLE_TIMEOUT_MS = 1000;
+
+function resolveIdleTimeoutMs(connection: MemcachedConnection): number {
+  const timeoutSeconds = Number(connection.connectionTimeout);
+  if (!Number.isFinite(timeoutSeconds) || timeoutSeconds <= 0) {
+    return MIN_IDLE_TIMEOUT_MS;
+  }
+
+  return Math.max(MIN_IDLE_TIMEOUT_MS, Math.round(timeoutSeconds * 1000));
+}
+
+function resetConnectionTimer(connection: MemcachedConnection) {
+  clearTimeout(connection.timer);
+  const idleTimeoutMs = resolveIdleTimeoutMs(connection);
+  connection.timer = setTimeout(() => {
+    logger.info(`Conexao ${connection.id} expirada por inatividade`);
+    closeConnection(connection);
+  }, idleTimeoutMs);
+}
+
+export function touchConnection(connection: MemcachedConnection) {
+  connection.lastActive = new Date();
+  resetConnectionTimer(connection);
+}
+
+export function closeConnection(connection: MemcachedConnection) {
+  clearTimeout(connection.timer);
+  try {
+    connection.client.close();
+  } catch {
+    // Ignore close errors.
+  }
+  connectionManager().delete(connection.id);
 }

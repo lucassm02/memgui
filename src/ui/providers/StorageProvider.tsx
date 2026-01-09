@@ -101,10 +101,13 @@ export const StorageProvider = ({ children }: { children: ReactNode }) => {
 
   const enableEncryption = async (password: string): Promise<boolean> => {
     try {
-      const { data } = await api.post<EncryptionStatus>("/storages/encryption", {
-        enabled: true,
-        password
-      });
+      const { data } = await api.post<EncryptionStatus>(
+        "/storages/encryption",
+        {
+          enabled: true,
+          password
+        }
+      );
       if (!data.enabled) {
         return false;
       }
@@ -117,10 +120,13 @@ export const StorageProvider = ({ children }: { children: ReactNode }) => {
 
   const disableEncryption = async (password: string): Promise<boolean> => {
     try {
-      const { data } = await api.post<EncryptionStatus>("/storages/encryption", {
-        enabled: false,
-        password
-      });
+      const { data } = await api.post<EncryptionStatus>(
+        "/storages/encryption",
+        {
+          enabled: false,
+          password
+        }
+      );
       if (data.enabled) {
         return false;
       }

@@ -10,11 +10,7 @@
     "skipLibCheck": true,
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "esModuleInterop": false,
     "forceConsistentCasingInFileNames": true,
@@ -24,11 +20,7 @@
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": [
-    ".",
-    "./@types",
-    "../../vite.config.ts"
-  ],
+  "include": [".", "./@types", "../../vite.config.ts"],
   "exclude": [
     "../../node_modules",
     "../electron/**/*",

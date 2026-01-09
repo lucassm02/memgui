@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { connectionManager, logger } from "@/api/utils";
+import {
+  closeConnection,
+  connectionManager,
+  logger,
+  touchConnection
+} from "@/api/utils";
 
 export function checkConnectionMiddleware(
   request: Request,
@@ -9,7 +14,7 @@ export function checkConnectionMiddleware(
   const connectionId = <string>request.headers["x-connection-id"];
 
   if (!connectionId) {
-    response.status(400).json({ error: "ID de conexão não fornecido" });
+    response.status(400).json({ error: "ID de conex?o n?o fornecido" });
     return;
   }
 
@@ -19,24 +24,17 @@ export function checkConnectionMiddleware(
   if (!connection) {
     response
       .status(401)
-      .json({ error: "Não autorizado, conexão não encontrada" });
+      .json({ error: "N?o autorizado, conex?o n?o encontrada" });
     return;
   }
 
   try {
-    connection.lastActive = new Date();
-
-    clearTimeout(connection.timer);
-    connection.timer = setTimeout(() => {
-      logger.info(`Conexão ${connectionId} expirada por inatividade`);
-      connection.client.close();
-      connections.delete(connectionId);
-    }, connection.connectionTimeout * 1000);
+    touchConnection(connection);
 
     next();
   } catch (error) {
-    logger.error(`Conexão ${connectionId} inativa`, error as Error);
-    connections.delete(connectionId);
-    response.status(503).json({ error: "Conexão com Memcached perdida" });
+    logger.error(`Conex?o ${connectionId} inativa`, error as Error);
+    closeConnection(connection);
+    response.status(503).json({ error: "Conex?o com Memcached perdida" });
   }
 }

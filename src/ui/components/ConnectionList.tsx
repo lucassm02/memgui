@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   LinkIcon,
   PencilSquareIcon,
@@ -6,9 +5,11 @@ import {
   TrashIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
+import StorageSecurityPanel from "./StorageSecurityPanel";
 import { Connection } from "@/ui/contexts";
 import {
   useConnections,
@@ -18,7 +19,6 @@ import {
   useModal
 } from "@/ui/hooks";
 import { toneButton } from "@/ui/utils/buttonTone";
-import StorageSecurityPanel from "./StorageSecurityPanel";
 
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();

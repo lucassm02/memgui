@@ -2,10 +2,13 @@ import { z } from "zod";
 
 const connectionSchema = z.object({
   body: z.object({
-    host: z.string({
-      required_error: "O host é obrigatório.",
-      invalid_type_error: "O host deve ser uma string."
-    }),
+    host: z
+      .string({
+        required_error: "O host é obrigatório.",
+        invalid_type_error: "O host deve ser uma string."
+      })
+      .trim()
+      .min(1, { message: "O host nao pode ser vazio." }),
     port: z
       .number({
         required_error: "A porta é obrigatória.",
@@ -28,12 +31,17 @@ const connectionSchema = z.object({
       }),
     authentication: z
       .object({
-        username: z.string({
-          invalid_type_error: "O username deve ser uma string."
-        }),
-        password: z.string({
-          invalid_type_error: "A senha deve ser uma string."
-        })
+        username: z
+          .string({
+            invalid_type_error: "O username deve ser uma string."
+          })
+          .trim()
+          .min(1, { message: "O username nao pode ser vazio." }),
+        password: z
+          .string({
+            invalid_type_error: "A senha deve ser uma string."
+          })
+          .min(1, { message: "A senha nao pode ser vazia." })
       })
       .optional()
   })

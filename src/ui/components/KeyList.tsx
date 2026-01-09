@@ -84,8 +84,7 @@ const KeyList = () => {
       if (lastLoadParams.current === currentKey) return;
       lastLoadParams.current = currentKey;
 
-      const showLoading =
-        searchTerm.trim() === "" && !skipNextLoadRef.current;
+      const showLoading = searchTerm.trim() === "" && !skipNextLoadRef.current;
       skipNextLoadRef.current = false;
       handleLoadKeys(showLoading, searchTerm, maxItems);
     }, 300);
@@ -106,7 +105,9 @@ const KeyList = () => {
       confirmLabel: t("keyList.flushConfirmation.confirm"),
       cancelLabel: t("keyList.flushConfirmation.cancel"),
       type: "error",
-      onConfirm: handleFlushAllKeys
+      onConfirm: async () => {
+        await handleFlushAllKeys();
+      }
     });
   };
 

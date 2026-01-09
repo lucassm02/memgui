@@ -6,9 +6,13 @@ import z from "zod";
 
 import { MemcachedConnection } from "@/api/types";
 import {
+  closeConnection,
   connectionManager,
+  extractSlabInfoFromStatsSlabsOutput,
   logger,
-  extractSlabInfoFromStatsSlabsOutput
+  MEMCACHED_CONNECT_TIMEOUT_SECONDS,
+  MEMCACHED_KEEPALIVE_DELAY_SECONDS,
+  touchConnection
 } from "@/api/utils";
 import { executeMemcachedCommand } from "@/api/utils/executeMemcachedCommand";
 import { connectionSchema } from "@/api/utils/validationSchema";
@@ -20,11 +24,19 @@ class ConnectionController {
     try {
       const connections = connectionManager();
       const connectionId = <string>request.headers["x-connection-id"];
-      const connection = connections.get(connectionId)!;
 
-      connection.client.close();
-      clearTimeout(connection.timer);
-      connections.delete(connection.id);
+      if (!connectionId) {
+        response.status(400).json({ error: "ID de conexao nao fornecido" });
+        return;
+      }
+
+      const connection = connections.get(connectionId);
+      if (!connection) {
+        response.status(404).json({ error: "Conexao nao encontrada" });
+        return;
+      }
+
+      closeConnection(connection);
 
       logger.info("Conexão Memcached encerrada", {
         connectionId: connection.id
@@ -79,9 +91,10 @@ class ConnectionController {
   }
 
   async create(request: Request, response: Response): Promise<void> {
-    try {
-      const connections = connectionManager();
+    const connections = connectionManager();
+    let client: memjs.Client | null = null;
 
+    try {
       type Body = z.infer<typeof connectionSchema>["body"];
 
       const { host, port, connectionTimeout, authentication } = <Body>(
@@ -90,33 +103,51 @@ class ConnectionController {
 
       const connectionId = randomUUID();
 
-      const client = memjs.Client.create(`${host}:${port}`, {
+      const auth =
+        authentication &&
+        authentication.username.trim().length > 0 &&
+        authentication.password.length > 0
+          ? {
+              username: authentication.username.trim(),
+              password: authentication.password
+            }
+          : undefined;
+
+      const connectTimeoutSeconds = Math.min(
+        connectionTimeout,
+        MEMCACHED_CONNECT_TIMEOUT_SECONDS
+      );
+
+      const memcachedClient = memjs.Client.create(`${host}:${port}`, {
         retries: 1,
-        username: authentication?.username,
-        password: authentication?.password,
-        timeout: connectionTimeout
+        username: auth?.username,
+        password: auth?.password,
+        timeout: connectionTimeout,
+        conntimeout: connectTimeoutSeconds,
+        keepAlive: true,
+        keepAliveDelay: MEMCACHED_KEEPALIVE_DELAY_SECONDS
       });
+      client = memcachedClient;
 
       await new Promise<void>((resolve, reject) => {
-        client.stats((error: unknown) => (error ? reject(error) : resolve()));
+        memcachedClient.stats((error: unknown) =>
+          error ? reject(error) : resolve()
+        );
       });
 
       const newConnection: MemcachedConnection = {
         id: connectionId,
         host,
         port: Number(port),
-        client,
+        client: memcachedClient,
         lastActive: new Date(),
-        authentication,
+        authentication: auth,
         connectionTimeout,
-        timer: setTimeout(() => {
-          logger.info(`Conexão ${connectionId} expirada por inatividade`);
-          client.close();
-          connections.delete(connectionId);
-        }, connectionTimeout * 1000)
+        timer: setTimeout(() => undefined, 0)
       };
 
       connections.set(connectionId, newConnection);
+      touchConnection(newConnection);
 
       logger.info("Nova conexão Memcached estabelecida", {
         connectionId,
@@ -132,6 +163,9 @@ class ConnectionController {
         timestamp: newConnection.lastActive
       });
     } catch (error) {
+      if (client) {
+        client.close();
+      }
       const message = "Falha ao criar conexão";
       logger.error(message, error);
       response.status(500).json({

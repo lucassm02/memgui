@@ -65,12 +65,7 @@ function resolveDataDir(): string {
   }
 
   if (process.platform === "darwin") {
-    return path.join(
-      os.homedir(),
-      "Library",
-      "Application Support",
-      APP_NAME
-    );
+    return path.join(os.homedir(), "Library", "Application Support", APP_NAME);
   }
 
   const xdgConfigHome = process.env.XDG_CONFIG_HOME;
@@ -391,7 +386,10 @@ class StorageController {
     return derived;
   }
 
-  private async deriveKey(password: string, salt: Buffer): Promise<{
+  private async deriveKey(
+    password: string,
+    salt: Buffer
+  ): Promise<{
     key: Buffer;
     verifier: Buffer;
   }> {

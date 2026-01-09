@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import net from "net";
+import { MEMCACHED_CONNECT_TIMEOUT_SECONDS } from "./constants";
 import { MemcachedConnection } from "@/api/types";
 
 // ===================================
@@ -47,25 +48,60 @@ function buildBinaryStatsSlabsRequest(): Buffer {
   return buildBinaryRequest(0x10, key, Buffer.alloc(0), Buffer.alloc(0));
 }
 
-/**
- * Sets up a timeout for the operation.
- */
-function setupTimeout(
-  timeoutSeconds: number,
-  client: net.Socket,
+const DEFAULT_REQUEST_TIMEOUT_SECONDS = 5;
+
+function resolveTimeouts(timeoutSeconds: number): {
+  requestTimeoutMs: number;
+  connectTimeoutMs: number;
+} {
+  const safeTimeoutSeconds =
+    Number.isFinite(timeoutSeconds) && timeoutSeconds > 0
+      ? timeoutSeconds
+      : DEFAULT_REQUEST_TIMEOUT_SECONDS;
+  const requestTimeoutMs = Math.round(safeTimeoutSeconds * 1000);
+  const connectTimeoutMs = Math.min(
+    requestTimeoutMs,
+    MEMCACHED_CONNECT_TIMEOUT_SECONDS * 1000
+  );
+
+  return { requestTimeoutMs, connectTimeoutMs };
+}
+
+function startRequestTimeout(
+  timeoutMs: number,
   onTimeout: (err: Error) => void
 ): NodeJS.Timeout {
   return setTimeout(() => {
-    client.destroy();
-    onTimeout(
-      new Error(`Timeout: No response within ${timeoutSeconds * 1000}ms`)
-    );
-  }, timeoutSeconds * 1000);
+    onTimeout(new Error(`Timeout: No response within ${timeoutMs}ms`));
+  }, timeoutMs);
+}
+
+function refreshTimeout(timeout: NodeJS.Timeout | null): void {
+  if (timeout && typeof timeout.refresh === "function") {
+    timeout.refresh();
+  }
 }
 
 /**
  * Handles the authentication response.
  */
+function extractBinaryErrorMessage(responsePacket: Buffer): string | null {
+  const totalBodyLength = responsePacket.readUInt32BE(8);
+  if (totalBodyLength === 0) {
+    return null;
+  }
+
+  const extrasLength = responsePacket.readUInt8(4);
+  const keyLength = responsePacket.readUInt16BE(2);
+  const valueLength = totalBodyLength - extrasLength - keyLength;
+  if (valueLength <= 0) {
+    return null;
+  }
+
+  const valueStart = 24 + extrasLength + keyLength;
+  return responsePacket.slice(valueStart, valueStart + valueLength).toString();
+}
+
 function handleAuthResponse(
   client: net.Socket,
   responsePacket: Buffer,
@@ -74,7 +110,12 @@ function handleAuthResponse(
 ): void {
   const status = responsePacket.readUInt16BE(6);
   if (status !== 0) {
-    reject(new Error(`Authentication failed with status: ${status}`));
+    const detail = extractBinaryErrorMessage(responsePacket);
+    reject(
+      new Error(
+        `Authentication failed with status ${status}${detail ? `: ${detail}` : ""}`
+      )
+    );
     return;
   }
   state.stage = "command";
@@ -86,30 +127,45 @@ function handleAuthResponse(
  * Handles the binary response for the "stats slabs" command.
  */
 function handleBinaryStatsSlabsResponse(
-  client: net.Socket,
   responsePacket: Buffer,
   stats: Record<string, string>,
   resolve: (value: Record<string, string>) => void,
-  reject: (err: Error) => void,
-  timeout: NodeJS.Timeout
+  reject: (err: Error) => void
 ): void {
+  const status = responsePacket.readUInt16BE(6);
   const totalBodyLength = responsePacket.readUInt32BE(8);
+  if (status !== 0) {
+    const detail = extractBinaryErrorMessage(responsePacket);
+    reject(
+      new Error(
+        `Stats request failed with status ${status}${detail ? `: ${detail}` : ""}`
+      )
+    );
+    return;
+  }
+
   if (totalBodyLength === 0) {
-    clearTimeout(timeout);
-    client.destroy();
     resolve(stats);
     return;
   }
 
-  if (responsePacket.toString().toUpperCase() === "NOT FOUND") {
-    reject(new Error("Comando inválido"));
+  const extrasLength = responsePacket.readUInt8(4);
+  const keyLength = responsePacket.readUInt16BE(2);
+  const valueLength = totalBodyLength - extrasLength - keyLength;
+  if (valueLength < 0) {
+    reject(new Error("Invalid response body length"));
     return;
   }
 
-  const keyLength = responsePacket.readUInt16BE(2);
-  const statName = responsePacket.slice(24, 24 + keyLength).toString();
-  const statValue = responsePacket.slice(24 + keyLength).toString();
-  stats[statName] = statValue;
+  const keyStart = 24 + extrasLength;
+  const valueStart = keyStart + keyLength;
+  const statName = responsePacket.slice(keyStart, valueStart).toString();
+  const statValue = responsePacket
+    .slice(valueStart, valueStart + valueLength)
+    .toString();
+  if (statName) {
+    stats[statName] = statValue;
+  }
 }
 
 /**
@@ -117,19 +173,16 @@ function handleBinaryStatsSlabsResponse(
  */
 function handleBinaryResponseData(
   client: net.Socket,
-  data: Buffer,
+  bufferState: { buffer: Buffer },
   stats: Record<string, string>,
-  timeout: NodeJS.Timeout,
-  state: { stage: string },
+  state: { stage: string; settled: boolean },
   resolve: (value: Record<string, string>) => void,
   reject: (err: Error) => void
 ): void {
-  let buffer = data;
+  let buffer = bufferState.buffer;
   while (buffer.length >= 24) {
     const magic = buffer.readUInt8(0);
     if (magic !== 0x81) {
-      clearTimeout(timeout);
-      client.destroy();
       reject(new Error(`Invalid response (magic ${magic})`));
       return;
     }
@@ -140,17 +193,19 @@ function handleBinaryResponseData(
     buffer = buffer.slice(responseLength);
     if (state.stage === "auth") {
       handleAuthResponse(client, responsePacket, state, reject);
+      if (state.settled) {
+        bufferState.buffer = buffer;
+        return;
+      }
     } else if (state.stage === "command") {
-      handleBinaryStatsSlabsResponse(
-        client,
-        responsePacket,
-        stats,
-        resolve,
-        reject,
-        timeout
-      );
+      handleBinaryStatsSlabsResponse(responsePacket, stats, resolve, reject);
+      if (state.settled) {
+        bufferState.buffer = buffer;
+        return;
+      }
     }
   }
+  bufferState.buffer = buffer;
 }
 
 /**
@@ -172,9 +227,63 @@ export async function executeMemcachedBinaryCommand(
     }
     const stats: Record<string, string> = {};
     const client = new net.Socket();
-    const state = { stage: connection.authentication ? "auth" : "command" };
-    const timeout = setupTimeout(connection.connectionTimeout, client, reject);
+    client.setNoDelay(true);
+    const state = {
+      stage: connection.authentication ? "auth" : "command",
+      settled: false
+    };
+    const bufferState = { buffer: Buffer.alloc(0) };
+    const { requestTimeoutMs, connectTimeoutMs } = resolveTimeouts(
+      connection.connectionTimeout
+    );
+    let requestTimeout: NodeJS.Timeout | null = null;
+    let connectTimeout: NodeJS.Timeout | null = null;
+
+    const cleanup = () => {
+      if (connectTimeout) {
+        clearTimeout(connectTimeout);
+        connectTimeout = null;
+      }
+      if (requestTimeout) {
+        clearTimeout(requestTimeout);
+        requestTimeout = null;
+      }
+    };
+
+    const resolveWith = (result: Record<string, string>) => {
+      if (state.settled) {
+        return;
+      }
+      state.settled = true;
+      cleanup();
+      client.destroy();
+      resolve(result);
+    };
+
+    const rejectWith = (error: Error) => {
+      if (state.settled) {
+        return;
+      }
+      state.settled = true;
+      cleanup();
+      client.destroy();
+      reject(error);
+    };
+    connectTimeout = setTimeout(() => {
+      rejectWith(
+        new Error(`Timeout: Could not connect within ${connectTimeoutMs}ms`)
+      );
+    }, connectTimeoutMs);
+
     client.connect(connection.port, connection.host, () => {
+      if (state.settled) {
+        return;
+      }
+      if (connectTimeout) {
+        clearTimeout(connectTimeout);
+        connectTimeout = null;
+      }
+      requestTimeout = startRequestTimeout(requestTimeoutMs, rejectWith);
       if (state.stage === "auth" && connection.authentication) {
         const authRequest = buildSaslAuthRequest(
           connection.authentication.username,
@@ -187,26 +296,28 @@ export async function executeMemcachedBinaryCommand(
       }
     });
     client.on("data", (chunk: Buffer) => {
+      refreshTimeout(requestTimeout);
+      bufferState.buffer = Buffer.concat([bufferState.buffer, chunk]);
       try {
         handleBinaryResponseData(
           client,
-          chunk,
+          bufferState,
           stats,
-          timeout,
           state,
-          resolve,
-          reject
+          resolveWith,
+          rejectWith
         );
       } catch (err) {
-        clearTimeout(timeout);
-        client.destroy();
-        reject(err as Error);
+        rejectWith(err as Error);
+      }
+    });
+    client.on("close", () => {
+      if (!state.settled) {
+        rejectWith(new Error("Connection closed before response"));
       }
     });
     client.on("error", (error: Error) => {
-      clearTimeout(timeout);
-      client.destroy();
-      reject(error);
+      rejectWith(error);
     });
   });
 }
@@ -232,6 +343,16 @@ function getAsciiCommandType(
   if (arg.startsWith("slabs")) return "STATS_SLABS";
   if (arg.startsWith("cachedump")) return "STATS_CACHEDUMP";
   throw new Error("Unsupported ASCII command.");
+}
+
+function getAsciiErrorLine(data: string): string | null {
+  const lines = data.split("\r\n");
+  for (const line of lines) {
+    if (line.startsWith("ERROR")) return line;
+    if (line.startsWith("CLIENT_ERROR")) return line;
+    if (line.startsWith("SERVER_ERROR")) return line;
+  }
+  return null;
 }
 
 /**
@@ -280,18 +401,70 @@ export async function executeMemcachedAsciiCommand(
   command: string
 ): Promise<Record<string, string>> {
   return new Promise((resolve, reject) => {
+    let commandType: "STATS_SLABS" | "STATS_CACHEDUMP";
+    try {
+      commandType = getAsciiCommandType(command);
+    } catch (err) {
+      reject(err as Error);
+      return;
+    }
+
     const client = new net.Socket();
+    client.setNoDelay(true);
     let dataBuffer = "";
-    const timeout = setTimeout(() => {
+    const { requestTimeoutMs, connectTimeoutMs } = resolveTimeouts(
+      connection.connectionTimeout
+    );
+    let requestTimeout: NodeJS.Timeout | null = null;
+    let connectTimeout: NodeJS.Timeout | null = null;
+    let settled = false;
+
+    const cleanup = () => {
+      if (connectTimeout) {
+        clearTimeout(connectTimeout);
+        connectTimeout = null;
+      }
+      if (requestTimeout) {
+        clearTimeout(requestTimeout);
+        requestTimeout = null;
+      }
+    };
+
+    const resolveWith = (result: Record<string, string>) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      cleanup();
       client.destroy();
-      reject(
-        new Error(
-          `Timeout: No response within ${connection.connectionTimeout * 1000}ms`
-        )
+      resolve(result);
+    };
+
+    const rejectWith = (error: Error) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      cleanup();
+      client.destroy();
+      reject(error);
+    };
+
+    connectTimeout = setTimeout(() => {
+      rejectWith(
+        new Error(`Timeout: Could not connect within ${connectTimeoutMs}ms`)
       );
-    }, connection.connectionTimeout * 1000);
+    }, connectTimeoutMs);
 
     client.connect(connection.port, connection.host, () => {
+      if (settled) {
+        return;
+      }
+      if (connectTimeout) {
+        clearTimeout(connectTimeout);
+        connectTimeout = null;
+      }
+      requestTimeout = startRequestTimeout(requestTimeoutMs, rejectWith);
       let commandStr = command.trim();
       if (!commandStr.endsWith("\r\n")) {
         commandStr += "\r\n";
@@ -300,30 +473,30 @@ export async function executeMemcachedAsciiCommand(
     });
 
     client.on("data", (chunk: Buffer) => {
+      refreshTimeout(requestTimeout);
       dataBuffer += chunk.toString();
+      const errorLine = getAsciiErrorLine(dataBuffer);
+      if (errorLine) {
+        rejectWith(new Error(errorLine));
+        return;
+      }
       if (dataBuffer.includes("END\r\n")) {
-        clearTimeout(timeout);
-        client.destroy();
-        let commandType: "STATS_SLABS" | "STATS_CACHEDUMP";
-        try {
-          commandType = getAsciiCommandType(command);
-        } catch (err) {
-          return reject(err as Error);
-        }
-        let result: any;
-        if (commandType === "STATS_SLABS") {
-          result = handleAsciiStatsSlabsResponse(dataBuffer);
-        } else {
-          result = handleAsciiStatsCachedumpResponse(dataBuffer);
-        }
-        resolve(result);
+        const result =
+          commandType === "STATS_SLABS"
+            ? handleAsciiStatsSlabsResponse(dataBuffer)
+            : handleAsciiStatsCachedumpResponse(dataBuffer);
+        resolveWith(result);
+      }
+    });
+
+    client.on("close", () => {
+      if (!settled) {
+        rejectWith(new Error("Connection closed before response"));
       }
     });
 
     client.on("error", (err: Error) => {
-      clearTimeout(timeout);
-      client.destroy();
-      reject(err);
+      rejectWith(err);
     });
   });
 }

@@ -1,9 +1,9 @@
-import { useState } from "react";
 import {
   LockClosedIcon,
   LockOpenIcon,
   ShieldCheckIcon
 } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useDarkMode, useModal, useStorage } from "@/ui/hooks";
@@ -105,9 +105,7 @@ const StorageSecurityPanel = () => {
   return (
     <div
       className={`mt-6 p-4 rounded-xl border ${
-        darkMode
-          ? "bg-gray-900/40 border-gray-700"
-          : "bg-white border-gray-200"
+        darkMode ? "bg-gray-900/40 border-gray-700" : "bg-white border-gray-200"
       }`}
     >
       <div className="flex items-start justify-between gap-3">

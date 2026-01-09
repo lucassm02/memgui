@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { LockClosedIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useDarkMode, useElectron, useStorage } from "@/ui/hooks";
@@ -45,7 +45,9 @@ const StorageUnlockModal = () => {
     >
       <div
         className={`w-full max-w-md rounded-xl border p-6 shadow-2xl ${
-          darkMode ? "bg-gray-900 text-white border-gray-700" : "bg-white text-gray-900 border-gray-200"
+          darkMode
+            ? "bg-gray-900 text-white border-gray-700"
+            : "bg-white text-gray-900 border-gray-200"
         }`}
       >
         <div className="flex items-start gap-3">
@@ -110,9 +112,7 @@ const StorageUnlockModal = () => {
             />
           </label>
 
-          {error && (
-            <p className="text-sm text-red-400">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-400">{error}</p>}
 
           <button
             type="submit"
@@ -121,7 +121,9 @@ const StorageUnlockModal = () => {
             }`}
             disabled={isSubmitting}
           >
-            {isSubmitting ? t("common.loading") : t("storageSecurity.unlockButton")}
+            {isSubmitting
+              ? t("common.loading")
+              : t("storageSecurity.unlockButton")}
           </button>
         </form>
       </div>
