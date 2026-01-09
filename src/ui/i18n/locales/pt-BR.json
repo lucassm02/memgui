@@ -53,19 +53,20 @@
       "address": "Endereço do Servidor",
       "hostPlaceholder": "Ex: 192.168.1.1",
       "port": "Porta",
-      "memcachedPort": "Porta",
+      "memcachedPort": "Porta do Memcached",
       "options": "Opções Avançadas",
       "username": "Usuário (opcional)",
       "usernamePlaceholder": "Digite seu usuário",
       "password": "Senha (opcional)",
       "passwordPlaceholder": "Digite sua senha",
+      "authToggle": "Usar autentica??o",
       "timeout": "Timeout em segundos (mínimo 300)",
       "sshToggle": "Conectar via SSH",
       "sshHost": "Servidor SSH",
       "sshHostPlaceholder": "Ex: servidor.exemplo.com",
       "sshPort": "Porta SSH",
-      "sshUsername": "Usuário SSH",
-      "sshUsernamePlaceholder": "Digite seu usuário SSH",
+      "sshUsername": "Usu?rio SSH",
+      "sshUsernamePlaceholder": "Digite seu usu?rio SSH",
       "sshPassword": "Senha SSH (opcional)",
       "sshPasswordPlaceholder": "Digite sua senha SSH",
       "sshPrivateKey": "Chave privada SSH (opcional)",
@@ -78,7 +79,14 @@
     "test": "Testar",
     "testing": "Testando...",
     "testSuccess": "Conexão realizada com sucesso!",
-    "sshAuthRequired": "Informe a senha ou a chave privada do SSH."
+    "sshAuthRequired": "Informe a senha ou a chave privada do SSH.",
+    "sshStorageWarning": "Credenciais SSH n?o ser?o salvas sem a criptografia do storage.",
+    "sshHostKeyTitle": "Confirmar chave do host SSH",
+    "sshHostKeyMessage": "Impress?o digital do host SSH: {{fingerprint}}. Deseja confiar neste host?",
+    "sshHostKeyMismatchTitle": "Chave do host SSH alterada",
+    "sshHostKeyMismatchMessage": "A chave do host SSH mudou. Esperada: {{expected}}. Recebida: {{fingerprint}}. Deseja confiar na nova chave?",
+    "sshHostKeyConfirm": "Confiar",
+    "sshHostKeyCancel": "Cancelar"
   },
   "setupGuide": {
     "title": "Guia de Configuração",
@@ -90,19 +98,39 @@
       },
       "address": {
         "title": "Endereço do Servidor",
-        "description": "Insira o IP ou domínio do servidor Memcached. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>."
+        "description": "Insira o IP ou dom?nio do servidor. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>. Se usar SSH, informe o host do SSH."
       },
       "port": {
-        "title": "Porta",
-        "description": "O padrão do Memcached é <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
+        "title": "Porta do Memcached",
+        "description": "O padr?o do Memcached ? <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
       },
       "auth": {
         "title": "Autenticação (Opcional)",
-        "description": "Insira usuário e senha apenas se seu servidor exigir autenticação."
+        "description": "Ative a autentica??o e informe usu?rio e senha apenas se seu servidor exigir."
       },
       "timeout": {
         "title": "Timeout",
         "description": "O timeout define o tempo máximo de resposta."
+      },
+      "sshToggle": {
+        "title": "Conex?o SSH (Opcional)",
+        "description": "Ative para acessar um servidor remoto via SSH."
+      },
+      "sshPort": {
+        "title": "Porta SSH",
+        "description": "A porta padr?o do SSH ? <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "Autentica??o SSH (Opcional)",
+        "description": "Informe usu?rio e senha ou uma chave privada para autenticar via SSH."
+      },
+      "sshHostKey": {
+        "title": "Verifica??o do Host SSH",
+        "description": "Na primeira conex?o, voc? precisar? confirmar a impress?o digital do host."
+      },
+      "sshStorage": {
+        "title": "Seguran?a do SSH",
+        "description": "Para salvar credenciais SSH no app, ative a criptografia do storage."
       }
     },
     "close": "Fechar"
@@ -196,7 +224,6 @@
       "unlocked": "Storage desbloqueado."
     }
   },
-
   "loadingModal": {
     "loading": "Carregando..."
   },

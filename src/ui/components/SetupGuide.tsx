@@ -16,7 +16,7 @@ const SetupGuideModal = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
       <div
-        className={`p-6 rounded-lg shadow-lg w-[90%] max-w-lg border transition-all
+        className={`p-5 rounded-lg shadow-lg w-[92%] max-w-md max-h-[85vh] overflow-y-auto border transition-all
           ${darkMode ? "bg-gray-800 text-white border-gray-700" : "bg-white text-gray-900 border-gray-300"}`}
       >
         <div className="flex justify-between items-center border-b pb-3">
@@ -40,12 +40,12 @@ const SetupGuideModal = () => {
           />
         </Disclaimer>
 
-        <div className="mt-4 space-y-4 text-sm">
+        <div className="mt-3 space-y-3 text-sm">
           <div>
             <h3 className="text-md font-semibold">
               {t("setupGuide.fields.name.title")}
             </h3>
-            <p className="mt-1 ml-5 text-gray-400">
+            <p className="mt-0.5 ml-5 text-gray-400">
               {t("setupGuide.fields.name.description")}
             </p>
           </div>
@@ -54,7 +54,7 @@ const SetupGuideModal = () => {
             <h3 className="text-md font-semibold">
               {t("setupGuide.fields.address.title")}
             </h3>
-            <p className="mt-1 ml-5 text-gray-400">
+            <p className="mt-0.5 ml-5 text-gray-400">
               <Trans
                 i18nKey="setupGuide.fields.address.description"
                 components={{ code: <code /> }}
@@ -66,7 +66,7 @@ const SetupGuideModal = () => {
             <h3 className="text-md font-semibold">
               {t("setupGuide.fields.port.title")}
             </h3>
-            <p className="mt-1 ml-5 text-gray-400">
+            <p className="mt-0.5 ml-5 text-gray-400">
               <Trans
                 i18nKey="setupGuide.fields.port.description"
                 components={{ strong: <strong /> }}
@@ -78,8 +78,56 @@ const SetupGuideModal = () => {
             <h3 className="text-md font-semibold">
               {t("setupGuide.fields.auth.title")}
             </h3>
-            <p className="mt-1 ml-5 text-gray-400">
+            <p className="mt-0.5 ml-5 text-gray-400">
               {t("setupGuide.fields.auth.description")}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold">
+              {t("setupGuide.fields.sshToggle.title")}
+            </h3>
+            <p className="mt-0.5 ml-5 text-gray-400">
+              {t("setupGuide.fields.sshToggle.description")}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold">
+              {t("setupGuide.fields.sshPort.title")}
+            </h3>
+            <p className="mt-0.5 ml-5 text-gray-400">
+              <Trans
+                i18nKey="setupGuide.fields.sshPort.description"
+                components={{ strong: <strong /> }}
+              />
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold">
+              {t("setupGuide.fields.sshAuth.title")}
+            </h3>
+            <p className="mt-0.5 ml-5 text-gray-400">
+              {t("setupGuide.fields.sshAuth.description")}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold">
+              {t("setupGuide.fields.sshHostKey.title")}
+            </h3>
+            <p className="mt-0.5 ml-5 text-gray-400">
+              {t("setupGuide.fields.sshHostKey.description")}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold">
+              {t("setupGuide.fields.sshStorage.title")}
+            </h3>
+            <p className="mt-0.5 ml-5 text-gray-400">
+              {t("setupGuide.fields.sshStorage.description")}
             </p>
           </div>
 
@@ -87,13 +135,13 @@ const SetupGuideModal = () => {
             <h3 className="text-md font-semibold">
               {t("setupGuide.fields.timeout.title")}
             </h3>
-            <p className="mt-1 ml-5 text-gray-400">
+            <p className="mt-0.5 ml-5 text-gray-400">
               {t("setupGuide.fields.timeout.description")}
             </p>
           </div>
         </div>
 
-        <div className="mt-5 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <button
             onClick={closeSetupGuideModal}
             className={toneButton("primary", darkMode, "sm")}

@@ -15,7 +15,11 @@ import {
   touchConnection
 } from "@/api/utils";
 import { executeMemcachedCommand } from "@/api/utils/executeMemcachedCommand";
-import { closeSshTunnel, createSshTunnel } from "@/api/utils/sshTunnel";
+import {
+  closeSshTunnel,
+  createSshTunnel,
+  SshHostKeyError
+} from "@/api/utils/sshTunnel";
 import { connectionSchema } from "@/api/utils/validationSchema";
 
 class ConnectionController {
@@ -125,7 +129,8 @@ class ConnectionController {
             port: ssh.port,
             username: ssh.username.trim(),
             password: ssh.password,
-            privateKey: ssh.privateKey
+            privateKey: ssh.privateKey,
+            hostKeyFingerprint: ssh.hostKeyFingerprint
           }
         : undefined;
 
@@ -135,7 +140,8 @@ class ConnectionController {
           ssh: sshConfig,
           remoteHost: "127.0.0.1",
           remotePort: Number(port),
-          readyTimeoutMs: connectionTimeout * 1000
+          readyTimeoutMs: connectionTimeout * 1000,
+          expectedHostFingerprint: sshConfig.hostKeyFingerprint
         });
       }
 
@@ -192,6 +198,21 @@ class ConnectionController {
         timestamp: newConnection.lastActive
       });
     } catch (error) {
+      if (error instanceof SshHostKeyError) {
+        if (client) {
+          client.close();
+        }
+        if (tunnel) {
+          closeSshTunnel(tunnel);
+        }
+        response.status(409).json({
+          error: error.message,
+          code: error.code,
+          fingerprint: error.fingerprint,
+          expectedFingerprint: error.expectedFingerprint
+        });
+        return;
+      }
       if (client) {
         client.close();
       }

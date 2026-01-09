@@ -16,6 +16,7 @@ export interface ModalContextType {
   showConfirm: (params: {
     message: string;
     onConfirm: () => void | Promise<void>;
+    onCancel?: () => void | Promise<void>;
     type?: AlertType;
     title?: string;
     confirmLabel?: string;
@@ -44,6 +45,7 @@ export interface ModalContextType {
   alertModalConfirmLabel: string | null;
   alertModalCancelLabel: string | null;
   alertModalOnConfirm: (() => void | Promise<void>) | null;
+  alertModalOnCancel: (() => void | Promise<void>) | null;
   alertModalTitle: string | null;
   loadingModalIsOpen: boolean;
   viewDataModalIsOpen: boolean;

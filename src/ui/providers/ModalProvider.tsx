@@ -31,6 +31,9 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [alertModalOnConfirm, setAlertModalOnConfirm] = useState<
     (() => void | Promise<void>) | null
   >(null);
+  const [alertModalOnCancel, setAlertModalOnCancel] = useState<
+    (() => void | Promise<void>) | null
+  >(null);
   const [alertModalTitle, setAlertModalTitle] = useState<string | null>(null);
   const [loadingModalIsOpen, setLoadingModalIsOpen] = useState(false);
   const [viewDataModalIsOpen, setViewDataModalIsOpen] = useState(false);
@@ -100,6 +103,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setAlertModalConfirmLabel(null);
     setAlertModalCancelLabel(null);
     setAlertModalOnConfirm(null);
+    setAlertModalOnCancel(null);
     setAlertModalTitle(null);
   };
 
@@ -109,12 +113,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setAlertModalConfirmLabel(null);
     setAlertModalCancelLabel(null);
     setAlertModalOnConfirm(null);
+    setAlertModalOnCancel(null);
     setAlertModalTitle(null);
   };
 
   const showConfirm = ({
     message,
     onConfirm,
+    onCancel,
     type = "warning",
     title,
     confirmLabel,
@@ -122,6 +128,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   }: {
     message: string;
     onConfirm: () => void | Promise<void>;
+    onCancel?: () => void | Promise<void>;
     type?: AlertType;
     title?: string;
     confirmLabel?: string;
@@ -132,6 +139,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setAlertModalType(type);
     setAlertModalMode("confirm");
     setAlertModalOnConfirm(() => onConfirm);
+    setAlertModalOnCancel(() => onCancel ?? null);
     setAlertModalTitle(title ?? null);
     setAlertModalConfirmLabel(confirmLabel ?? null);
     setAlertModalCancelLabel(cancelLabel ?? null);
@@ -175,6 +183,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         alertModalConfirmLabel,
         alertModalCancelLabel,
         alertModalOnConfirm,
+        alertModalOnCancel,
         alertModalTitle,
         dismissLoading,
         loadingModalIsOpen,

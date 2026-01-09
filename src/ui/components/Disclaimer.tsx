@@ -22,25 +22,37 @@ const Disclaimer = ({
 
   if (!showDisclaimer) return null;
 
+  const showClose = typeof hideDisclaimer === "function";
+
   return (
     <div
-      className={`relative p-4 rounded-lg bg-yellow-50 border border-yellow-300 text-yellow-900 text-sm shadow-md ${className}`}
+      className={`relative rounded-md border p-3 text-xs shadow-sm max-h-48 overflow-y-auto ${
+        darkMode
+          ? "border-amber-500/40 text-amber-200 bg-amber-500/10"
+          : "border-amber-300 text-amber-700 bg-amber-50"
+      } ${className}`}
     >
-      <button
-        onClick={hideDisclaimer}
-        className={`${toneButton(
-          "warning",
-          darkMode,
-          "icon"
-        )} absolute top-2 right-2 !p-1`}
-        aria-label={t("common.close")}
-      >
-        {typeof hideDisclaimer === "function" && (
+      {showClose && (
+        <button
+          onClick={hideDisclaimer}
+          className={`${toneButton(
+            "warning",
+            darkMode,
+            "icon"
+          )} absolute top-2 right-2 !p-1`}
+          aria-label={t("common.close")}
+        >
           <XMarkIcon className="w-5 h-5" />
-        )}
-      </button>
+        </button>
+      )}
 
-      <h3 className="font-semibold text-yellow-800">{t("disclaimer.title")}</h3>
+      <h3
+        className={`font-semibold ${
+          darkMode ? "text-amber-200" : "text-amber-800"
+        }`}
+      >
+        {t("disclaimer.title")}
+      </h3>
       <p className="mt-1">{children}</p>
     </div>
   );

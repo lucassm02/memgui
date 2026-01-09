@@ -9,8 +9,8 @@ import { useTranslation, Trans } from "react-i18next";
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useElectron } from "../hooks/useElectron";
 import { useModal } from "../hooks/useModal";
+import { useStorage } from "../hooks/useStorage";
 import { toneButton } from "../utils/buttonTone";
-import Disclaimer from "./Disclaimer";
 import { Connection } from "@/ui/contexts";
 
 type Props = {
@@ -29,10 +29,12 @@ const defaultForm = {
   password: "",
   timeout: 300,
   sshEnabled: false,
+  authEnabled: false,
   sshPort: 22,
   sshUsername: "",
   sshPassword: "",
-  sshPrivateKey: ""
+  sshPrivateKey: "",
+  sshHostKeyFingerprint: ""
 };
 
 const ConnectionModal = ({ onSubmit, onTest }: Props) => {
@@ -45,6 +47,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   } = useModal();
   const { darkMode } = useDarkMode();
   const { enabled: electronEnabled } = useElectron();
+  const { encryptionEnabled } = useStorage();
   const { t } = useTranslation();
 
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -57,6 +60,7 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
 
     const passwordValue = formData.sshPassword;
     const privateKeyValue = formData.sshPrivateKey.trim();
+    const hostKeyFingerprintValue = formData.sshHostKeyFingerprint.trim();
     const hasPassword = passwordValue.trim().length > 0;
     const hasPrivateKey = privateKeyValue.length > 0;
 
@@ -64,7 +68,10 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
       port: formData.sshPort,
       username: formData.sshUsername.trim(),
       ...(hasPassword ? { password: passwordValue } : {}),
-      ...(hasPrivateKey ? { privateKey: privateKeyValue } : {})
+      ...(hasPrivateKey ? { privateKey: privateKeyValue } : {}),
+      ...(hostKeyFingerprintValue
+        ? { hostKeyFingerprint: hostKeyFingerprintValue }
+        : {})
     };
   };
 
@@ -73,19 +80,29 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
     !formData.sshPassword.trim() &&
     !formData.sshPrivateKey.trim();
 
-  const buildConnectionPayload = (): Omit<Connection, "id"> => ({
-    name: formData.name,
-    host: formData.host,
-    port: formData.port,
-    username: formData.username,
-    password: formData.password,
-    timeout: formData.timeout,
-    ssh: buildSshConfig()
-  });
+  const buildConnectionPayload = (): Omit<Connection, "id"> => {
+    const payload: Omit<Connection, "id"> = {
+      name: formData.name,
+      host: formData.host,
+      port: formData.port,
+      timeout: formData.timeout,
+      ssh: buildSshConfig()
+    };
+
+    if (formData.authEnabled) {
+      payload.username = formData.username;
+      payload.password = formData.password;
+    }
+
+    return payload;
+  };
 
   useEffect(() => {
     if (connectionModalIsOpen && connectionToEdit) {
       const sshConfig = connectionToEdit.ssh;
+      const authEnabled = !!(
+        connectionToEdit.username || connectionToEdit.password
+      );
       setFormData({
         name: connectionToEdit.name,
         host: connectionToEdit.host,
@@ -94,15 +111,16 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
         password: connectionToEdit.password ?? "",
         timeout: connectionToEdit.timeout ?? defaultForm.timeout,
         sshEnabled: !!sshConfig,
+        authEnabled,
         sshPort: sshConfig?.port ?? defaultForm.sshPort,
         sshUsername: sshConfig?.username ?? "",
         sshPassword: sshConfig?.password ?? "",
-        sshPrivateKey: sshConfig?.privateKey ?? ""
+        sshPrivateKey: sshConfig?.privateKey ?? "",
+        sshHostKeyFingerprint: sshConfig?.hostKeyFingerprint ?? ""
       });
       setShowAdvanced(
         !!(
-          connectionToEdit.username ||
-          connectionToEdit.password ||
+          authEnabled ||
           connectionToEdit.timeout !== defaultForm.timeout ||
           sshConfig
         )
@@ -287,61 +305,80 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
           {showAdvanced && (
             <>
               <div className="mt-4 space-y-3">
-                <div>
-                  <label
-                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {t("connectionModal.fields.username")}:
-                  </label>
+                <div className="flex items-center gap-2">
                   <input
-                    type="text"
-                    name="username"
-                    placeholder={t(
-                      "connectionModal.fields.usernamePlaceholder"
-                    )}
-                    value={formData.username}
+                    type="checkbox"
+                    name="authEnabled"
+                    checked={formData.authEnabled}
                     onChange={handleChange}
-                    className={`w-full p-2 rounded-md border focus:outline-none transition
+                    className="h-4 w-4"
+                  />
+                  <span
+                    className={`text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}
+                  >
+                    {t("connectionModal.fields.authToggle")}
+                  </span>
+                </div>
+
+                {formData.authEnabled && (
+                  <div className="space-y-3">
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.username")}:
+                      </label>
+                      <input
+                        type="text"
+                        name="username"
+                        placeholder={t(
+                          "connectionModal.fields.usernamePlaceholder"
+                        )}
+                        value={formData.username}
+                        required={formData.authEnabled}
+                        onChange={handleChange}
+                        className={`w-full p-2 rounded-md border focus:outline-none transition
                   ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
-                  />
-                </div>
-                <div>
-                  <label
-                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {t("connectionModal.fields.password")}:
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder={t(
-                      "connectionModal.fields.passwordPlaceholder"
-                    )}
-                    value={formData.password}
-                    onChange={handleChange}
-                    className={`w-full p-2 rounded-md border focus:outline-none transition
+                      />
+                    </div>
+                    <div>
+                      <label
+                        className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      >
+                        {t("connectionModal.fields.password")}:
+                      </label>
+                      <input
+                        type="password"
+                        name="password"
+                        placeholder={t(
+                          "connectionModal.fields.passwordPlaceholder"
+                        )}
+                        value={formData.password}
+                        required={formData.authEnabled}
+                        onChange={handleChange}
+                        className={`w-full p-2 rounded-md border focus:outline-none transition
                   ${darkMode ? "bg-gray-700 text-white border-gray-600 focus:border-blue-400" : "bg-gray-100 text-gray-900 border-gray-300 focus:border-blue-500"}`}
-                  />
-                </div>
-              </div>
-              <div className="mt-3 space-y-3">
-                <div>
-                  <label
-                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {formData.authEnabled && (
+                  <div
+                    className={`rounded-md border p-3 text-xs ${
+                      darkMode
+                        ? "border-amber-500/40 text-amber-200 bg-amber-500/10"
+                        : "border-amber-300 text-amber-700 bg-amber-50"
+                    }`}
                   >
-                    {t("connectionModal.fields.timeout")}:
-                  </label>
-                  <input
-                    type="number"
-                    name="timeout"
-                    value={formData.timeout}
-                    min={300}
-                    max={3600}
-                    onChange={handleChange}
-                    className="w-full p-2 rounded-md border"
-                  />
-                </div>
+                    <Trans
+                      i18nKey="connectionModal.authNote"
+                      components={{ strong: <strong /> }}
+                    />
+                  </div>
+                )}
               </div>
+
               <div className="mt-4 space-y-3">
                 <div className="flex items-center gap-2">
                   <input
@@ -434,14 +471,36 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
                     </div>
                   </div>
                 )}
+                {formData.sshEnabled && !encryptionEnabled && (
+                  <div
+                    className={`rounded-md border p-3 text-xs ${
+                      darkMode
+                        ? "border-amber-500/40 text-amber-200 bg-amber-500/10"
+                        : "border-amber-300 text-amber-700 bg-amber-50"
+                    }`}
+                  >
+                    {t("connectionModal.sshStorageWarning")}
+                  </div>
+                )}
               </div>
-
-              <Disclaimer className="mt-5 mb-5" showDisclaimer={true}>
-                <Trans
-                  i18nKey="connectionModal.authNote"
-                  components={{ strong: <strong /> }}
-                />
-              </Disclaimer>
+              <div className="mt-3 space-y-3">
+                <div>
+                  <label
+                    className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                  >
+                    {t("connectionModal.fields.timeout")}:
+                  </label>
+                  <input
+                    type="number"
+                    name="timeout"
+                    value={formData.timeout}
+                    min={300}
+                    max={3600}
+                    onChange={handleChange}
+                    className="w-full p-2 rounded-md border"
+                  />
+                </div>
+              </div>
             </>
           )}
 

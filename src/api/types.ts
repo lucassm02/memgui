@@ -7,6 +7,7 @@ export interface SshConfig {
   username: string;
   password?: string;
   privateKey?: string;
+  hostKeyFingerprint?: string;
 }
 
 export interface SshTunnel {

@@ -58,7 +58,19 @@
       "usernamePlaceholder": "Introduce tu usuario",
       "password": "Contraseña (opcional)",
       "passwordPlaceholder": "Introduce tu contraseña",
-      "timeout": "Timeout en segundos (mínimo 300)"
+      "timeout": "Timeout en segundos (mínimo 300)",
+      "memcachedPort": "Puerto de Memcached",
+      "authToggle": "Usar autenticaci?n",
+      "sshToggle": "Conectar v?a SSH",
+      "sshHost": "Host SSH",
+      "sshHostPlaceholder": "Ej: servidor.ejemplo.com",
+      "sshPort": "Puerto SSH",
+      "sshUsername": "Usuario SSH",
+      "sshUsernamePlaceholder": "Introduce tu usuario SSH",
+      "sshPassword": "Contrase?a SSH (opcional)",
+      "sshPasswordPlaceholder": "Introduce tu contrase?a SSH",
+      "sshPrivateKey": "Clave privada SSH (opcional)",
+      "sshPrivateKeyPlaceholder": "Pega tu clave privada"
     },
     "authNote": "Cuando la autenticación está habilitada, solo se pueden gestionar las claves creadas en <strong>MemGUI</strong> debido a una limitación del protocolo de Memcached autenticado.",
     "cancel": "Cancelar",
@@ -66,7 +78,15 @@
     "save": "Guardar cambios",
     "test": "Probar",
     "testing": "Probando...",
-    "testSuccess": "¡Conexión realizada con éxito!"
+    "testSuccess": "¡Conexión realizada con éxito!",
+    "sshAuthRequired": "Proporciona una contrase?a SSH o una clave privada.",
+    "sshStorageWarning": "Las credenciales SSH no se guardar?n a menos que el cifrado del almacenamiento est? habilitado.",
+    "sshHostKeyTitle": "Confirmar clave del host SSH",
+    "sshHostKeyMessage": "Huella del host SSH: {{fingerprint}}. ?Conf?as en este host?",
+    "sshHostKeyMismatchTitle": "La clave del host SSH cambi?",
+    "sshHostKeyMismatchMessage": "La clave del host SSH ha cambiado. Esperada: {{expected}}. Recibida: {{fingerprint}}. ?Confiar en la nueva clave?",
+    "sshHostKeyConfirm": "Confiar",
+    "sshHostKeyCancel": "Cancelar"
   },
   "setupGuide": {
     "title": "Guía de configuración",
@@ -78,19 +98,39 @@
       },
       "address": {
         "title": "Dirección del servidor",
-        "description": "Introduce la IP o el dominio del servidor Memcached. Para uso local usa <code>127.0.0.1</code> o <code>localhost</code>."
+        "description": "Introduce la IP o dominio del servidor. Para uso local, utiliza <code>127.0.0.1</code> o <code>localhost</code>. Si usas SSH, indica el host SSH."
       },
       "port": {
-        "title": "Puerto",
-        "description": "El puerto por defecto de Memcached es <strong>11211</strong>. Si lo cambiaste, usa el puerto configurado."
+        "title": "Puerto de Memcached",
+        "description": "El valor predeterminado de Memcached es <strong>11211</strong>. Si se cambi?, utiliza el puerto configurado en el servidor."
       },
       "auth": {
         "title": "Autenticación (Opcional)",
-        "description": "Completa usuario y contraseña solo si tu servidor requiere autenticación."
+        "description": "Activa la autenticaci?n e introduce usuario y contrase?a solo si tu servidor lo requiere."
       },
       "timeout": {
         "title": "Timeout",
         "description": "El timeout define el tiempo máximo de respuesta."
+      },
+      "sshToggle": {
+        "title": "Conexi?n SSH (opcional)",
+        "description": "Act?valo para acceder a un servidor remoto por SSH."
+      },
+      "sshPort": {
+        "title": "Puerto SSH",
+        "description": "El puerto SSH predeterminado es <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "Autenticaci?n SSH (opcional)",
+        "description": "Indica usuario y contrase?a o una clave privada para autenticar por SSH."
+      },
+      "sshHostKey": {
+        "title": "Verificaci?n del host SSH",
+        "description": "En la primera conexi?n, se te pedir? confiar en la huella del host."
+      },
+      "sshStorage": {
+        "title": "Seguridad SSH",
+        "description": "Para guardar credenciales SSH, habilita el cifrado del almacenamiento."
       }
     },
     "close": "Cerrar"

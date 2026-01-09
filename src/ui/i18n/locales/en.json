@@ -53,12 +53,13 @@
       "address": "Server Address",
       "hostPlaceholder": "Ex: 192.168.1.1",
       "port": "Port",
-      "memcachedPort": "Port",
+      "memcachedPort": "Memcached Port",
       "options": "Advanced Options",
       "username": "Username (optional)",
       "usernamePlaceholder": "Enter your username",
       "password": "Password (optional)",
       "passwordPlaceholder": "Enter your password",
+      "authToggle": "Use authentication",
       "timeout": "Timeout in seconds (minimum 300)",
       "sshToggle": "Connect via SSH",
       "sshHost": "SSH Host",
@@ -78,7 +79,14 @@
     "test": "Test",
     "testing": "Testing...",
     "testSuccess": "Connection successful!",
-    "sshAuthRequired": "Provide an SSH password or private key."
+    "sshAuthRequired": "Provide an SSH password or private key.",
+    "sshStorageWarning": "SSH credentials won't be saved unless storage encryption is enabled.",
+    "sshHostKeyTitle": "Confirm SSH host key",
+    "sshHostKeyMessage": "SSH host fingerprint: {{fingerprint}}. Do you trust this host?",
+    "sshHostKeyMismatchTitle": "SSH host key changed",
+    "sshHostKeyMismatchMessage": "The SSH host key has changed. Expected: {{expected}}. Received: {{fingerprint}}. Trust the new key?",
+    "sshHostKeyConfirm": "Trust",
+    "sshHostKeyCancel": "Cancel"
   },
   "setupGuide": {
     "title": "Setup Guide",
@@ -90,19 +98,39 @@
       },
       "address": {
         "title": "Server Address",
-        "description": "Enter the IP or domain of the Memcached server. For local use <code>127.0.0.1</code> or <code>localhost</code>."
+        "description": "Enter the server IP or domain. For local, use <code>127.0.0.1</code> or <code>localhost</code>. If using SSH, enter the SSH host."
       },
       "port": {
-        "title": "Port",
-        "description": "The default Memcached port is <strong>11211</strong>. If you changed it, use the configured port."
+        "title": "Memcached Port",
+        "description": "Memcached default is <strong>11211</strong>. If changed, use the configured port on the server."
       },
       "auth": {
         "title": "Authentication (Optional)",
-        "description": "Fill in username and password only if your server requires authentication."
+        "description": "Enable authentication and enter username and password only if your server requires it."
       },
       "timeout": {
         "title": "Timeout",
         "description": "Timeout controls the maximum response time."
+      },
+      "sshToggle": {
+        "title": "SSH Connection (optional)",
+        "description": "Enable this to access a remote server through SSH."
+      },
+      "sshPort": {
+        "title": "SSH Port",
+        "description": "Default SSH port is <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "SSH Authentication (optional)",
+        "description": "Provide username/password or a private key to authenticate over SSH."
+      },
+      "sshHostKey": {
+        "title": "SSH Host Verification",
+        "description": "On first connect, you'll be asked to trust the host fingerprint."
+      },
+      "sshStorage": {
+        "title": "SSH Security",
+        "description": "To save SSH credentials, enable storage encryption."
       }
     },
     "close": "Close"

@@ -58,7 +58,19 @@
       "usernamePlaceholder": "Entrez votre nom d'utilisateur",
       "password": "Mot de passe (optionnel)",
       "passwordPlaceholder": "Entrez votre mot de passe",
-      "timeout": "Timeout en secondes (minimum 300)"
+      "timeout": "Timeout en secondes (minimum 300)",
+      "memcachedPort": "Port Memcached",
+      "authToggle": "Utiliser l'authentification",
+      "sshToggle": "Se connecter via SSH",
+      "sshHost": "H?te SSH",
+      "sshHostPlaceholder": "Ex : serveur.exemple.com",
+      "sshPort": "Port SSH",
+      "sshUsername": "Nom d'utilisateur SSH",
+      "sshUsernamePlaceholder": "Entrez votre nom d'utilisateur SSH",
+      "sshPassword": "Mot de passe SSH (optionnel)",
+      "sshPasswordPlaceholder": "Entrez votre mot de passe SSH",
+      "sshPrivateKey": "Cl? priv?e SSH (optionnelle)",
+      "sshPrivateKeyPlaceholder": "Collez votre cl? priv?e"
     },
     "authNote": "Lorsque l'authentification est activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être gérées en raison d'une limitation du protocole Memcached authentifié.",
     "cancel": "Annuler",
@@ -66,7 +78,15 @@
     "save": "Enregistrer les modifications",
     "test": "Tester",
     "testing": "Test en cours...",
-    "testSuccess": "Connexion réussie !"
+    "testSuccess": "Connexion réussie !",
+    "sshAuthRequired": "Fournissez un mot de passe SSH ou une cl? priv?e.",
+    "sshStorageWarning": "Les identifiants SSH ne seront pas enregistr?s sans le chiffrement du stockage.",
+    "sshHostKeyTitle": "Confirmer la cl? d'h?te SSH",
+    "sshHostKeyMessage": "Empreinte de l'h?te SSH : {{fingerprint}}. Faites-vous confiance ? cet h?te ?",
+    "sshHostKeyMismatchTitle": "La cl? d'h?te SSH a chang?",
+    "sshHostKeyMismatchMessage": "La cl? d'h?te SSH a chang?. Attendue : {{expected}}. Re?ue : {{fingerprint}}. Faire confiance ? la nouvelle cl? ?",
+    "sshHostKeyConfirm": "Faire confiance",
+    "sshHostKeyCancel": "Annuler"
   },
   "setupGuide": {
     "title": "Guide de configuration",
@@ -78,19 +98,39 @@
       },
       "address": {
         "title": "Adresse du serveur",
-        "description": "Saisissez l'IP ou le domaine du serveur Memcached. Pour un usage local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>."
+        "description": "Entrez l'IP ou le domaine du serveur. Pour local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>. Si vous utilisez SSH, indiquez l'h?te SSH."
       },
       "port": {
-        "title": "Port",
-        "description": "Le port par défaut de Memcached est <strong>11211</strong>. Si vous l'avez modifié, utilisez le port configuré."
+        "title": "Port Memcached",
+        "description": "Le port par d?faut de Memcached est <strong>11211</strong>. S'il a ?t? chang?, utilisez le port configur? sur le serveur."
       },
       "auth": {
         "title": "Authentification (Optionnel)",
-        "description": "Renseignez l'utilisateur et le mot de passe uniquement si votre serveur requiert une authentification."
+        "description": "Activez l'authentification et renseignez l'utilisateur et le mot de passe uniquement si votre serveur l'exige."
       },
       "timeout": {
         "title": "Timeout",
         "description": "Le timeout définit le temps de réponse maximum."
+      },
+      "sshToggle": {
+        "title": "Connexion SSH (optionnelle)",
+        "description": "Activez pour acc?der ? un serveur distant via SSH."
+      },
+      "sshPort": {
+        "title": "Port SSH",
+        "description": "Le port SSH par d?faut est <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "Authentification SSH (optionnelle)",
+        "description": "Indiquez un nom d'utilisateur/mot de passe ou une cl? priv?e pour vous authentifier via SSH."
+      },
+      "sshHostKey": {
+        "title": "V?rification de l'h?te SSH",
+        "description": "Lors de la premi?re connexion, il faudra approuver l'empreinte de l'h?te."
+      },
+      "sshStorage": {
+        "title": "S?curit? SSH",
+        "description": "Pour enregistrer les identifiants SSH, activez le chiffrement du stockage."
       }
     },
     "close": "Fermer"

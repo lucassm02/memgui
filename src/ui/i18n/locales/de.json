@@ -58,7 +58,19 @@
       "usernamePlaceholder": "Benutzernamen eingeben",
       "password": "Passwort (optional)",
       "passwordPlaceholder": "Passwort eingeben",
-      "timeout": "Timeout in Sekunden (mindestens 300)"
+      "timeout": "Timeout in Sekunden (mindestens 300)",
+      "memcachedPort": "Memcached-Port",
+      "authToggle": "Authentifizierung verwenden",
+      "sshToggle": "Per SSH verbinden",
+      "sshHost": "SSH-Host",
+      "sshHostPlaceholder": "Bsp.: server.beispiel.de",
+      "sshPort": "SSH-Port",
+      "sshUsername": "SSH-Benutzername",
+      "sshUsernamePlaceholder": "Geben Sie Ihren SSH-Benutzernamen ein",
+      "sshPassword": "SSH-Passwort (optional)",
+      "sshPasswordPlaceholder": "Geben Sie Ihr SSH-Passwort ein",
+      "sshPrivateKey": "SSH-Privatschl?ssel (optional)",
+      "sshPrivateKeyPlaceholder": "F?gen Sie Ihren privaten Schl?ssel ein"
     },
     "authNote": "Wenn die Authentifizierung aktiviert ist, können aufgrund einer Einschränkung des authentifizierten Memcached-Protokolls nur Schlüssel verwaltet werden, die in <strong>MemGUI</strong> erstellt wurden.",
     "cancel": "Abbrechen",
@@ -66,7 +78,15 @@
     "save": "Änderungen speichern",
     "test": "Testen",
     "testing": "Teste...",
-    "testSuccess": "Verbindung erfolgreich!"
+    "testSuccess": "Verbindung erfolgreich!",
+    "sshAuthRequired": "Geben Sie ein SSH-Passwort oder einen privaten Schl?ssel an.",
+    "sshStorageWarning": "SSH-Zugangsdaten werden nicht gespeichert, solange die Speicherverschl?sselung deaktiviert ist.",
+    "sshHostKeyTitle": "SSH-Hostschl?ssel best?tigen",
+    "sshHostKeyMessage": "SSH-Host-Fingerprint: {{fingerprint}}. Vertrauen Sie diesem Host?",
+    "sshHostKeyMismatchTitle": "SSH-Hostschl?ssel ge?ndert",
+    "sshHostKeyMismatchMessage": "Der SSH-Hostschl?ssel hat sich ge?ndert. Erwartet: {{expected}}. Erhalten: {{fingerprint}}. Neue Schl?ssel vertrauen?",
+    "sshHostKeyConfirm": "Vertrauen",
+    "sshHostKeyCancel": "Abbrechen"
   },
   "setupGuide": {
     "title": "Einrichtungsleitfaden",
@@ -78,19 +98,39 @@
       },
       "address": {
         "title": "Serveradresse",
-        "description": "Gib die IP oder Domain des Memcached-Servers ein. Für lokal verwende <code>127.0.0.1</code> oder <code>localhost</code>."
+        "description": "Geben Sie die IP oder den Domainnamen des Servers ein. F?r lokal verwenden Sie <code>127.0.0.1</code> oder <code>localhost</code>. Bei SSH geben Sie den SSH-Host an."
       },
       "port": {
-        "title": "Port",
-        "description": "Der Standardport von Memcached ist <strong>11211</strong>. Falls geändert, nutze den konfigurierten Port."
+        "title": "Memcached-Port",
+        "description": "Der Standard von Memcached ist <strong>11211</strong>. Wenn ge?ndert, verwenden Sie den auf dem Server konfigurierten Port."
       },
       "auth": {
         "title": "Authentifizierung (Optional)",
-        "description": "Gib Benutzername und Passwort nur an, wenn dein Server Authentifizierung verlangt."
+        "description": "Aktivieren Sie die Authentifizierung und geben Sie Benutzername und Passwort nur an, wenn Ihr Server dies erfordert."
       },
       "timeout": {
         "title": "Timeout",
         "description": "Das Timeout legt die maximale Antwortzeit fest."
+      },
+      "sshToggle": {
+        "title": "SSH-Verbindung (optional)",
+        "description": "Aktivieren Sie dies, um einen entfernten Server per SSH zu erreichen."
+      },
+      "sshPort": {
+        "title": "SSH-Port",
+        "description": "Der Standard-SSH-Port ist <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "SSH-Authentifizierung (optional)",
+        "description": "Geben Sie Benutzername/Passwort oder einen privaten Schl?ssel f?r die SSH-Authentifizierung an."
+      },
+      "sshHostKey": {
+        "title": "SSH-Host-Verifizierung",
+        "description": "Bei der ersten Verbindung werden Sie gebeten, dem Host-Fingerprint zu vertrauen."
+      },
+      "sshStorage": {
+        "title": "SSH-Sicherheit",
+        "description": "Zum Speichern von SSH-Zugangsdaten aktivieren Sie die Speicherverschl?sselung."
       }
     },
     "close": "Schließen"

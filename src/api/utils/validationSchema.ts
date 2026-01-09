@@ -30,6 +30,15 @@ const sshSchema = z
       })
       .trim()
       .min(1, { message: "A chave privada não pode ser vazia." })
+      .optional(),
+    hostKeyFingerprint: z
+      .string({
+        invalid_type_error: "A impressão digital do host SSH deve ser uma string."
+      })
+      .trim()
+      .min(1, {
+        message: "A impressão digital do host SSH não pode ser vazia."
+      })
       .optional()
   })
   .refine((value) => value.password || value.privateKey, {
