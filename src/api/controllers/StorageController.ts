@@ -1,12 +1,58 @@
+import fs from "fs";
+import os from "os";
+import path from "path";
 import Datastore from "@seald-io/nedb";
 import { Request, Response } from "express";
 
 import { logger } from "@/api/utils";
+
+const APP_NAME = "MemGUI";
+const DB_FILENAME = "database.db";
+
+function resolveDataDir(): string {
+  const envDir = process.env.MEMGUI_DATA_DIR;
+  if (envDir) {
+    return envDir;
+  }
+
+  if (process.platform === "win32") {
+    const appData = process.env.APPDATA;
+    return appData
+      ? path.join(appData, APP_NAME)
+      : path.join(os.homedir(), "AppData", "Roaming", APP_NAME);
+  }
+
+  if (process.platform === "darwin") {
+    return path.join(
+      os.homedir(),
+      "Library",
+      "Application Support",
+      APP_NAME
+    );
+  }
+
+  const xdgConfigHome = process.env.XDG_CONFIG_HOME;
+  if (xdgConfigHome) {
+    return path.join(xdgConfigHome, APP_NAME);
+  }
+
+  return path.join(os.homedir(), ".config", APP_NAME);
+}
+
+function resolveDatabasePath(): string {
+  const dataDir = resolveDataDir();
+  fs.mkdirSync(dataDir, { recursive: true });
+  return path.join(dataDir, DB_FILENAME);
+}
+
 class StorageController {
   db!: Datastore;
 
   constructor() {
-    this.db = new Datastore({ filename: "./database.db", autoload: true });
+    this.db = new Datastore({
+      filename: resolveDatabasePath(),
+      autoload: true
+    });
   }
 
   async putItem(request: Request, response: Response): Promise<void> {
