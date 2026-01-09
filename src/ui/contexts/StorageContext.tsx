@@ -7,6 +7,13 @@ export interface StorageContextType {
   getKey: (key: string) => Promise<Key | null>;
   deleteKey: (key: string) => Promise<boolean>;
   getAllKeys: () => Promise<Key[]>;
+  setStoragePassword: (password: string) => Promise<boolean>;
+  clearStoragePassword: () => void;
+  enableEncryption: (password: string) => Promise<boolean>;
+  disableEncryption: (password: string) => Promise<boolean>;
+  encryptionEnabled: boolean;
+  storageLocked: boolean;
+  storageVersion: number;
   storage: Record<string, unknown>;
 }
 

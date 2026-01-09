@@ -158,6 +158,32 @@
     "format": "Format",
     "close": "Schließen"
   },
+  "storageSecurity": {
+    "title": "App Security",
+    "description": "Encrypt local data stored by MemGUI.",
+    "passwordLabel": "App password",
+    "passwordPlaceholder": "Enter a password",
+    "confirmLabel": "Confirm password",
+    "confirmPlaceholder": "Re-enter the password",
+    "unlockButton": "Unlock",
+    "enableButton": "Enable encryption",
+    "disableButton": "Disable encryption",
+    "statusEnabled": "Encryption enabled",
+    "statusLocked": "Storage locked",
+    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "errors": {
+      "passwordRequired": "Password is required.",
+      "passwordMismatch": "Passwords do not match.",
+      "invalidPassword": "Invalid password.",
+      "enableFailed": "Could not enable encryption.",
+      "disableFailed": "Could not disable encryption."
+    },
+    "success": {
+      "enabled": "Encryption enabled.",
+      "disabled": "Encryption disabled.",
+      "unlocked": "Storage unlocked."
+    }
+  },
   "loadingModal": {
     "loading": "Laden..."
   },

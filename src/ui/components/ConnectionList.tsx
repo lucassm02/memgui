@@ -18,6 +18,7 @@ import {
   useModal
 } from "@/ui/hooks";
 import { toneButton } from "@/ui/utils/buttonTone";
+import StorageSecurityPanel from "./StorageSecurityPanel";
 
 const ConnectionList = () => {
   const { menuIsOpen, closeMenu } = useMenu();
@@ -180,6 +181,8 @@ const ConnectionList = () => {
               </div>
             );
           })}
+
+          <StorageSecurityPanel />
         </div>
       </div>
     </>

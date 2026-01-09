@@ -7,7 +7,7 @@ const buildOptions = {
   platform: "node",
   format: "cjs",
   sourcemap: false,
-  external: ["path", "fs", "os", "http", "https", "vite", "net"],
+  external: ["path", "fs", "os", "http", "https", "vite", "net", "crypto"],
   target: ["esnext"],
   loader: { ".tsx": "tsx", ".ts": "ts" },
   logLevel: "info"

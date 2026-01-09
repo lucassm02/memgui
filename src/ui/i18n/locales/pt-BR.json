@@ -158,6 +158,33 @@
     "format": "Formato",
     "close": "Fechar"
   },
+  "storageSecurity": {
+    "title": "Seguranca do app",
+    "description": "Criptografa os dados locais salvos pelo MemGUI.",
+    "passwordLabel": "Senha do app",
+    "passwordPlaceholder": "Digite uma senha",
+    "confirmLabel": "Confirmar senha",
+    "confirmPlaceholder": "Digite a senha novamente",
+    "unlockButton": "Desbloquear",
+    "enableButton": "Ativar criptografia",
+    "disableButton": "Desativar criptografia",
+    "statusEnabled": "Criptografia ativada",
+    "statusLocked": "Storage bloqueado",
+    "disableConfirm": "Desativar criptografia? Os dados serao salvos em texto puro.",
+    "errors": {
+      "passwordRequired": "Senha obrigatoria.",
+      "passwordMismatch": "As senhas nao conferem.",
+      "invalidPassword": "Senha invalida.",
+      "enableFailed": "Nao foi possivel ativar a criptografia.",
+      "disableFailed": "Nao foi possivel desativar a criptografia."
+    },
+    "success": {
+      "enabled": "Criptografia ativada.",
+      "disabled": "Criptografia desativada.",
+      "unlocked": "Storage desbloqueado."
+    }
+  },
+
   "loadingModal": {
     "loading": "Carregando..."
   },

@@ -79,7 +79,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
   const navigate = useNavigate();
   const { showAlert, showLoading, dismissLoading } = useModal();
-  const { getKey, setKey } = useStorage();
+  const { getKey, setKey, storageVersion } = useStorage();
   const { t } = useTranslation();
 
   const loadConnections = useCallback(async () => {
@@ -92,12 +92,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     setSavedConnections(value as Connection[]);
   }, [getKey]);
 
-  const hasLoadedConnections = useRef(false);
   useEffect(() => {
-    if (hasLoadedConnections.current) return;
-    hasLoadedConnections.current = true;
     loadConnections();
-  }, [loadConnections]);
+  }, [loadConnections, storageVersion]);
 
   useEffect(() => {
     activeConnectionIdRef.current = currentConnection.id;

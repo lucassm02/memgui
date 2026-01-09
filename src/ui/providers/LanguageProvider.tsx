@@ -19,7 +19,7 @@ const normalizeLanguage = (value: string | undefined) => {
 };
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const { getKey, setKey } = useStorage();
+  const { getKey, setKey, storageVersion } = useStorage();
   const [language, setLanguage] = useState(supportedLanguages[0]);
   const [loaded, setLoaded] = useState(false);
 
@@ -41,7 +41,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     };
 
     load();
-  }, [getKey]);
+  }, [getKey, storageVersion]);
 
   const changeLanguage = (newLanguage: string) => {
     const normalized = normalizeLanguage(newLanguage);

@@ -2,6 +2,7 @@ import { I18nextProvider } from "react-i18next";
 import { Route, Routes } from "react-router-dom";
 import AlertModal from "@/ui/components/AlertModal";
 import LoadingModal from "@/ui/components/LoadingModal";
+import StorageUnlockModal from "@/ui/components/StorageUnlockModal";
 import TitleBar from "@/ui/components/TitleBar";
 import UpdateNotice from "@/ui/components/UpdateNotice";
 import i18n from "@/ui/i18n";
@@ -32,6 +33,7 @@ const App = () => (
                     <UpdateNotice />
                     <LoadingModal />
                     <AlertModal />
+                    <StorageUnlockModal />
                     <Routes>
                       <Route path="/" element={<Connection />} />
                       <Route path="/panel" element={<Panel />} />
