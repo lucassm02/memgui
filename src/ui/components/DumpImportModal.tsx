@@ -202,6 +202,7 @@ const DumpImportModal = ({
     }
 
     setStatus("idle");
+    statusRef.current = "idle";
     setProgress(0);
     setSuccessRate(0);
     setProcessed(0);
@@ -225,6 +226,7 @@ const DumpImportModal = ({
     setFileError("");
     setErrorMessage("");
     setStatus("idle");
+    statusRef.current = "idle";
     setFileName(file.name);
     setProgress(0);
     setSuccessRate(0);
@@ -243,6 +245,7 @@ const DumpImportModal = ({
         itemsRef.current = [];
         setTotal(0);
         setStatus("error");
+        statusRef.current = "error";
         return;
       }
 
@@ -251,17 +254,20 @@ const DumpImportModal = ({
         itemsRef.current = [];
         setTotal(0);
         setStatus("error");
+        statusRef.current = "error";
         return;
       }
 
       itemsRef.current = resolved;
       setTotal(resolved.length);
       setStatus("ready");
+      statusRef.current = "ready";
     } catch (_error) {
       setFileError(t("dumpImport.invalidFile"));
       itemsRef.current = [];
       setTotal(0);
       setStatus("error");
+      statusRef.current = "error";
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -330,6 +336,7 @@ const DumpImportModal = ({
   const startImport = () => {
     if (!connectionId) {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dumpImport.error"));
       return;
     }
@@ -337,6 +344,7 @@ const DumpImportModal = ({
     if (itemsRef.current.length === 0) {
       setFileError(t("dumpImport.empty"));
       setStatus("error");
+      statusRef.current = "error";
       return;
     }
 
@@ -345,6 +353,7 @@ const DumpImportModal = ({
     setErrorMessage("");
     setFileError("");
     setStatus("connecting");
+    statusRef.current = "connecting";
     setProgress(0);
     setSuccessRate(0);
     setProcessed(0);
@@ -354,6 +363,7 @@ const DumpImportModal = ({
     const wsUrl = resolveWsUrl("/ws/import", connectionId);
     if (!wsUrl) {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dumpImport.error"));
       return;
     }
@@ -380,6 +390,7 @@ const DumpImportModal = ({
         switch (payload.type) {
           case "import-start": {
             setStatus("running");
+            statusRef.current = "running";
             setTotal(payload.total);
             setBatchCount(payload.batchCount);
             batchSizeRef.current = payload.batchSize || DEFAULT_BATCH_SIZE;
@@ -401,6 +412,7 @@ const DumpImportModal = ({
           }
           case "import-complete": {
             setStatus("done");
+            statusRef.current = "done";
             setProcessed(payload.processed);
             setTotal(payload.total);
             setProgress(100);
@@ -417,6 +429,7 @@ const DumpImportModal = ({
           }
           case "import-cancelled": {
             setStatus("cancelled");
+            statusRef.current = "cancelled";
             setProcessed(payload.processed);
             setTotal(payload.total);
             const rate =
@@ -434,6 +447,7 @@ const DumpImportModal = ({
           }
           case "import-error": {
             setStatus("error");
+            statusRef.current = "error";
             setErrorMessage(payload.message || t("dumpImport.error"));
             cleanupSocket();
             break;
@@ -443,6 +457,7 @@ const DumpImportModal = ({
         }
       } catch (_error) {
         setStatus("error");
+        statusRef.current = "error";
         setErrorMessage(t("dumpImport.error"));
         cleanupSocket();
       }
@@ -450,6 +465,7 @@ const DumpImportModal = ({
 
     socket.onerror = () => {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dumpImport.error"));
     };
 
@@ -467,6 +483,7 @@ const DumpImportModal = ({
 
   const handleCancel = () => {
     cancelRef.current = true;
+    statusRef.current = "cancelled";
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({ type: "cancel" }));
       socketRef.current.close();

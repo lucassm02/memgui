@@ -372,11 +372,15 @@ const KeyList = () => {
       />
       <DumpImportModal
         isOpen={importModalOpen}
-        onClose={() => setImportModalOpen(false)}
+        onClose={() => {
+          setImportModalOpen(false);
+          void refreshKeyCount();
+          void handleLoadKeys(true, searchTerm, maxItems, { force: true });
+        }}
         connectionId={currentConnection.id}
         onImportComplete={() => {
           void refreshKeyCount();
-          void handleLoadKeys(true, searchTerm, maxItems);
+          void handleLoadKeys(false, searchTerm, maxItems, { force: true });
         }}
       />
     </div>

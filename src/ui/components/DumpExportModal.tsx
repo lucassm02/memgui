@@ -4,7 +4,7 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { KeyData } from "@/ui/contexts";
@@ -78,6 +78,11 @@ type DumpMessage =
       message: string;
     };
 
+type PrefetchOptions = {
+  autoStart?: boolean;
+  force?: boolean;
+};
+
 const DEFAULT_BATCH_SIZE = 50;
 
 const buildDumpFilename = (
@@ -136,6 +141,8 @@ const DumpExportModal = ({
   const payloadRef = useRef<string | null>(null);
   const statusRef = useRef<DumpStatus>(status);
   const saveHandleRef = useRef<FileSystemFileHandle | null>(null);
+  const startAfterPrefetchRef = useRef(false);
+  const startDumpInternalRef = useRef<() => void>(() => {});
 
   const supportsSavePicker =
     typeof (
@@ -165,63 +172,143 @@ const DumpExportModal = ({
     statusRef.current = status;
   }, [status]);
 
-  useEffect(() => {
-    if (!isOpen) {
+  const handlePrefetchDump = useCallback(
+    (options: PrefetchOptions = {}) => {
+      if (!connectionId) {
+        setStatus("error");
+        statusRef.current = "error";
+        setErrorMessage(t("dump.error"));
+        return;
+      }
+
+      const currentStatus = statusRef.current;
+      const shouldAutoStart = options.autoStart === true;
+
+      if (
+        !options.force &&
+        (currentStatus === "connecting" || currentStatus === "running")
+      ) {
+        return;
+      }
+
+      if (currentStatus === "prefetching") {
+        if (shouldAutoStart) {
+          startAfterPrefetchRef.current = true;
+        }
+        return;
+      }
+
+      startAfterPrefetchRef.current = shouldAutoStart;
+
       socketRef.current?.close();
       socketRef.current = null;
       payloadRef.current = null;
-      saveHandleRef.current = null;
-      return;
-    }
 
-    setStatus("idle");
-    setProgress(0);
-    setSuccessRate(0);
-    setProcessed(0);
-    setTotal(0);
-    setBatchIndex(0);
-    setBatchCount(0);
-    setErrorMessage("");
-    setSaveMessage("");
-    setDownloadName("");
-    setSaveHandleName("");
-    dataRef.current = [];
-    payloadRef.current = null;
-    saveHandleRef.current = null;
-    startedAtRef.current = "";
+      setStatus("prefetching");
+      statusRef.current = "prefetching";
+      setProgress(0);
+      setSuccessRate(0);
+      setProcessed(0);
+      setTotal(0);
+      setBatchIndex(0);
+      setBatchCount(0);
+      setErrorMessage("");
+      setSaveMessage("");
+      setDownloadName("");
+      startedAtRef.current = "";
 
-    return () => {
-      socketRef.current?.close();
-      socketRef.current = null;
-    };
-  }, [isOpen, connectionId]);
+      const wsUrl = resolveWsUrl("/ws/dump", connectionId);
+      if (!wsUrl) {
+        startAfterPrefetchRef.current = false;
+        setStatus("error");
+        statusRef.current = "error";
+        setErrorMessage(t("dump.error"));
+        return;
+      }
 
-  const handleCancel = () => {
-    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify({ type: "cancel" }));
-      socketRef.current.close();
-    }
-    setStatus("cancelled");
-  };
+      const socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
 
-  const handleClose = () => {
-    if (status === "running" || status === "connecting") {
-      handleCancel();
-    }
-    onClose();
-  };
+      socket.onopen = () => {
+        socket.send(
+          JSON.stringify({ type: "prefetch", batchSize: DEFAULT_BATCH_SIZE })
+        );
+      };
 
-  const handleStartDump = () => {
+      socket.onmessage = (event) => {
+        try {
+          const payload = JSON.parse(event.data) as DumpMessage;
+          if (!payload || typeof payload !== "object") {
+            return;
+          }
+
+          if (payload.type === "dump-prefetch") {
+            setTotal(payload.total);
+            setBatchCount(payload.batchCount);
+            setProgress(0);
+            setSuccessRate(0);
+            setProcessed(0);
+            setBatchIndex(0);
+            const shouldStart = startAfterPrefetchRef.current;
+            startAfterPrefetchRef.current = false;
+            statusRef.current = "idle";
+            setStatus("idle");
+            socket.close();
+            if (shouldStart) {
+              setTimeout(() => {
+                startDumpInternalRef.current();
+              }, 0);
+            }
+            return;
+          }
+
+          if (payload.type === "dump-error") {
+            startAfterPrefetchRef.current = false;
+            setStatus("error");
+            statusRef.current = "error";
+            setErrorMessage(payload.message);
+            socket.close();
+          }
+        } catch (_error) {
+          startAfterPrefetchRef.current = false;
+          setStatus("error");
+          statusRef.current = "error";
+          setErrorMessage(t("dump.error"));
+        }
+      };
+
+      socket.onerror = () => {
+        startAfterPrefetchRef.current = false;
+        setStatus("error");
+        statusRef.current = "error";
+        setErrorMessage(t("dump.error"));
+      };
+
+      socket.onclose = (event) => {
+        socketRef.current = null;
+        if (statusRef.current === "prefetching") {
+          startAfterPrefetchRef.current = false;
+          setStatus("error");
+          statusRef.current = "error";
+          setErrorMessage(`${t("dump.error")} (${event.code})`);
+        }
+      };
+    },
+    [connectionId, t]
+  );
+
+  const startDumpInternal = useCallback(() => {
     if (!connectionId) {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dump.error"));
       return;
     }
 
     if (
-      status === "connecting" ||
-      status === "running" ||
-      status === "prefetching"
+      statusRef.current === "connecting" ||
+      statusRef.current === "running" ||
+      statusRef.current === "prefetching"
     ) {
       return;
     }
@@ -248,6 +335,7 @@ const DumpExportModal = ({
     const wsUrl = resolveWsUrl("/ws/dump", connectionId);
     if (!wsUrl) {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dump.error"));
       return;
     }
@@ -271,6 +359,7 @@ const DumpExportModal = ({
         switch (payload.type) {
           case "dump-start": {
             setStatus("running");
+            statusRef.current = "running";
             setTotal(payload.total);
             setBatchCount(payload.batchCount);
             if (payload.total === 0) {
@@ -290,6 +379,7 @@ const DumpExportModal = ({
           }
           case "dump-complete": {
             setStatus("done");
+            statusRef.current = "done";
             setProcessed(payload.processed);
             setTotal(payload.total);
             setProgress(100);
@@ -326,6 +416,7 @@ const DumpExportModal = ({
           }
           case "dump-cancelled": {
             setStatus("cancelled");
+            statusRef.current = "cancelled";
             setProcessed(payload.processed);
             setTotal(payload.total);
             const rate =
@@ -342,6 +433,7 @@ const DumpExportModal = ({
           }
           case "dump-error": {
             setStatus("error");
+            statusRef.current = "error";
             setErrorMessage(payload.message);
             break;
           }
@@ -350,12 +442,14 @@ const DumpExportModal = ({
         }
       } catch (_error) {
         setStatus("error");
+        statusRef.current = "error";
         setErrorMessage(t("dump.error"));
       }
     };
 
     socket.onerror = () => {
       setStatus("error");
+      statusRef.current = "error";
       setErrorMessage(t("dump.error"));
     };
 
@@ -367,101 +461,83 @@ const DumpExportModal = ({
         statusRef.current === "running"
       ) {
         setStatus("error");
+        statusRef.current = "error";
         setErrorMessage(`${t("dump.error")} (${event.code})`);
       }
     };
-  };
+  }, [connectionId, connectionHost, connectionName, connectionPort, t, total]);
 
-  const handlePrefetchDump = () => {
-    if (!connectionId) {
-      setStatus("error");
-      setErrorMessage(t("dump.error"));
+  useEffect(() => {
+    startDumpInternalRef.current = startDumpInternal;
+  }, [startDumpInternal]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      socketRef.current?.close();
+      socketRef.current = null;
+      payloadRef.current = null;
+      saveHandleRef.current = null;
       return;
     }
 
-    if (
-      status === "connecting" ||
-      status === "running" ||
-      status === "prefetching"
-    ) {
-      return;
-    }
-
-    socketRef.current?.close();
-    socketRef.current = null;
-    payloadRef.current = null;
-
-    setStatus("prefetching");
-    statusRef.current = "prefetching";
+    setStatus("idle");
+    statusRef.current = "idle";
     setProgress(0);
     setSuccessRate(0);
     setProcessed(0);
+    setTotal(0);
     setBatchIndex(0);
     setBatchCount(0);
     setErrorMessage("");
     setSaveMessage("");
     setDownloadName("");
+    setSaveHandleName("");
+    dataRef.current = [];
+    payloadRef.current = null;
+    saveHandleRef.current = null;
     startedAtRef.current = "";
+    startAfterPrefetchRef.current = false;
 
-    const wsUrl = resolveWsUrl("/ws/dump", connectionId);
-    if (!wsUrl) {
-      setStatus("error");
-      setErrorMessage(t("dump.error"));
-      return;
+    if (connectionId) {
+      handlePrefetchDump({ force: true });
     }
 
-    const socket = new WebSocket(wsUrl);
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      socket.send(
-        JSON.stringify({ type: "prefetch", batchSize: DEFAULT_BATCH_SIZE })
-      );
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const payload = JSON.parse(event.data) as DumpMessage;
-        if (!payload || typeof payload !== "object") {
-          return;
-        }
-
-        if (payload.type === "dump-prefetch") {
-          setTotal(payload.total);
-          setBatchCount(payload.batchCount);
-          setProgress(0);
-          setSuccessRate(0);
-          setProcessed(0);
-          setBatchIndex(0);
-          statusRef.current = "idle";
-          setStatus("idle");
-          socket.close();
-          return;
-        }
-
-        if (payload.type === "dump-error") {
-          setStatus("error");
-          setErrorMessage(payload.message);
-          socket.close();
-        }
-      } catch (_error) {
-        setStatus("error");
-        setErrorMessage(t("dump.error"));
-      }
-    };
-
-    socket.onerror = () => {
-      setStatus("error");
-      setErrorMessage(t("dump.error"));
-    };
-
-    socket.onclose = (event) => {
+    return () => {
+      socketRef.current?.close();
       socketRef.current = null;
-      if (statusRef.current === "prefetching") {
-        setStatus("error");
-        setErrorMessage(`${t("dump.error")} (${event.code})`);
-      }
     };
+  }, [isOpen, connectionId, handlePrefetchDump]);
+
+  const handleCancel = () => {
+    startAfterPrefetchRef.current = false;
+    statusRef.current = "cancelled";
+    if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({ type: "cancel" }));
+      socketRef.current.close();
+    }
+    socketRef.current?.close();
+    setStatus("cancelled");
+  };
+
+  const handleClose = () => {
+    if (
+      status === "running" ||
+      status === "connecting" ||
+      status === "prefetching"
+    ) {
+      handleCancel();
+    }
+    onClose();
+  };
+
+  const handleStartDump = () => {
+    if (
+      statusRef.current === "connecting" ||
+      statusRef.current === "running"
+    ) {
+      return;
+    }
+    handlePrefetchDump({ autoStart: true, force: true });
   };
 
   const handleSaveDump = async () => {
@@ -581,98 +657,98 @@ const DumpExportModal = ({
           ) : status === "done" ? (
             <CheckCircleIcon className="w-6 h-6 text-emerald-500" />
           ) : status === "error" ? (
-          <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />
-        ) : null}
-      </div>
+            <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />
+          ) : null}
+        </div>
 
-      {supportsSavePicker ? (
-        <div className="mt-5 space-y-2">
-          <label
-            className={`text-sm font-medium ${
-              darkMode ? "text-gray-200" : "text-gray-700"
-            }`}
-          >
-            {t("dump.saveLocation")}
-          </label>
-          <div
-            className={`rounded-xl border-2 border-dashed p-4 transition-all ${
-              darkMode
-                ? "border-gray-700 bg-gray-900/40"
-                : "border-gray-200 bg-gray-50"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={async () => {
-                const picker = (
-                  window as unknown as {
-                    showSaveFilePicker?: (options: {
-                      suggestedName?: string;
-                      types?: {
-                        description: string;
-                        accept: Record<string, string[]>;
-                      }[];
-                    }) => Promise<FileSystemFileHandle>;
-                  }
-                ).showSaveFilePicker;
-
-                if (!picker) {
-                  return;
-                }
-
-                try {
-                  const handle = await picker({
-                    suggestedName:
-                      downloadName ||
-                      buildDumpFilename(
-                        connectionName,
-                        connectionHost,
-                        connectionPort
-                      ),
-                    types: [
-                      {
-                        description: "JSON",
-                        accept: { "application/json": [".json"] }
-                      }
-                    ]
-                  });
-                  saveHandleRef.current = handle;
-                  setSaveHandleName(handle.name);
-                } catch (error) {
-                  if ((error as { name?: string }).name !== "AbortError") {
-                    setErrorMessage(t("dump.saveError"));
-                  }
-                }
-              }}
-              className={toneButton("neutral", darkMode)}
-            >
-              {t("dump.chooseLocation")}
-            </button>
-            <p
-              className={`mt-2 text-xs ${
-                darkMode ? "text-gray-400" : "text-gray-500"
+        {supportsSavePicker ? (
+          <div className="mt-5 space-y-2">
+            <label
+              className={`text-sm font-medium ${
+                darkMode ? "text-gray-200" : "text-gray-700"
               }`}
             >
-              {t("dump.saveHint")}
-            </p>
-            {saveHandleName ? (
+              {t("dump.saveLocation")}
+            </label>
+            <div
+              className={`rounded-xl border-2 border-dashed p-4 transition-all ${
+                darkMode
+                  ? "border-gray-700 bg-gray-900/40"
+                  : "border-gray-200 bg-gray-50"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={async () => {
+                  const picker = (
+                    window as unknown as {
+                      showSaveFilePicker?: (options: {
+                        suggestedName?: string;
+                        types?: {
+                          description: string;
+                          accept: Record<string, string[]>;
+                        }[];
+                      }) => Promise<FileSystemFileHandle>;
+                    }
+                  ).showSaveFilePicker;
+
+                  if (!picker) {
+                    return;
+                  }
+
+                  try {
+                    const handle = await picker({
+                      suggestedName:
+                        downloadName ||
+                        buildDumpFilename(
+                          connectionName,
+                          connectionHost,
+                          connectionPort
+                        ),
+                      types: [
+                        {
+                          description: "JSON",
+                          accept: { "application/json": [".json"] }
+                        }
+                      ]
+                    });
+                    saveHandleRef.current = handle;
+                    setSaveHandleName(handle.name);
+                  } catch (error) {
+                    if ((error as { name?: string }).name !== "AbortError") {
+                      setErrorMessage(t("dump.saveError"));
+                    }
+                  }
+                }}
+                className={toneButton("neutral", darkMode)}
+              >
+                {t("dump.chooseLocation")}
+              </button>
               <p
                 className={`mt-2 text-xs ${
-                  darkMode ? "text-gray-300" : "text-gray-600"
+                  darkMode ? "text-gray-400" : "text-gray-500"
                 }`}
               >
-                {t("dump.locationSelected")}: {saveHandleName}
+                {t("dump.saveHint")}
               </p>
-            ) : null}
+              {saveHandleName ? (
+                <p
+                  className={`mt-2 text-xs ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  {t("dump.locationSelected")}: {saveHandleName}
+                </p>
+              ) : null}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      {statusLabel ? (
-        <p
-          className={`mt-4 text-sm ${
-            darkMode ? "text-gray-300" : "text-gray-600"
-          }`}
+        {statusLabel ? (
+          <p
+            className={`mt-4 text-sm ${
+              darkMode ? "text-gray-300" : "text-gray-600"
+            }`}
           >
             {statusLabel}
           </p>

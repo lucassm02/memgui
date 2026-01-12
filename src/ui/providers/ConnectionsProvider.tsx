@@ -316,7 +316,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   }, [isConnected, currentConnection.id, refreshKeyCount]);
 
   const handleLoadKeys = useCallback(
-    async (showLoadingModal = true, search?: string, limit?: number) => {
+    async (
+      showLoadingModal = true,
+      search?: string,
+      limit?: number,
+      options?: { force?: boolean }
+    ) => {
       const connectionId = activeConnectionIdRef.current;
       // Avoid stacking identical key fetches for the same connection context
       if (
@@ -329,6 +334,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
       // Skip if a key-count refresh is already in-flight for this connection
       if (
+        !options?.force &&
         connectionId &&
         isRefreshingKeyCountRef.current &&
         refreshingKeyCountConnectionRef.current === connectionId &&
