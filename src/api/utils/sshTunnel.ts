@@ -73,13 +73,11 @@ export function createSshTunnel({
     const client = new Client();
     let server: net.Server | null = null;
     let settled = false;
-    let hostKeyFailure:
-      | {
-          code: SshHostKeyErrorCode;
-          fingerprint: string;
-          expectedFingerprint?: string;
-        }
-      | null = null;
+    let hostKeyFailure: {
+      code: SshHostKeyErrorCode;
+      fingerprint: string;
+      expectedFingerprint?: string;
+    } | null = null;
 
     const cleanup = () => {
       if (server) {
@@ -106,16 +104,22 @@ export function createSshTunnel({
 
     client.on("ready", () => {
       server = net.createServer((socket) => {
-        client.forwardOut(LOCAL_HOST, 0, remoteHost, remotePort, (err, stream) => {
-          if (err) {
-            socket.destroy();
-            return;
-          }
+        client.forwardOut(
+          LOCAL_HOST,
+          0,
+          remoteHost,
+          remotePort,
+          (err, stream) => {
+            if (err) {
+              socket.destroy();
+              return;
+            }
 
-          socket.pipe(stream).pipe(socket);
-          stream.on("error", () => socket.destroy());
-          socket.on("error", () => stream.destroy());
-        });
+            socket.pipe(stream).pipe(socket);
+            stream.on("error", () => socket.destroy());
+            socket.on("error", () => stream.destroy());
+          }
+        );
       });
 
       server.once("error", (err) =>

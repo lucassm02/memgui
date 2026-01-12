@@ -160,7 +160,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       | undefined;
     if (!data) return null;
     const code = data.code;
-    if (code !== "SSH_HOST_KEY_UNVERIFIED" && code !== "SSH_HOST_KEY_MISMATCH") {
+    if (
+      code !== "SSH_HOST_KEY_UNVERIFIED" &&
+      code !== "SSH_HOST_KEY_MISMATCH"
+    ) {
       return null;
     }
     if (!data.fingerprint || typeof data.fingerprint !== "string") {
@@ -238,7 +241,13 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setSavedConnections(sanitizedConnections);
-  }, [getKey, setKey, canPersistSshSecrets, hasSshSecrets, sanitizeConnectionForStorage]);
+  }, [
+    getKey,
+    setKey,
+    canPersistSshSecrets,
+    hasSshSecrets,
+    sanitizeConnectionForStorage
+  ]);
 
   useEffect(() => {
     loadConnections();
@@ -470,7 +479,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
       if (ssh && !hasSshSecrets(ssh)) {
         showAlert(t("connectionModal.sshAuthRequired"), "error");
-        openConnectionModal(connection ?? ({ ...params, id: "" } as Connection));
+        openConnectionModal(
+          connection ?? ({ ...params, id: "" } as Connection)
+        );
         return false;
       }
 

@@ -31,9 +31,7 @@ export default [
       parser: tsParser,
       globals: globals.browser,
       parserOptions: {
-        ecmaFeatures: { jsx: true },
-        project: ["./src/api/tsconfig.json", "./src/ui/tsconfig.json"],
-        tsconfigRootDir: process.cwd()
+        ecmaFeatures: { jsx: true }
       }
     },
     settings: {
@@ -85,6 +83,15 @@ export default [
           alphabetize: { order: "asc", caseInsensitive: true }
         }
       ]
+    }
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        project: ["./src/api/tsconfig.json", "./src/ui/tsconfig.json"],
+        tsconfigRootDir: process.cwd()
+      }
     }
   }
 ];

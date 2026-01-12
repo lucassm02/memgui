@@ -33,7 +33,8 @@ const sshSchema = z
       .optional(),
     hostKeyFingerprint: z
       .string({
-        invalid_type_error: "A impressão digital do host SSH deve ser uma string."
+        invalid_type_error:
+          "A impressão digital do host SSH deve ser uma string."
       })
       .trim()
       .min(1, {

@@ -1,6 +1,6 @@
 import { logger } from "./logger";
-import { MemcachedConnection } from "@/api/types";
 import { closeSshTunnel } from "./sshTunnel";
+import { MemcachedConnection } from "@/api/types";
 
 class ConnectionManager {
   private static instance: ConnectionManager;

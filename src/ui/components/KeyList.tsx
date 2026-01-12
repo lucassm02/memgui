@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
+  ArrowDownTrayIcon,
   ArrowPathIcon,
+  ArrowUpTrayIcon,
   DocumentMagnifyingGlassIcon,
   PencilSquareIcon,
   PlusIcon,
@@ -16,6 +18,8 @@ import { toneButton } from "../utils/buttonTone";
 import { formatBytes } from "../utils/formatBytes";
 import CreateKeyModal from "./CreateKeyModal";
 import Disclaimer from "./Disclaimer";
+import DumpExportModal from "./DumpExportModal";
+import DumpImportModal from "./DumpImportModal";
 import EditKeyModal from "./EditKeyModal";
 import ViewDataModal from "./ViewDataModal";
 
@@ -29,7 +33,8 @@ const KeyList = () => {
     handleEditKey,
     currentConnection,
     handleFlushAllKeys,
-    totalKeyCount
+    totalKeyCount,
+    refreshKeyCount
   } = useConnections();
 
   const { openCreateModal, openEditModal, openViewDataModal, showConfirm } =
@@ -40,11 +45,18 @@ const KeyList = () => {
   const [maxItems, setMaxItems] = useState(5);
   const [autoUpdate, setAutoUpdate] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [dumpModalOpen, setDumpModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   useEffect(() => {
     const show = !!(currentConnection.username && currentConnection.password);
     setShowDisclaimer(show);
   }, [currentConnection.password, currentConnection.username]);
+
+  useEffect(() => {
+    setDumpModalOpen(false);
+    setImportModalOpen(false);
+  }, [currentConnection.id]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -97,6 +109,8 @@ const KeyList = () => {
   }, [searchTerm, maxItems, currentConnection.id]);
 
   const filteredKeys = keys;
+  const exportDisabled = !currentConnection.id;
+  const importDisabled = !currentConnection.id;
 
   const handleConfirmFlushAll = () => {
     showConfirm({
@@ -178,6 +192,28 @@ const KeyList = () => {
             >
               <PlusIcon className="w-5 h-5" />
               {t("keyList.create")}
+            </button>
+
+            <button
+              onClick={() => setDumpModalOpen(true)}
+              className={`${toneButton("neutral", darkMode)} ${
+                exportDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={exportDisabled}
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+              {t("keyList.export")}
+            </button>
+
+            <button
+              onClick={() => setImportModalOpen(true)}
+              className={`${toneButton("neutral", darkMode)} ${
+                importDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={importDisabled}
+            >
+              <ArrowUpTrayIcon className="w-5 h-5" />
+              {t("keyList.import")}
             </button>
 
             <button
@@ -326,6 +362,23 @@ const KeyList = () => {
       <CreateKeyModal onSave={handleCreateKey} />
       <EditKeyModal onSave={handleEditKey} />
       <ViewDataModal />
+      <DumpExportModal
+        isOpen={dumpModalOpen}
+        onClose={() => setDumpModalOpen(false)}
+        connectionId={currentConnection.id}
+        connectionName={currentConnection.name}
+        connectionHost={currentConnection.host}
+        connectionPort={currentConnection.port}
+      />
+      <DumpImportModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        connectionId={currentConnection.id}
+        onImportComplete={() => {
+          void refreshKeyCount();
+          void handleLoadKeys(true, searchTerm, maxItems);
+        }}
+      />
     </div>
   );
 };
