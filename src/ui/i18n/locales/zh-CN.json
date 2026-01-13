@@ -40,7 +40,7 @@
     "setupGuideLink": "配置指南"
   },
   "connectionList": {
-    "title": "已保存的连接",
+    "title": "连接",
     "empty": "未找到连接",
     "edit": "编辑连接"
   },

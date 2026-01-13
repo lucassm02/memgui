@@ -40,7 +40,7 @@
     "setupGuideLink": "セットアップガイド"
   },
   "connectionList": {
-    "title": "保存された接続",
+    "title": "接続",
     "empty": "接続が見つかりません",
     "edit": "接続を編集"
   },

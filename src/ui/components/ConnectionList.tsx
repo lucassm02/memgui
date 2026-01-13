@@ -1,6 +1,7 @@
 import {
   LinkIcon,
   PencilSquareIcon,
+  PlusIcon,
   SignalSlashIcon,
   TrashIcon,
   XMarkIcon
@@ -63,6 +64,10 @@ const ConnectionList = () => {
     return matchById || matchByAddress;
   };
 
+  const handleCreateConnection = () => {
+    openConnectionModal();
+  };
+
   return (
     <>
       {menuIsOpen && (
@@ -70,7 +75,7 @@ const ConnectionList = () => {
       )}
 
       <div
-        className={`fixed left-0 ${enabled ? "top-10" : "top-0"} h-screen w-80 z-50 transition-transform duration-300 shadow-lg
+        className={`fixed left-0 ${enabled ? "top-10" : "top-0"} bottom-0 w-80 z-50 transition-transform duration-300 shadow-lg
         ${
           darkMode
             ? "bg-gray-800 border-r border-gray-700"
@@ -79,111 +84,137 @@ const ConnectionList = () => {
         ${menuIsOpen ? "translate-x-0" : "-translate-x-full"}
       `}
       >
-        <div className="p-4 space-y-2">
-          <div className="flex justify-between items-center">
-            <h3
-              className={`text-sm font-medium ${
-                darkMode ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              {t("connectionList.title")}
-            </h3>
-            <button
-              onClick={closeMenu}
-              className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
-            >
-              <XMarkIcon
-                className={`w-6 h-6 ${
+        <div className="flex h-full flex-col p-4">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <h3
+                className={`text-sm font-medium ${
                   darkMode ? "text-gray-300" : "text-gray-600"
                 }`}
-              />
+              >
+                {t("connectionList.title")}
+              </h3>
+              <button
+                onClick={closeMenu}
+                className={`${toneButton("neutral", darkMode, "icon")} !p-1`}
+              >
+                <XMarkIcon
+                  className={`w-6 h-6 ${
+                    darkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+                />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleCreateConnection}
+              className={`${toneButton("success", darkMode)} w-full justify-center`}
+            >
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-full border ${
+                  darkMode
+                    ? "border-green-200/30 bg-green-200/15 text-green-100"
+                    : "border-green-200/70 bg-white/80 text-green-700"
+                }`}
+              >
+                <PlusIcon className="h-3.5 w-3.5" />
+              </span>
+              <span>{t("connectionHome.createButton")}</span>
             </button>
           </div>
 
-          {savedConnections.length === 0 && (
-            <div
-              className={`p-4 text-center rounded-xl flex flex-col items-center gap-2 ${
-                darkMode
-                  ? "bg-gray-700/30 text-gray-400"
-                  : "bg-gray-50 text-gray-500"
-              }`}
-            >
-              <SignalSlashIcon className="w-8 h-8 text-gray-400" />
-              <p>{t("connectionList.empty")}</p>
-            </div>
-          )}
-
-          {sortedConnections.map((conn) => {
-            const isActive = isConnectionActive(conn);
-            return (
-              <div
-                key={getConnectionIdentity(conn)}
-                className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer
-                  ${darkMode ? "border-gray-600 hover:bg-gray-700/40" : "border-gray-200 hover:bg-gray-50"}
-                  ${
-                    isActive
-                      ? darkMode
-                        ? "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/15"
-                        : "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/20"
-                      : ""
-                  }
-                  transition-all duration-200 shadow-sm`}
-                onClick={() => choseConnection(conn)}
-              >
-                <div className="flex-1">
-                  <div
-                    className={`flex items-center gap-2 ${
-                      darkMode ? "text-gray-100" : "text-gray-900"
-                    }`}
-                  >
-                    <LinkIcon
-                      className={`w-4 h-4 ${
-                        isActive ? "text-emerald-400" : "text-blue-400"
-                      }`}
-                    />
-                    <span className="text-sm font-medium">{conn.name}</span>
-                  </div>
-                  <div
-                    className={`text-xs mt-1 ${
-                      darkMode ? "text-gray-400" : "text-gray-500"
-                    }`}
-                  >
-                    {conn.host}:{conn.port}
-                    <span className="ml-2 opacity-75">
-                      ID: {conn.id?.slice(0, 8)}
-                    </span>
-                  </div>
+          <div className="mt-4 flex-1 overflow-y-auto pr-1">
+            <div className="space-y-2">
+              {savedConnections.length === 0 && (
+                <div
+                  className={`p-4 text-center rounded-xl flex flex-col items-center gap-2 ${
+                    darkMode
+                      ? "bg-gray-700/30 text-gray-400"
+                      : "bg-gray-50 text-gray-500"
+                  }`}
+                >
+                  <SignalSlashIcon className="w-8 h-8 text-gray-400" />
+                  <p>{t("connectionList.empty")}</p>
                 </div>
+              )}
 
-                {!isConnected && (
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openConnectionModal(conn);
-                      }}
-                      className={`${toneButton("primary", darkMode, "icon")} !p-1`}
-                      aria-label={t("connectionList.edit")}
-                    >
-                      <PencilSquareIcon className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteConnection(conn);
-                      }}
-                      className={`${toneButton("danger", darkMode, "icon")} !p-1`}
-                      aria-label={t("common.delete")}
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
+              {sortedConnections.map((conn) => {
+                const isActive = isConnectionActive(conn);
+                return (
+                  <div
+                    key={getConnectionIdentity(conn)}
+                    className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer
+                      ${darkMode ? "border-gray-600 hover:bg-gray-700/40" : "border-gray-200 hover:bg-gray-50"}
+                      ${
+                        isActive
+                          ? darkMode
+                            ? "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/15"
+                            : "border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/20"
+                          : ""
+                      }
+                      transition-all duration-200 shadow-sm`}
+                    onClick={() => choseConnection(conn)}
+                  >
+                    <div className="flex-1">
+                      <div
+                        className={`flex items-center gap-2 ${
+                          darkMode ? "text-gray-100" : "text-gray-900"
+                        }`}
+                      >
+                        <LinkIcon
+                          className={`w-4 h-4 ${
+                            isActive ? "text-emerald-400" : "text-blue-400"
+                          }`}
+                        />
+                        <span className="text-sm font-medium">{conn.name}</span>
+                      </div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {conn.host}:{conn.port}
+                      </div>
+                    </div>
+
+                    {!isConnected && (
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openConnectionModal(conn);
+                          }}
+                          className={`${toneButton("primary", darkMode, "icon")} !p-1`}
+                          aria-label={t("connectionList.edit")}
+                        >
+                          <PencilSquareIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteConnection(conn);
+                          }}
+                          className={`${toneButton("danger", darkMode, "icon")} !p-1`}
+                          aria-label={t("common.delete")}
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          </div>
 
-          <StorageSecurityPanel />
+          <div
+            className={`mt-4 border-t pt-4 shrink-0 ${
+              darkMode ? "border-gray-700/70" : "border-gray-200"
+            }`}
+          >
+            <StorageSecurityPanel />
+          </div>
         </div>
       </div>
     </>

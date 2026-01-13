@@ -40,7 +40,7 @@
     "setupGuideLink": "설정 가이드"
   },
   "connectionList": {
-    "title": "저장된 연결",
+    "title": "연결",
     "empty": "연결이 없습니다",
     "edit": "연결 편집"
   },

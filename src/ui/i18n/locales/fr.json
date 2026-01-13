@@ -40,7 +40,7 @@
     "setupGuideLink": "guide de configuration"
   },
   "connectionList": {
-    "title": "Connexions enregistrées",
+    "title": "Connexions",
     "empty": "Aucune connexion trouvée",
     "edit": "Modifier la connexion"
   },

@@ -40,7 +40,7 @@
     "setupGuideLink": "guia de configuração"
   },
   "connectionList": {
-    "title": "Conexões Salvas",
+    "title": "Conexões",
     "empty": "Nenhuma conexão encontrada",
     "edit": "Editar conexão"
   },

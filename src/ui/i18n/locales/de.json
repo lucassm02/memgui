@@ -40,7 +40,7 @@
     "setupGuideLink": "Einrichtungsleitfaden"
   },
   "connectionList": {
-    "title": "Gespeicherte Verbindungen",
+    "title": "Verbindungen",
     "empty": "Keine Verbindungen gefunden",
     "edit": "Verbindung bearbeiten"
   },

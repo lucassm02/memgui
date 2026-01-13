@@ -9,7 +9,11 @@ import { useTranslation } from "react-i18next";
 import { useDarkMode, useModal, useStorage } from "@/ui/hooks";
 import { toneButton } from "@/ui/utils/buttonTone";
 
-const StorageSecurityPanel = () => {
+type StorageSecurityPanelProps = {
+  className?: string;
+};
+
+const StorageSecurityPanel = ({ className = "" }: StorageSecurityPanelProps) => {
   const { darkMode } = useDarkMode();
   const { showAlert, showConfirm, showLoading, dismissLoading } = useModal();
   const {
@@ -104,9 +108,9 @@ const StorageSecurityPanel = () => {
 
   return (
     <div
-      className={`mt-6 p-4 rounded-xl border ${
+      className={`p-4 rounded-xl border ${
         darkMode ? "bg-gray-900/40 border-gray-700" : "bg-white border-gray-200"
-      }`}
+      } ${className}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
