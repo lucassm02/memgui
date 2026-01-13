@@ -38,6 +38,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libarchive-tools
-          sudo snap install snapcraft --classic
-      - name: Build and publish
+      - name: Build and publish (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: yarn build:all --publish=always --linux AppImage deb
+      - name: Build and publish (Windows)
+        if: matrix.os == 'windows-latest'
         run: yarn build:all --publish=always

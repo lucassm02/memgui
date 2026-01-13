@@ -52,6 +52,7 @@ app.whenReady().then(async () => {
       PRODUCTION_PORT = await server();
     }
   } catch (error) {
+    console.error("Failed to start server:", error);
     app.quit();
   }
 

@@ -13,12 +13,11 @@ import { logger } from "./api/utils";
 import { registerDumpWebsocket } from "./api/ws/dump";
 import { registerImportWebsocket } from "./api/ws/import";
 
-function loadEnvFile() {
+function loadEnvFile(dev: boolean = false) {
+  if (!dev) return;
   const envPath = path.resolve(process.cwd(), ".env");
   dotenv.config({ path: envPath });
 }
-
-loadEnvFile();
 
 export async function server(port = 0, dev: boolean = false, host?: string) {
   try {
@@ -145,5 +144,6 @@ type Argv = { port?: number; host?: string; start?: boolean; dev?: boolean };
 const { port, host, start, dev } = cli.argv as Argv;
 
 if (start) {
+  loadEnvFile(dev);
   server(port, dev, host);
 }
