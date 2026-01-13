@@ -540,6 +540,41 @@ const DumpExportModal = ({
     handlePrefetchDump({ autoStart: true, force: true });
   };
 
+  const handlePickSaveLocation = async () => {
+    const picker = (
+      window as unknown as {
+        showSaveFilePicker?: (options: {
+          suggestedName?: string;
+          types?: { description: string; accept: Record<string, string[]> }[];
+        }) => Promise<FileSystemFileHandle>;
+      }
+    ).showSaveFilePicker;
+
+    if (!picker) {
+      return;
+    }
+
+    try {
+      const handle = await picker({
+        suggestedName:
+          downloadName ||
+          buildDumpFilename(connectionName, connectionHost, connectionPort),
+        types: [
+          {
+            description: "JSON",
+            accept: { "application/json": [".json"] }
+          }
+        ]
+      });
+      saveHandleRef.current = handle;
+      setSaveHandleName(handle.name);
+    } catch (error) {
+      if ((error as { name?: string }).name !== "AbortError") {
+        setErrorMessage(t("dump.saveError"));
+      }
+    }
+  };
+
   const handleSaveDump = async () => {
     const payload = payloadRef.current;
     if (!payload) {
@@ -662,7 +697,7 @@ const DumpExportModal = ({
         </div>
 
         {supportsSavePicker ? (
-          <div className="mt-5 space-y-2">
+          <div className="mt-6 flex flex-col gap-3">
             <label
               className={`text-sm font-medium ${
                 darkMode ? "text-gray-200" : "text-gray-700"
@@ -671,75 +706,56 @@ const DumpExportModal = ({
               {t("dump.saveLocation")}
             </label>
             <div
-              className={`rounded-xl border-2 border-dashed p-4 transition-all ${
+              role="button"
+              tabIndex={0}
+              aria-label={t("dump.chooseLocation")}
+              onClick={() => {
+                void handlePickSaveLocation();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  void handlePickSaveLocation();
+                }
+              }}
+              className={`rounded-xl border-2 border-dashed p-5 transition-all cursor-pointer hover:border-blue-500/60 hover:bg-blue-500/5 ${
                 darkMode
                   ? "border-gray-700 bg-gray-900/40"
                   : "border-gray-200 bg-gray-50"
               }`}
             >
-              <button
-                type="button"
-                onClick={async () => {
-                  const picker = (
-                    window as unknown as {
-                      showSaveFilePicker?: (options: {
-                        suggestedName?: string;
-                        types?: {
-                          description: string;
-                          accept: Record<string, string[]>;
-                        }[];
-                      }) => Promise<FileSystemFileHandle>;
-                    }
-                  ).showSaveFilePicker;
-
-                  if (!picker) {
-                    return;
-                  }
-
-                  try {
-                    const handle = await picker({
-                      suggestedName:
-                        downloadName ||
-                        buildDumpFilename(
-                          connectionName,
-                          connectionHost,
-                          connectionPort
-                        ),
-                      types: [
-                        {
-                          description: "JSON",
-                          accept: { "application/json": [".json"] }
-                        }
-                      ]
-                    });
-                    saveHandleRef.current = handle;
-                    setSaveHandleName(handle.name);
-                  } catch (error) {
-                    if ((error as { name?: string }).name !== "AbortError") {
-                      setErrorMessage(t("dump.saveError"));
-                    }
-                  }
-                }}
-                className={toneButton("neutral", darkMode)}
-              >
-                {t("dump.chooseLocation")}
-              </button>
-              <p
-                className={`mt-2 text-xs ${
-                  darkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                {t("dump.saveHint")}
-              </p>
-              {saveHandleName ? (
-                <p
-                  className={`mt-2 text-xs ${
-                    darkMode ? "text-gray-300" : "text-gray-600"
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2.5 rounded-lg border ${
+                    darkMode
+                      ? "border-gray-700 bg-gray-800 text-gray-100"
+                      : "border-gray-200 bg-white text-gray-700"
                   }`}
                 >
-                  {t("dump.locationSelected")}: {saveHandleName}
-                </p>
-              ) : null}
+                  <ArrowDownTrayIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">
+                    {t("dump.chooseLocation")}
+                  </p>
+                  <p
+                    className={`mt-1 text-xs ${
+                      darkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    {t("dump.saveHint")}
+                  </p>
+                  {saveHandleName ? (
+                    <p
+                      className={`mt-2 text-xs ${
+                        darkMode ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      {t("dump.locationSelected")}: {saveHandleName}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </div>
         ) : null}

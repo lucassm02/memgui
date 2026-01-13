@@ -188,6 +188,7 @@ const DumpImportModal = ({
     statusRef.current = status;
   }, [status]);
 
+  const canPickFile = status !== "running" && status !== "connecting";
   const canStart = status === "ready" && !!connectionId;
 
   const cleanupSocket = () => {
@@ -535,7 +536,7 @@ const DumpImportModal = ({
           ) : null}
         </div>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-6 flex flex-col gap-4">
           <label
             className={`text-sm font-medium ${
               darkMode ? "text-gray-200" : "text-gray-700"
@@ -544,12 +545,33 @@ const DumpImportModal = ({
             {t("dumpImport.fileLabel")}
           </label>
           <div
-            className={`rounded-xl border-2 border-dashed p-4 transition-all ${
+            role="button"
+            tabIndex={canPickFile ? 0 : -1}
+            aria-label={t("dumpImport.chooseFile")}
+            onClick={() => {
+              if (canPickFile) {
+                handlePickFile();
+              }
+            }}
+            onKeyDown={(event) => {
+              if (!canPickFile) {
+                return;
+              }
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handlePickFile();
+              }
+            }}
+            className={`rounded-xl border-2 border-dashed p-5 transition-all ${
               dragActive
                 ? "border-blue-500 bg-blue-500/10"
                 : darkMode
                   ? "border-gray-700 bg-gray-900/40"
                   : "border-gray-200 bg-gray-50"
+            } ${
+              canPickFile
+                ? "cursor-pointer hover:border-blue-500/60 hover:bg-blue-500/5"
+                : "cursor-not-allowed opacity-60"
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -560,38 +582,41 @@ const DumpImportModal = ({
               type="file"
               accept="application/json"
               onChange={handleFileChange}
-              disabled={status === "running" || status === "connecting"}
+              disabled={!canPickFile}
               className="sr-only"
             />
-            <button
-              type="button"
-              onClick={handlePickFile}
-              disabled={status === "running" || status === "connecting"}
-              className={`${toneButton("neutral", darkMode)} ${
-                status === "running" || status === "connecting"
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-            >
-              <ArrowUpTrayIcon className="w-5 h-5" />
-              {t("dumpImport.chooseFile")}
-            </button>
-            <p
-              className={`mt-2 text-xs ${
-                darkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              {t("dumpImport.fileHint")}
-            </p>
-            {fileName ? (
-              <p
-                className={`mt-2 text-xs ${
-                  darkMode ? "text-gray-300" : "text-gray-600"
+            <div className="flex items-start gap-3">
+              <div
+                className={`p-2.5 rounded-lg border ${
+                  darkMode
+                    ? "border-gray-700 bg-gray-800 text-gray-100"
+                    : "border-gray-200 bg-white text-gray-700"
                 }`}
               >
-                {t("dumpImport.fileSelected")}: {fileName}
-              </p>
-            ) : null}
+                <ArrowUpTrayIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">
+                  {t("dumpImport.chooseFile")}
+                </p>
+                <p
+                  className={`mt-1 text-xs ${
+                    darkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  {t("dumpImport.fileHint")}
+                </p>
+                {fileName ? (
+                  <p
+                    className={`mt-2 text-xs ${
+                      darkMode ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
+                    {t("dumpImport.fileSelected")}: {fileName}
+                  </p>
+                ) : null}
+              </div>
+            </div>
           </div>
 
           {fileError ? (
