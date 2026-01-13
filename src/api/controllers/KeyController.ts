@@ -357,7 +357,10 @@ class KeyController {
         throw new Error("Valor curr_items invalido");
       }
 
-      response.json({ count });
+      const reservedCount = await this.getReservedKeyCount(connection);
+      const visibleCount = Math.max(0, count - reservedCount);
+
+      response.json({ count: visibleCount });
     } catch (error) {
       const message = "Falha ao contar chaves";
       logger.error(message, error);
@@ -743,6 +746,41 @@ class KeyController {
       : storedKeys;
 
     return { storedKeys, reservedIndexKeys, listKeys };
+  }
+
+  private async getReservedKeyCount(
+    connection: MemcachedConnection
+  ): Promise<number> {
+    try {
+      const response = await connection.client.get(RESERVED_KEYS.INDEXES);
+      if (!response?.value) {
+        return 0;
+      }
+
+      let indexKeys: string[] = [];
+      try {
+        const parsed = JSON.parse(response.value.toString());
+        if (Array.isArray(parsed)) {
+          indexKeys = Array.from(
+            new Set(
+              parsed.filter(
+                (key): key is string =>
+                  typeof key === "string" &&
+                  key.startsWith(RESERVED_KEYS.SHARD_PREFIX)
+              )
+            )
+          );
+        }
+      } catch (error) {
+        logger.error("Erro ao ler indice de chaves", error as Error);
+        return 1;
+      }
+
+      return 1 + indexKeys.length;
+    } catch (error) {
+      logger.error("Erro ao obter chaves reservadas", error as Error);
+      return 0;
+    }
   }
 
   private async sendCachedumpResponse(
