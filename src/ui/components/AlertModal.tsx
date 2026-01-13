@@ -107,7 +107,7 @@ const AlertModal = () => {
         </div>
 
         <p
-          className={`mt-3 text-sm ${
+          className={`mt-3 text-sm whitespace-pre-wrap break-words ${
             darkMode ? "text-gray-200" : "text-gray-800"
           }`}
         >
