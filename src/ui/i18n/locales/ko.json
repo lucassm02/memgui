@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "뒤로",
-    "stats": "통계",
+    "stats": "관리",
     "disconnect": "연결 해제"
   },
   "connectionHome": {
@@ -290,7 +290,7 @@
     "cancel": "취소"
   },
   "statistics": {
-    "title": "서버 통계",
+    "title": "관리",
     "advanced": "고급 모니터링",
     "slabs": "슬랩 통계",
     "host": "호스트",

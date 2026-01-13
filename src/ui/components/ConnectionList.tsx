@@ -86,11 +86,17 @@ const ConnectionList = () => {
       `}
       >
         <div className="flex h-full flex-col p-4">
-          <div className="space-y-3">
+          <div
+            className={`-mx-4 -mt-4 px-4 pt-4 pb-3 mb-5 border-b ${
+              darkMode
+                ? "bg-gray-900/80 border-gray-700/80"
+                : "bg-gray-100 border-gray-200"
+            }`}
+          >
             <div className="flex justify-between items-center">
               <h3
                 className={`text-sm font-medium ${
-                  darkMode ? "text-gray-300" : "text-gray-600"
+                  darkMode ? "text-gray-200" : "text-gray-700"
                 }`}
               >
                 {t("connectionList.title")}
@@ -106,17 +112,16 @@ const ConnectionList = () => {
                 />
               </button>
             </div>
-
-            <button
-              type="button"
-              onClick={handleCreateConnection}
-              className={`${toneButton("success", darkMode)} w-full justify-center`}
-            >
-              <PlusCircleIcon className="w-5 h-5" />
-
-              <span>{t("connectionHome.createButton")}</span>
-            </button>
           </div>
+
+          <button
+            type="button"
+            onClick={handleCreateConnection}
+            className={`${toneButton("success", darkMode)} w-full justify-center`}
+          >
+            <PlusCircleIcon className="w-5 h-5" />
+            <span>{t("connectionHome.createButton")}</span>
+          </button>
 
           <div className="mt-4 flex-1 overflow-y-auto pr-1">
             <div className="space-y-2">

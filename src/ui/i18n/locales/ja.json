@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "戻る",
-    "stats": "統計",
+    "stats": "管理",
     "disconnect": "切断"
   },
   "connectionHome": {
@@ -290,7 +290,7 @@
     "cancel": "キャンセル"
   },
   "statistics": {
-    "title": "サーバー統計",
+    "title": "管理",
     "advanced": "詳細モニタリング",
     "slabs": "スラブ統計",
     "host": "ホスト",

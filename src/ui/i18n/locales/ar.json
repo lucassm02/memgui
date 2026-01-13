@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "رجوع",
-    "stats": "الإحصائيات",
+    "stats": "الإدارة",
     "disconnect": "قطع الاتصال"
   },
   "connectionHome": {
@@ -290,7 +290,7 @@
     "cancel": "إلغاء"
   },
   "statistics": {
-    "title": "إحصاءات الخادم",
+    "title": "الإدارة",
     "advanced": "مراقبة متقدمة",
     "slabs": "إحصاءات الـ Slab",
     "host": "المضيف",

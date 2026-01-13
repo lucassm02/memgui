@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "返回",
-    "stats": "统计",
+    "stats": "管理",
     "disconnect": "断开连接"
   },
   "connectionHome": {
@@ -290,7 +290,7 @@
     "cancel": "取消"
   },
   "statistics": {
-    "title": "服务器统计",
+    "title": "管理",
     "advanced": "高级监控",
     "slabs": "Slab 统计",
     "host": "主机",

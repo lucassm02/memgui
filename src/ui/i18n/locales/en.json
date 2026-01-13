@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "Back",
-    "stats": "Statistics",
+    "stats": "Management",
     "disconnect": "Disconnect"
   },
   "connectionHome": {
@@ -290,7 +290,7 @@
     "cancel": "Cancel"
   },
   "statistics": {
-    "title": "Server Statistics",
+    "title": "Management",
     "advanced": "Advanced Monitoring",
     "slabs": "Slab Statistics",
     "host": "Host",
