@@ -488,8 +488,17 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const handleChoseConnection = async (params: Omit<Connection, "id">) => {
     const { host, name, port, timeout, password, username, ssh } = params;
     try {
+      const incomingIdentity = getIdentity(params);
+      const isAlreadyActive =
+        isConnected &&
+        currentConnection.id !== "" &&
+        getIdentity(currentConnection) === incomingIdentity;
+      if (isAlreadyActive) {
+        return true;
+      }
+
       const connection = savedConnections.find(
-        (c) => getIdentity(c) === getIdentity(params)
+        (c) => getIdentity(c) === incomingIdentity
       );
 
       if (!ensureSshEncryption(ssh)) {
