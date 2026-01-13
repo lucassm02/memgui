@@ -54,6 +54,9 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   const [formData, setFormData] = useState(defaultForm);
   const [isTesting, setIsTesting] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
+  const notifySshEncryptionRequired = () => {
+    showAlert(t("connectionModal.sshStorageWarning"), "warning");
+  };
 
   const buildSshConfig = () => {
     if (!formData.sshEnabled) return undefined;
@@ -138,6 +141,16 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const target = event.target;
+    if (
+      target instanceof HTMLInputElement &&
+      target.type === "checkbox" &&
+      target.name === "sshEnabled" &&
+      target.checked &&
+      !encryptionEnabled
+    ) {
+      notifySshEncryptionRequired();
+      return;
+    }
     const value = (() => {
       if (target instanceof HTMLInputElement) {
         if (target.type === "number") {
@@ -161,6 +174,10 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
     if (formRef.current && !formRef.current.reportValidity()) return;
+    if (formData.sshEnabled && !encryptionEnabled) {
+      notifySshEncryptionRequired();
+      return;
+    }
     if (isSshAuthMissing) {
       showAlert(t("connectionModal.sshAuthRequired"), "error");
       return;
@@ -175,6 +192,10 @@ const ConnectionModal = ({ onSubmit, onTest }: Props) => {
   const handleTestConnection = async () => {
     if (isTesting) return;
     if (formRef.current && !formRef.current.reportValidity()) return;
+    if (formData.sshEnabled && !encryptionEnabled) {
+      notifySshEncryptionRequired();
+      return;
+    }
     if (isSshAuthMissing) {
       showAlert(t("connectionModal.sshAuthRequired"), "error");
       return;

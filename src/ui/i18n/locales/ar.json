@@ -59,18 +59,18 @@
       "password": "كلمة المرور (اختياري)",
       "passwordPlaceholder": "أدخل كلمة المرور",
       "timeout": "المهلة بالثواني (300 كحد أدنى)",
-      "memcachedPort": "???? Memcached",
-      "authToggle": "??????? ????????",
-      "sshToggle": "??????? ??? SSH",
-      "sshHost": "???? SSH",
-      "sshHostPlaceholder": "????: server.example.com",
-      "sshPort": "???? SSH",
-      "sshUsername": "??? ?????? SSH",
-      "sshUsernamePlaceholder": "???? ??? ?????? SSH",
-      "sshPassword": "???? ???? SSH (???????)",
-      "sshPasswordPlaceholder": "???? ???? ???? SSH",
-      "sshPrivateKey": "??????? ????? ?? SSH (???????)",
-      "sshPrivateKeyPlaceholder": "???? ??????? ?????"
+      "memcachedPort": "منفذ Memcached",
+      "authToggle": "استخدام المصادقة",
+      "sshToggle": "الاتصال عبر SSH",
+      "sshHost": "مضيف SSH",
+      "sshHostPlaceholder": "مثال: server.example.com",
+      "sshPort": "منفذ SSH",
+      "sshUsername": "اسم مستخدم SSH",
+      "sshUsernamePlaceholder": "أدخل اسم مستخدم SSH",
+      "sshPassword": "كلمة مرور SSH (اختياري)",
+      "sshPasswordPlaceholder": "أدخل كلمة مرور SSH",
+      "sshPrivateKey": "المفتاح الخاص لـ SSH (اختياري)",
+      "sshPrivateKeyPlaceholder": "الصق المفتاح الخاص"
     },
     "authNote": "عند تفعيل المصادقة، لا يمكن إدارة سوى المفاتيح التي تم إنشاؤها في <strong>MemGUI</strong> بسبب قيود بروتوكول Memcached الموثّق.",
     "cancel": "إلغاء",
@@ -79,14 +79,14 @@
     "test": "اختبار",
     "testing": "جارٍ الاختبار...",
     "testSuccess": "تم الاتصال بنجاح!",
-    "sshAuthRequired": "???? ????? ???? ???? SSH ?? ????? ???.",
-    "sshStorageWarning": "?? ??? ??? ?????? ?????? SSH ?? ?? ??? ????? ????? ???????.",
-    "sshHostKeyTitle": "????? ????? ???? SSH",
-    "sshHostKeyMessage": "???? ???? SSH: {{fingerprint}}. ?? ??? ???? ???????",
-    "sshHostKeyMismatchTitle": "?? ????? ????? ???? SSH",
-    "sshHostKeyMismatchMessage": "?? ????? ????? ???? SSH. ???????: {{expected}}. ???????: {{fingerprint}}. ?? ??? ???????? ???????",
-    "sshHostKeyConfirm": "???",
-    "sshHostKeyCancel": "?????"
+    "sshAuthRequired": "يرجى إدخال كلمة مرور SSH أو مفتاح خاص.",
+    "sshStorageWarning": "??????? SSH? ???? ????? ???????.",
+    "sshHostKeyTitle": "تأكيد مفتاح مضيف SSH",
+    "sshHostKeyMessage": "بصمة مضيف SSH: {{fingerprint}}. هل تثق بهذا المضيف؟",
+    "sshHostKeyMismatchTitle": "تم تغيير مفتاح مضيف SSH",
+    "sshHostKeyMismatchMessage": "تم تغيير مفتاح مضيف SSH. المتوقع: {{expected}}. المستلم: {{fingerprint}}. هل تثق بالمفتاح الجديد؟",
+    "sshHostKeyConfirm": "ثق",
+    "sshHostKeyCancel": "إلغاء"
   },
   "setupGuide": {
     "title": "دليل الإعداد",
@@ -98,39 +98,39 @@
       },
       "address": {
         "title": "عنوان الخادم",
-        "description": "???? ????? IP ?? ???? ??????. ????????? ?????? ?????? <code>127.0.0.1</code> ?? <code>localhost</code>. ??? ??? ?????? SSH? ???? ???? SSH."
+        "description": "أدخل عنوان IP أو نطاق الخادم. للاستخدام المحلي، استخدم <code>127.0.0.1</code> أو <code>localhost</code>. إذا كنت تستخدم SSH، أدخل مضيف SSH."
       },
       "port": {
-        "title": "???? Memcached",
-        "description": "?????? ????????? ?? Memcached ?? <strong>11211</strong>. ??? ?? ??????? ?????? ?????? ????????? ??? ??????."
+        "title": "منفذ Memcached",
+        "description": "المنفذ الافتراضي لـ Memcached هو <strong>11211</strong>. إذا تم تغييره، استخدم المنفذ المُعد على الخادم."
       },
       "auth": {
         "title": "المصادقة (اختياري)",
-        "description": "???? ???????? ????? ??? ???????? ????? ?????? ??? ??? ??? ?????? ????? ???."
+        "description": "فعّل المصادقة وأدخل اسم المستخدم وكلمة المرور فقط إذا كان خادمك يتطلب ذلك."
       },
       "timeout": {
         "title": "المهلة",
         "description": "تحدد المهلة أقصى زمن للاستجابة."
       },
       "sshToggle": {
-        "title": "????? SSH (???????)",
-        "description": "???? ?????? ??? ???? ???? ??? SSH."
+        "title": "اتصال SSH (اختياري)",
+        "description": "فعّل هذا للوصول إلى خادم بعيد عبر SSH."
       },
       "sshPort": {
-        "title": "???? SSH",
-        "description": "???? SSH ????????? ?? <strong>22</strong>."
+        "title": "منفذ SSH",
+        "description": "المنفذ الافتراضي لـ SSH هو <strong>22</strong>."
       },
       "sshAuth": {
-        "title": "?????? SSH (????????)",
-        "description": "???? ??? ????????/???? ?????? ?? ??????? ????? ???????? ??? SSH."
+        "title": "مصادقة SSH (اختياري)",
+        "description": "أدخل اسم المستخدم/كلمة المرور أو مفتاحًا خاصًا للمصادقة عبر SSH."
       },
       "sshHostKey": {
-        "title": "?????? ?? ???? SSH",
-        "description": "?? ??????? ????? ?????? ??? ?????? ????? ??????."
+        "title": "التحقق من مضيف SSH",
+        "description": "عند الاتصال لأول مرة، سيُطلب منك الوثوق ببصمة المضيف."
       },
       "sshStorage": {
-        "title": "???? SSH",
-        "description": "???? ?????? ?????? SSH? ???? ????? ???????."
+        "title": "أمان SSH",
+        "description": "??????? SSH? ???? ????? ???????."
       }
     },
     "close": "إغلاق"
@@ -144,8 +144,8 @@
     "refresh": "تحديث",
     "autoRefresh": "تحديث تلقائي",
     "clearAll": "مسح الكل",
-    "export": "Export Dump",
-    "import": "Import Dump",
+    "export": "تصدير dump",
+    "import": "استيراد dump",
     "searchPlaceholder": "اكتب مفتاحًا أو تعبيرًا نظاميًا...",
     "columns": {
       "key": "المفتاح",
@@ -201,79 +201,79 @@
     "close": "إغلاق"
   },
   "dump": {
-    "title": "Export dump",
-    "description": "Dump export runs in batches to avoid overloading the server.",
-    "preparing": "Preparing dump...",
-    "running": "Dump in progress...",
-    "done": "Dump completed.",
-    "cancelled": "Dump cancelled.",
-    "error": "Failed to export dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "download": "Download dump",
-    "prefetch": "Calculate total",
-    "prefetching": "Calculating total...",
-    "start": "Start export",
-    "save": "Save dump",
-    "saved": "Dump saved.",
-    "saveError": "Could not save the dump.",
-    "saveLocation": "Save location",
-    "chooseLocation": "Choose location",
-    "saveHint": "Pick a file location for the export (optional).",
-    "locationSelected": "Location selected",
-    "cancel": "Cancel",
-    "close": "Close",
-    "empty": "No keys found."
+    "title": "تصدير dump",
+    "description": "يتم تصدير الـ dump على دفعات لتجنب تحميل زائد على الخادم.",
+    "preparing": "جارٍ تحضير dump...",
+    "running": "جارٍ تنفيذ dump...",
+    "done": "اكتمل dump.",
+    "cancelled": "تم إلغاء dump.",
+    "error": "فشل تصدير dump.",
+    "progress": "التقدم",
+    "successRate": "نسبة النجاح",
+    "items": "العناصر",
+    "batch": "الدفعة",
+    "download": "تنزيل dump",
+    "prefetch": "حساب الإجمالي",
+    "prefetching": "جارٍ حساب الإجمالي...",
+    "start": "بدء التصدير",
+    "save": "حفظ dump",
+    "saved": "تم حفظ dump.",
+    "saveError": "تعذر حفظ dump.",
+    "saveLocation": "موقع الحفظ",
+    "chooseLocation": "اختيار الموقع",
+    "saveHint": "اختر موقع الملف للتصدير (اختياري).",
+    "locationSelected": "تم اختيار الموقع",
+    "cancel": "إلغاء",
+    "close": "إغلاق",
+    "empty": "لا توجد مفاتيح."
   },
   "dumpImport": {
-    "title": "Import dump",
-    "description": "Import runs in batches to avoid overloading the server.",
-    "fileLabel": "Dump file",
-    "fileHint": "Select a .json file exported by MemGUI.",
-    "chooseFile": "Select file",
-    "fileSelected": "Selected file",
-    "ready": "File ready to import.",
-    "invalidFile": "Invalid dump file.",
-    "empty": "No items found in the dump.",
-    "start": "Start import",
-    "preparing": "Preparing import...",
-    "running": "Import in progress...",
-    "done": "Import completed.",
-    "cancelled": "Import cancelled.",
-    "error": "Failed to import dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "cancel": "Cancel",
-    "close": "Close"
+    "title": "استيراد dump",
+    "description": "يتم الاستيراد على دفعات لتجنب تحميل زائد على الخادم.",
+    "fileLabel": "ملف dump",
+    "fileHint": "اختر ملف .json تم تصديره بواسطة MemGUI.",
+    "chooseFile": "اختيار ملف",
+    "fileSelected": "تم اختيار الملف",
+    "ready": "الملف جاهز للاستيراد.",
+    "invalidFile": "ملف dump غير صالح.",
+    "empty": "لم يتم العثور على عناصر في dump.",
+    "start": "بدء الاستيراد",
+    "preparing": "جارٍ تحضير الاستيراد...",
+    "running": "الاستيراد قيد التنفيذ...",
+    "done": "اكتمل الاستيراد.",
+    "cancelled": "تم إلغاء الاستيراد.",
+    "error": "فشل استيراد dump.",
+    "progress": "التقدم",
+    "successRate": "نسبة النجاح",
+    "items": "العناصر",
+    "batch": "الدفعة",
+    "cancel": "إلغاء",
+    "close": "إغلاق"
   },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "title": "أمان التطبيق",
+    "description": "يشفر البيانات المحلية المخزنة بواسطة MemGUI.",
+    "passwordLabel": "كلمة مرور التطبيق",
+    "passwordPlaceholder": "أدخل كلمة مرور",
+    "confirmLabel": "تأكيد كلمة المرور",
+    "confirmPlaceholder": "أعد إدخال كلمة المرور",
+    "unlockButton": "إلغاء القفل",
+    "enableButton": "تفعيل التشفير",
+    "disableButton": "تعطيل التشفير",
+    "statusEnabled": "التشفير مفعّل",
+    "statusLocked": "التخزين مقفل",
+    "disableConfirm": "تعطيل التشفير؟ سيتم حفظ البيانات كنص عادي.",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "كلمة المرور مطلوبة.",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+      "invalidPassword": "كلمة مرور غير صحيحة.",
+      "enableFailed": "تعذر تفعيل التشفير.",
+      "disableFailed": "تعذر تعطيل التشفير."
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "تم تفعيل التشفير.",
+      "disabled": "تم تعطيل التشفير.",
+      "unlocked": "تم إلغاء قفل التخزين."
     }
   },
   "loadingModal": {

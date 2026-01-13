@@ -59,14 +59,14 @@
       "usernamePlaceholder": "Digite seu usuário",
       "password": "Senha (opcional)",
       "passwordPlaceholder": "Digite sua senha",
-      "authToggle": "Usar autentica??o",
+      "authToggle": "Usar autenticação",
       "timeout": "Timeout em segundos (mínimo 300)",
       "sshToggle": "Conectar via SSH",
       "sshHost": "Servidor SSH",
       "sshHostPlaceholder": "Ex: servidor.exemplo.com",
       "sshPort": "Porta SSH",
-      "sshUsername": "Usu?rio SSH",
-      "sshUsernamePlaceholder": "Digite seu usu?rio SSH",
+      "sshUsername": "Usuário SSH",
+      "sshUsernamePlaceholder": "Digite seu usuário SSH",
       "sshPassword": "Senha SSH (opcional)",
       "sshPasswordPlaceholder": "Digite sua senha SSH",
       "sshPrivateKey": "Chave privada SSH (opcional)",
@@ -80,9 +80,9 @@
     "testing": "Testando...",
     "testSuccess": "Conexão realizada com sucesso!",
     "sshAuthRequired": "Informe a senha ou a chave privada do SSH.",
-    "sshStorageWarning": "Credenciais SSH n?o ser?o salvas sem a criptografia do storage.",
+    "sshStorageWarning": "Ative a criptografia do storage para usar SSH.",
     "sshHostKeyTitle": "Confirmar chave do host SSH",
-    "sshHostKeyMessage": "Impress?o digital do host SSH: {{fingerprint}}. Deseja confiar neste host?",
+    "sshHostKeyMessage": "Impressão digital do host SSH: {{fingerprint}}. Deseja confiar neste host?",
     "sshHostKeyMismatchTitle": "Chave do host SSH alterada",
     "sshHostKeyMismatchMessage": "A chave do host SSH mudou. Esperada: {{expected}}. Recebida: {{fingerprint}}. Deseja confiar na nova chave?",
     "sshHostKeyConfirm": "Confiar",
@@ -98,39 +98,39 @@
       },
       "address": {
         "title": "Endereço do Servidor",
-        "description": "Insira o IP ou dom?nio do servidor. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>. Se usar SSH, informe o host do SSH."
+        "description": "Insira o IP ou domínio do servidor. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>. Se usar SSH, informe o host do SSH."
       },
       "port": {
         "title": "Porta do Memcached",
-        "description": "O padr?o do Memcached ? <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
+        "description": "O padrão do Memcached é <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
       },
       "auth": {
         "title": "Autenticação (Opcional)",
-        "description": "Ative a autentica??o e informe usu?rio e senha apenas se seu servidor exigir."
+        "description": "Ative a autenticação e informe usuário e senha apenas se seu servidor exigir."
       },
       "timeout": {
         "title": "Timeout",
         "description": "O timeout define o tempo máximo de resposta."
       },
       "sshToggle": {
-        "title": "Conex?o SSH (Opcional)",
+        "title": "Conexão SSH (Opcional)",
         "description": "Ative para acessar um servidor remoto via SSH."
       },
       "sshPort": {
         "title": "Porta SSH",
-        "description": "A porta padr?o do SSH ? <strong>22</strong>."
+        "description": "A porta padrão do SSH é <strong>22</strong>."
       },
       "sshAuth": {
-        "title": "Autentica??o SSH (Opcional)",
-        "description": "Informe usu?rio e senha ou uma chave privada para autenticar via SSH."
+        "title": "Autenticação SSH (Opcional)",
+        "description": "Informe usuário e senha ou uma chave privada para autenticar via SSH."
       },
       "sshHostKey": {
-        "title": "Verifica??o do Host SSH",
-        "description": "Na primeira conex?o, voc? precisar? confirmar a impress?o digital do host."
+        "title": "Verificação do Host SSH",
+        "description": "Na primeira conexão, você precisará confirmar a impressão digital do host."
       },
       "sshStorage": {
-        "title": "Seguran?a do SSH",
-        "description": "Para salvar credenciais SSH no app, ative a criptografia do storage."
+        "title": "Segurança do SSH",
+        "description": "Ative a criptografia do storage para usar SSH."
       }
     },
     "close": "Fechar"
@@ -201,8 +201,8 @@
     "close": "Fechar"
   },
   "dump": {
-    "title": "Exportar dump",
-    "description": "O dump sera gerado em lotes para evitar sobrecarga do servidor.",
+    "title": "Exportar",
+    "description": "O dump será gerado em lotes para evitar sobrecarga do servidor.",
     "preparing": "Preparando dump...",
     "running": "Dump em andamento...",
     "done": "Dump finalizado.",
@@ -215,33 +215,33 @@
     "download": "Baixar dump",
     "prefetch": "Calcular total",
     "prefetching": "Calculando total...",
-    "start": "Iniciar exportacao",
+    "start": "Iniciar exportação",
     "save": "Salvar dump",
     "saved": "Dump salvo.",
-    "saveError": "Nao foi possivel salvar o dump.",
+    "saveError": "Não foi possível salvar o dump.",
     "saveLocation": "Local de salvamento",
     "chooseLocation": "Selecionar local",
-    "saveHint": "Escolha o local do arquivo para exportacao (opcional).",
+    "saveHint": "Escolha o local do arquivo para exportação (opcional).",
     "locationSelected": "Local selecionado",
     "cancel": "Cancelar",
     "close": "Fechar",
     "empty": "Nenhuma chave encontrada."
   },
   "dumpImport": {
-    "title": "Importar dump",
-    "description": "A importacao sera feita em lotes para evitar sobrecarga do servidor.",
+    "title": "Importar",
+    "description": "A importação será feita em lotes para evitar sobrecarga do servidor.",
     "fileLabel": "Arquivo de dump",
     "fileHint": "Selecione um arquivo .json exportado pelo MemGUI.",
     "chooseFile": "Selecionar arquivo",
     "fileSelected": "Arquivo selecionado",
     "ready": "Arquivo pronto para importar.",
-    "invalidFile": "Arquivo de dump invalido.",
+    "invalidFile": "Arquivo de dump inválido.",
     "empty": "Nenhum item encontrado no dump.",
-    "start": "Iniciar importacao",
-    "preparing": "Preparando importacao...",
-    "running": "Importacao em andamento...",
-    "done": "Importacao finalizada.",
-    "cancelled": "Importacao cancelada.",
+    "start": "Iniciar importação",
+    "preparing": "Preparando importação...",
+    "running": "Importação em andamento...",
+    "done": "Importação finalizada.",
+    "cancelled": "Importação cancelada.",
     "error": "Falha ao importar dump.",
     "progress": "Progresso",
     "successRate": "Sucesso",
@@ -251,7 +251,7 @@
     "close": "Fechar"
   },
   "storageSecurity": {
-    "title": "Seguranca do app",
+    "title": "Segurança do app",
     "description": "Criptografa os dados locais salvos pelo MemGUI.",
     "passwordLabel": "Senha do app",
     "passwordPlaceholder": "Digite uma senha",
@@ -262,13 +262,13 @@
     "disableButton": "Desativar criptografia",
     "statusEnabled": "Criptografia ativada",
     "statusLocked": "Storage bloqueado",
-    "disableConfirm": "Desativar criptografia? Os dados serao salvos em texto puro.",
+    "disableConfirm": "Desativar criptografia? Os dados serão salvos em texto puro.",
     "errors": {
-      "passwordRequired": "Senha obrigatoria.",
-      "passwordMismatch": "As senhas nao conferem.",
-      "invalidPassword": "Senha invalida.",
-      "enableFailed": "Nao foi possivel ativar a criptografia.",
-      "disableFailed": "Nao foi possivel desativar a criptografia."
+      "passwordRequired": "Senha obrigatória.",
+      "passwordMismatch": "As senhas não conferem.",
+      "invalidPassword": "Senha inválida.",
+      "enableFailed": "Não foi possível ativar a criptografia.",
+      "disableFailed": "Não foi possível desativar a criptografia."
     },
     "success": {
       "enabled": "Criptografia ativada.",

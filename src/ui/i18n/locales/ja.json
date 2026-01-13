@@ -59,18 +59,18 @@
       "password": "パスワード（任意）",
       "passwordPlaceholder": "パスワードを入力",
       "timeout": "タイムアウト（秒、最小 300）",
-      "memcachedPort": "Memcached ???",
-      "authToggle": "?????",
-      "sshToggle": "SSH???",
-      "sshHost": "SSH ???",
-      "sshHostPlaceholder": "?: server.example.com",
-      "sshPort": "SSH ???",
-      "sshUsername": "SSH ?????",
-      "sshUsernamePlaceholder": "SSH????????",
-      "sshPassword": "SSH ?????????",
-      "sshPasswordPlaceholder": "SSH????????",
-      "sshPrivateKey": "SSH ???????",
-      "sshPrivateKeyPlaceholder": "?????????????"
+      "memcachedPort": "Memcached ポート",
+      "authToggle": "認証を使用する",
+      "sshToggle": "SSHで接続",
+      "sshHost": "SSH ホスト",
+      "sshHostPlaceholder": "例: server.example.com",
+      "sshPort": "SSH ポート",
+      "sshUsername": "SSH ユーザー名",
+      "sshUsernamePlaceholder": "SSHユーザー名を入力",
+      "sshPassword": "SSH パスワード（任意）",
+      "sshPasswordPlaceholder": "SSHパスワードを入力",
+      "sshPrivateKey": "SSH 秘密鍵（任意）",
+      "sshPrivateKeyPlaceholder": "秘密鍵を貼り付け"
     },
     "authNote": "認証が有効な場合、<strong>MemGUI</strong> 内で作成されたキーのみ管理できます。これは認証済み Memcached プロトコルの制限によるものです。",
     "cancel": "キャンセル",
@@ -79,14 +79,14 @@
     "test": "テスト",
     "testing": "テスト中...",
     "testSuccess": "接続に成功しました！",
-    "sshAuthRequired": "SSH?????????????????????",
-    "sshStorageWarning": "?????????????????SSH ?????????????",
-    "sshHostKeyTitle": "SSH???????",
-    "sshHostKeyMessage": "SSH?????: {{fingerprint}}??????????????",
-    "sshHostKeyMismatchTitle": "SSH????????????",
-    "sshHostKeyMismatchMessage": "SSH????????????????: {{expected}}???: {{fingerprint}}?????????????",
-    "sshHostKeyConfirm": "????",
-    "sshHostKeyCancel": "?????"
+    "sshAuthRequired": "SSHのパスワードまたは秘密鍵を入力してください。",
+    "sshStorageWarning": "SSH ??????????????????????????",
+    "sshHostKeyTitle": "SSH ホスト鍵の確認",
+    "sshHostKeyMessage": "SSHホストのフィンガープリント: {{fingerprint}}。このホストを信頼しますか？",
+    "sshHostKeyMismatchTitle": "SSH ホスト鍵が変更されました",
+    "sshHostKeyMismatchMessage": "SSHホスト鍵が変更されました。期待値: {{expected}}。受信: {{fingerprint}}。新しい鍵を信頼しますか？",
+    "sshHostKeyConfirm": "信頼",
+    "sshHostKeyCancel": "キャンセル"
   },
   "setupGuide": {
     "title": "セットアップガイド",
@@ -98,39 +98,39 @@
       },
       "address": {
         "title": "サーバーアドレス",
-        "description": "????? IP ???????????????????? <code>127.0.0.1</code> ??? <code>localhost</code> ???????SSH ?????? SSH ??????????"
+        "description": "サーバーのIPまたはドメインを入力してください。ローカルの場合は <code>127.0.0.1</code> または <code>localhost</code> を使用します。SSHを使用する場合はSSHホストを入力してください。"
       },
       "port": {
-        "title": "Memcached ???",
-        "description": "Memcached ??????? <strong>11211</strong> ?????????????????????????????????????"
+        "title": "Memcached ポート",
+        "description": "Memcachedのデフォルトは <strong>11211</strong> です。変更されている場合はサーバーで設定されたポートを使用してください。"
       },
       "auth": {
         "title": "認証（任意）",
-        "description": "?????????????????????????????????????????"
+        "description": "サーバーで必要な場合のみ、認証を有効にしてユーザー名とパスワードを入力してください。"
       },
       "timeout": {
         "title": "タイムアウト",
         "description": "タイムアウトは最大応答時間を定義します。"
       },
       "sshToggle": {
-        "title": "SSH ??????",
-        "description": "SSH ??????????????????????????"
+        "title": "SSH 接続（任意）",
+        "description": "SSHを介してリモートサーバーにアクセスする場合に有効化します。"
       },
       "sshPort": {
-        "title": "SSH ???",
-        "description": "SSH ?????????? <strong>22</strong> ???"
+        "title": "SSH ポート",
+        "description": "SSHのデフォルトポートは <strong>22</strong> です。"
       },
       "sshAuth": {
-        "title": "SSH ??????",
-        "description": "SSH ?????????/??????????????????"
+        "title": "SSH 認証（任意）",
+        "description": "SSHで認証するためにユーザー名/パスワードまたは秘密鍵を入力してください。"
       },
       "sshHostKey": {
-        "title": "SSH ?????",
-        "description": "??????????????????????"
+        "title": "SSH ホスト検証",
+        "description": "初回接続時にホストのフィンガープリントを信頼するか確認します。"
       },
       "sshStorage": {
-        "title": "SSH ??????",
-        "description": "SSH ??????????????????????????????"
+        "title": "SSH セキュリティ",
+        "description": "SSH ??????????????????????????"
       }
     },
     "close": "閉じる"
@@ -144,8 +144,8 @@
     "refresh": "更新",
     "autoRefresh": "自動更新",
     "clearAll": "すべて削除",
-    "export": "Export Dump",
-    "import": "Import Dump",
+    "export": "ダンプをエクスポート",
+    "import": "ダンプをインポート",
     "searchPlaceholder": "キーまたは正規表現を入力...",
     "columns": {
       "key": "キー",
@@ -201,79 +201,79 @@
     "close": "閉じる"
   },
   "dump": {
-    "title": "Export dump",
-    "description": "Dump export runs in batches to avoid overloading the server.",
-    "preparing": "Preparing dump...",
-    "running": "Dump in progress...",
-    "done": "Dump completed.",
-    "cancelled": "Dump cancelled.",
-    "error": "Failed to export dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "download": "Download dump",
-    "prefetch": "Calculate total",
-    "prefetching": "Calculating total...",
-    "start": "Start export",
-    "save": "Save dump",
-    "saved": "Dump saved.",
-    "saveError": "Could not save the dump.",
-    "saveLocation": "Save location",
-    "chooseLocation": "Choose location",
-    "saveHint": "Pick a file location for the export (optional).",
-    "locationSelected": "Location selected",
-    "cancel": "Cancel",
-    "close": "Close",
-    "empty": "No keys found."
+    "title": "ダンプをエクスポート",
+    "description": "サーバーへの負荷を避けるため、ダンプのエクスポートはバッチで実行されます。",
+    "preparing": "ダンプを準備中...",
+    "running": "ダンプを実行中...",
+    "done": "ダンプが完了しました。",
+    "cancelled": "ダンプはキャンセルされました。",
+    "error": "ダンプのエクスポートに失敗しました。",
+    "progress": "進行状況",
+    "successRate": "成功率",
+    "items": "項目",
+    "batch": "バッチ",
+    "download": "ダンプをダウンロード",
+    "prefetch": "合計を計算",
+    "prefetching": "合計を計算中...",
+    "start": "エクスポート開始",
+    "save": "ダンプを保存",
+    "saved": "ダンプを保存しました。",
+    "saveError": "ダンプの保存に失敗しました。",
+    "saveLocation": "保存先",
+    "chooseLocation": "保存先を選択",
+    "saveHint": "エクスポートするファイルの保存先を選択してください（任意）。",
+    "locationSelected": "保存先を選択しました",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "empty": "キーが見つかりません。"
   },
   "dumpImport": {
-    "title": "Import dump",
-    "description": "Import runs in batches to avoid overloading the server.",
-    "fileLabel": "Dump file",
-    "fileHint": "Select a .json file exported by MemGUI.",
-    "chooseFile": "Select file",
-    "fileSelected": "Selected file",
-    "ready": "File ready to import.",
-    "invalidFile": "Invalid dump file.",
-    "empty": "No items found in the dump.",
-    "start": "Start import",
-    "preparing": "Preparing import...",
-    "running": "Import in progress...",
-    "done": "Import completed.",
-    "cancelled": "Import cancelled.",
-    "error": "Failed to import dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "cancel": "Cancel",
-    "close": "Close"
+    "title": "ダンプをインポート",
+    "description": "サーバーへの負荷を避けるため、インポートはバッチで実行されます。",
+    "fileLabel": "ダンプファイル",
+    "fileHint": "MemGUIでエクスポートされた .json ファイルを選択してください。",
+    "chooseFile": "ファイルを選択",
+    "fileSelected": "ファイルを選択しました",
+    "ready": "インポートの準備ができました。",
+    "invalidFile": "無効なダンプファイルです。",
+    "empty": "ダンプに項目が見つかりません。",
+    "start": "インポート開始",
+    "preparing": "インポートを準備中...",
+    "running": "インポート中...",
+    "done": "インポートが完了しました。",
+    "cancelled": "インポートはキャンセルされました。",
+    "error": "ダンプのインポートに失敗しました。",
+    "progress": "進行状況",
+    "successRate": "成功率",
+    "items": "項目",
+    "batch": "バッチ",
+    "cancel": "キャンセル",
+    "close": "閉じる"
   },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "title": "アプリのセキュリティ",
+    "description": "MemGUIが保存するローカルデータを暗号化します。",
+    "passwordLabel": "アプリのパスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "confirmLabel": "パスワードを確認",
+    "confirmPlaceholder": "パスワードを再入力",
+    "unlockButton": "ロック解除",
+    "enableButton": "暗号化を有効化",
+    "disableButton": "暗号化を無効化",
+    "statusEnabled": "暗号化が有効",
+    "statusLocked": "ストレージがロックされています",
+    "disableConfirm": "暗号化を無効にしますか？保存されたデータは平文で保存されます。",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "パスワードは必須です。",
+      "passwordMismatch": "パスワードが一致しません。",
+      "invalidPassword": "パスワードが無効です。",
+      "enableFailed": "暗号化を有効にできませんでした。",
+      "disableFailed": "暗号化を無効にできませんでした。"
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "暗号化を有効にしました。",
+      "disabled": "暗号化を無効にしました。",
+      "unlocked": "ストレージのロックを解除しました。"
     }
   },
   "loadingModal": {

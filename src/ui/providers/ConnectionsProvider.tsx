@@ -140,6 +140,12 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     }),
     [sanitizeSshForStorage]
   );
+  const ensureSshEncryption = (ssh?: Connection["ssh"]) => {
+    if (!ssh) return true;
+    if (encryptionEnabled) return true;
+    showAlert(t("connectionModal.sshStorageWarning"), "warning");
+    return false;
+  };
 
   type SshHostKeyErrorPayload = {
     code: "SSH_HOST_KEY_UNVERIFIED" | "SSH_HOST_KEY_MISMATCH";
@@ -420,6 +426,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     options?: { skipHostKeyPrompt?: boolean }
   ) => {
     try {
+      if (!ensureSshEncryption(params.ssh)) {
+        return false;
+      }
       showLoading();
 
       const { host, port, timeout, password, username, ssh } = params;
@@ -483,6 +492,10 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
         (c) => getIdentity(c) === getIdentity(params)
       );
 
+      if (!ensureSshEncryption(ssh)) {
+        return false;
+      }
+
       if (ssh && !hasSshSecrets(ssh)) {
         showAlert(t("connectionModal.sshAuthRequired"), "error");
         openConnectionModal(
@@ -542,6 +555,9 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     const { host, port, timeout, password, username, ssh } = params;
     let tempConnectionId = "";
     try {
+      if (!ensureSshEncryption(ssh)) {
+        return false;
+      }
       showLoading();
       const authentication =
         username || password ? { password, username } : undefined;

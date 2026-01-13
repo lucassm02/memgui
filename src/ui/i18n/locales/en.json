@@ -80,7 +80,7 @@
     "testing": "Testing...",
     "testSuccess": "Connection successful!",
     "sshAuthRequired": "Provide an SSH password or private key.",
-    "sshStorageWarning": "SSH credentials won't be saved unless storage encryption is enabled.",
+    "sshStorageWarning": "Enable storage encryption to use SSH.",
     "sshHostKeyTitle": "Confirm SSH host key",
     "sshHostKeyMessage": "SSH host fingerprint: {{fingerprint}}. Do you trust this host?",
     "sshHostKeyMismatchTitle": "SSH host key changed",
@@ -130,7 +130,7 @@
       },
       "sshStorage": {
         "title": "SSH Security",
-        "description": "To save SSH credentials, enable storage encryption."
+        "description": "Enable storage encryption to use SSH."
       }
     },
     "close": "Close"

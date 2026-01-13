@@ -6,6 +6,7 @@ import {
   TrashIcon,
   XMarkIcon
 } from "@heroicons/react/24/outline";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
@@ -111,15 +112,8 @@ const ConnectionList = () => {
               onClick={handleCreateConnection}
               className={`${toneButton("success", darkMode)} w-full justify-center`}
             >
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full border ${
-                  darkMode
-                    ? "border-green-200/30 bg-green-200/15 text-green-100"
-                    : "border-green-200/70 bg-white/80 text-green-700"
-                }`}
-              >
-                <PlusIcon className="h-3.5 w-3.5" />
-              </span>
+              <PlusCircleIcon className="w-5 h-5" />
+
               <span>{t("connectionHome.createButton")}</span>
             </button>
           </div>

@@ -59,18 +59,18 @@
       "password": "비밀번호 (선택 사항)",
       "passwordPlaceholder": "비밀번호 입력",
       "timeout": "타임아웃(초, 최소 300)",
-      "memcachedPort": "Memcached ??",
-      "authToggle": "?? ??",
-      "sshToggle": "SSH? ??",
-      "sshHost": "SSH ???",
-      "sshHostPlaceholder": "?: server.example.com",
-      "sshPort": "SSH ??",
-      "sshUsername": "SSH ??? ??",
-      "sshUsernamePlaceholder": "SSH ??? ?? ??",
-      "sshPassword": "SSH ????(??)",
-      "sshPasswordPlaceholder": "SSH ???? ??",
-      "sshPrivateKey": "SSH ?? ?(??)",
-      "sshPrivateKeyPlaceholder": "?? ?? ????"
+      "memcachedPort": "Memcached 포트",
+      "authToggle": "인증 사용",
+      "sshToggle": "SSH로 연결",
+      "sshHost": "SSH 호스트",
+      "sshHostPlaceholder": "예: server.example.com",
+      "sshPort": "SSH 포트",
+      "sshUsername": "SSH 사용자 이름",
+      "sshUsernamePlaceholder": "SSH 사용자 이름 입력",
+      "sshPassword": "SSH 비밀번호(선택 사항)",
+      "sshPasswordPlaceholder": "SSH 비밀번호 입력",
+      "sshPrivateKey": "SSH 개인 키(선택 사항)",
+      "sshPrivateKeyPlaceholder": "개인 키 붙여넣기"
     },
     "authNote": "인증이 활성화된 경우, 인증된 Memcached 프로토콜의 제한으로 인해 <strong>MemGUI</strong>에서 생성된 키만 관리할 수 있습니다.",
     "cancel": "취소",
@@ -79,14 +79,14 @@
     "test": "테스트",
     "testing": "테스트 중...",
     "testSuccess": "연결에 성공했습니다!",
-    "sshAuthRequired": "SSH ???? ?? ?? ?? ?????.",
-    "sshStorageWarning": "??? ???? ????? ??? SSH ?? ??? ???? ????.",
-    "sshHostKeyTitle": "SSH ??? ? ??",
-    "sshHostKeyMessage": "SSH ??? ??: {{fingerprint}}. ? ???? ???????",
-    "sshHostKeyMismatchTitle": "SSH ??? ?? ???",
-    "sshHostKeyMismatchMessage": "SSH ??? ?? ???????. ??: {{expected}}. ??: {{fingerprint}}. ? ?? ???????",
-    "sshHostKeyConfirm": "??",
-    "sshHostKeyCancel": "??"
+    "sshAuthRequired": "SSH 비밀번호 또는 개인 키를 입력하세요.",
+    "sshStorageWarning": "SSH? ????? ???? ???? ??????.",
+    "sshHostKeyTitle": "SSH 호스트 키 확인",
+    "sshHostKeyMessage": "SSH 호스트 지문: {{fingerprint}}. 이 호스트를 신뢰하시겠습니까?",
+    "sshHostKeyMismatchTitle": "SSH 호스트 키 변경됨",
+    "sshHostKeyMismatchMessage": "SSH 호스트 키가 변경되었습니다. 예상: {{expected}}. 수신: {{fingerprint}}. 새 키를 신뢰하시겠습니까?",
+    "sshHostKeyConfirm": "신뢰",
+    "sshHostKeyCancel": "취소"
   },
   "setupGuide": {
     "title": "설정 가이드",
@@ -98,39 +98,39 @@
       },
       "address": {
         "title": "서버 주소",
-        "description": "??? IP ?? ???? ?????. ??? <code>127.0.0.1</code> ?? <code>localhost</code>? ?????. SSH? ??? ?? SSH ???? ?????."
+        "description": "서버 IP 또는 도메인을 입력하세요. 로컬의 경우 <code>127.0.0.1</code> 또는 <code>localhost</code>를 사용합니다. SSH를 사용하는 경우 SSH 호스트를 입력하세요."
       },
       "port": {
-        "title": "Memcached ??",
-        "description": "Memcached ?? ??? <strong>11211</strong>???. ??? ?? ??? ??? ??? ?????."
+        "title": "Memcached 포트",
+        "description": "Memcached 기본 포트는 <strong>11211</strong>입니다. 변경된 경우 서버에 설정된 포트를 사용하세요."
       },
       "auth": {
         "title": "인증 (선택 사항)",
-        "description": "??? ??? ?? ??? ????? ??? ??? ????? ?????."
+        "description": "서버에 필요한 경우에만 인증을 활성화하고 사용자 이름과 비밀번호를 입력하세요."
       },
       "timeout": {
         "title": "타임아웃",
         "description": "타임아웃은 최대 응답 시간을 정의합니다."
       },
       "sshToggle": {
-        "title": "SSH ??(??)",
-        "description": "SSH? ?? ??? ????? ??????."
+        "title": "SSH 연결(선택 사항)",
+        "description": "SSH를 통해 원격 서버에 접근하려면 활성화하세요."
       },
       "sshPort": {
-        "title": "SSH ??",
-        "description": "SSH ?? ??? <strong>22</strong>???."
+        "title": "SSH 포트",
+        "description": "기본 SSH 포트는 <strong>22</strong>입니다."
       },
       "sshAuth": {
-        "title": "SSH ??(??)",
-        "description": "SSH ??? ?? ??? ??/???? ?? ?? ?? ?????."
+        "title": "SSH 인증(선택 사항)",
+        "description": "SSH 인증을 위해 사용자 이름/비밀번호 또는 개인 키를 입력하세요."
       },
       "sshHostKey": {
-        "title": "SSH ??? ??",
-        "description": "? ?? ? ??? ??? ???? ???."
+        "title": "SSH 호스트 검증",
+        "description": "첫 연결 시 호스트 지문을 신뢰할지 확인합니다."
       },
       "sshStorage": {
-        "title": "SSH ??",
-        "description": "SSH ?? ??? ????? ??? ???? ??????."
+        "title": "SSH 보안",
+        "description": "SSH? ????? ???? ???? ??????."
       }
     },
     "close": "닫기"
@@ -144,8 +144,8 @@
     "refresh": "새로고침",
     "autoRefresh": "자동 새로고침",
     "clearAll": "모두 지우기",
-    "export": "Export Dump",
-    "import": "Import Dump",
+    "export": "덤프 내보내기",
+    "import": "덤프 가져오기",
     "searchPlaceholder": "키 또는 정규식을 입력...",
     "columns": {
       "key": "키",
@@ -201,79 +201,79 @@
     "close": "닫기"
   },
   "dump": {
-    "title": "Export dump",
-    "description": "Dump export runs in batches to avoid overloading the server.",
-    "preparing": "Preparing dump...",
-    "running": "Dump in progress...",
-    "done": "Dump completed.",
-    "cancelled": "Dump cancelled.",
-    "error": "Failed to export dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "download": "Download dump",
-    "prefetch": "Calculate total",
-    "prefetching": "Calculating total...",
-    "start": "Start export",
-    "save": "Save dump",
-    "saved": "Dump saved.",
-    "saveError": "Could not save the dump.",
-    "saveLocation": "Save location",
-    "chooseLocation": "Choose location",
-    "saveHint": "Pick a file location for the export (optional).",
-    "locationSelected": "Location selected",
-    "cancel": "Cancel",
-    "close": "Close",
-    "empty": "No keys found."
+    "title": "덤프 내보내기",
+    "description": "서버 과부하를 피하기 위해 덤프 내보내기는 배치로 실행됩니다.",
+    "preparing": "덤프 준비 중...",
+    "running": "덤프 진행 중...",
+    "done": "덤프가 완료되었습니다.",
+    "cancelled": "덤프가 취소되었습니다.",
+    "error": "덤프 내보내기에 실패했습니다.",
+    "progress": "진행률",
+    "successRate": "성공률",
+    "items": "항목",
+    "batch": "배치",
+    "download": "덤프 다운로드",
+    "prefetch": "총계 계산",
+    "prefetching": "총계 계산 중...",
+    "start": "내보내기 시작",
+    "save": "덤프 저장",
+    "saved": "덤프가 저장되었습니다.",
+    "saveError": "덤프 저장에 실패했습니다.",
+    "saveLocation": "저장 위치",
+    "chooseLocation": "위치 선택",
+    "saveHint": "내보낼 파일의 저장 위치를 선택하세요(선택 사항).",
+    "locationSelected": "위치가 선택되었습니다.",
+    "cancel": "취소",
+    "close": "닫기",
+    "empty": "키가 없습니다."
   },
   "dumpImport": {
-    "title": "Import dump",
-    "description": "Import runs in batches to avoid overloading the server.",
-    "fileLabel": "Dump file",
-    "fileHint": "Select a .json file exported by MemGUI.",
-    "chooseFile": "Select file",
-    "fileSelected": "Selected file",
-    "ready": "File ready to import.",
-    "invalidFile": "Invalid dump file.",
-    "empty": "No items found in the dump.",
-    "start": "Start import",
-    "preparing": "Preparing import...",
-    "running": "Import in progress...",
-    "done": "Import completed.",
-    "cancelled": "Import cancelled.",
-    "error": "Failed to import dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "cancel": "Cancel",
-    "close": "Close"
+    "title": "덤프 가져오기",
+    "description": "서버 과부하를 피하기 위해 가져오기는 배치로 실행됩니다.",
+    "fileLabel": "덤프 파일",
+    "fileHint": "MemGUI에서 내보낸 .json 파일을 선택하세요.",
+    "chooseFile": "파일 선택",
+    "fileSelected": "파일이 선택되었습니다.",
+    "ready": "가져오기 준비가 완료되었습니다.",
+    "invalidFile": "유효하지 않은 덤프 파일입니다.",
+    "empty": "덤프에 항목이 없습니다.",
+    "start": "가져오기 시작",
+    "preparing": "가져오기 준비 중...",
+    "running": "가져오기 진행 중...",
+    "done": "가져오기가 완료되었습니다.",
+    "cancelled": "가져오기가 취소되었습니다.",
+    "error": "덤프 가져오기에 실패했습니다.",
+    "progress": "진행률",
+    "successRate": "성공률",
+    "items": "항목",
+    "batch": "배치",
+    "cancel": "취소",
+    "close": "닫기"
   },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "title": "앱 보안",
+    "description": "MemGUI가 저장하는 로컬 데이터를 암호화합니다.",
+    "passwordLabel": "앱 비밀번호",
+    "passwordPlaceholder": "비밀번호 입력",
+    "confirmLabel": "비밀번호 확인",
+    "confirmPlaceholder": "비밀번호 다시 입력",
+    "unlockButton": "잠금 해제",
+    "enableButton": "암호화 활성화",
+    "disableButton": "암호화 비활성화",
+    "statusEnabled": "암호화 활성화됨",
+    "statusLocked": "스토리지 잠김",
+    "disableConfirm": "암호화를 비활성화할까요? 저장된 데이터는 평문으로 저장됩니다.",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "비밀번호가 필요합니다.",
+      "passwordMismatch": "비밀번호가 일치하지 않습니다.",
+      "invalidPassword": "비밀번호가 올바르지 않습니다.",
+      "enableFailed": "암호화를 활성화하지 못했습니다.",
+      "disableFailed": "암호화를 비활성화하지 못했습니다."
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "암호화가 활성화되었습니다.",
+      "disabled": "암호화가 비활성화되었습니다.",
+      "unlocked": "스토리지가 잠금 해제되었습니다."
     }
   },
   "loadingModal": {

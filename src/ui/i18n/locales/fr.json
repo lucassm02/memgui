@@ -62,15 +62,15 @@
       "memcachedPort": "Port Memcached",
       "authToggle": "Utiliser l'authentification",
       "sshToggle": "Se connecter via SSH",
-      "sshHost": "H?te SSH",
+      "sshHost": "Hôte SSH",
       "sshHostPlaceholder": "Ex : serveur.exemple.com",
       "sshPort": "Port SSH",
       "sshUsername": "Nom d'utilisateur SSH",
       "sshUsernamePlaceholder": "Entrez votre nom d'utilisateur SSH",
       "sshPassword": "Mot de passe SSH (optionnel)",
       "sshPasswordPlaceholder": "Entrez votre mot de passe SSH",
-      "sshPrivateKey": "Cl? priv?e SSH (optionnelle)",
-      "sshPrivateKeyPlaceholder": "Collez votre cl? priv?e"
+      "sshPrivateKey": "Clé privée SSH (optionnelle)",
+      "sshPrivateKeyPlaceholder": "Collez votre clé privée"
     },
     "authNote": "Lorsque l'authentification est activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être gérées en raison d'une limitation du protocole Memcached authentifié.",
     "cancel": "Annuler",
@@ -79,12 +79,12 @@
     "test": "Tester",
     "testing": "Test en cours...",
     "testSuccess": "Connexion réussie !",
-    "sshAuthRequired": "Fournissez un mot de passe SSH ou une cl? priv?e.",
-    "sshStorageWarning": "Les identifiants SSH ne seront pas enregistr?s sans le chiffrement du stockage.",
-    "sshHostKeyTitle": "Confirmer la cl? d'h?te SSH",
-    "sshHostKeyMessage": "Empreinte de l'h?te SSH : {{fingerprint}}. Faites-vous confiance ? cet h?te ?",
-    "sshHostKeyMismatchTitle": "La cl? d'h?te SSH a chang?",
-    "sshHostKeyMismatchMessage": "La cl? d'h?te SSH a chang?. Attendue : {{expected}}. Re?ue : {{fingerprint}}. Faire confiance ? la nouvelle cl? ?",
+    "sshAuthRequired": "Fournissez un mot de passe SSH ou une clé privée.",
+    "sshStorageWarning": "Activez le chiffrement du stockage pour utiliser SSH.",
+    "sshHostKeyTitle": "Confirmer la clé d'hôte SSH",
+    "sshHostKeyMessage": "Empreinte de l'hôte SSH : {{fingerprint}}. Faites-vous confiance à cet hôte ?",
+    "sshHostKeyMismatchTitle": "La clé d'hôte SSH a changé",
+    "sshHostKeyMismatchMessage": "La clé d'hôte SSH a changé. Attendue : {{expected}}. Reçue : {{fingerprint}}. Faire confiance à la nouvelle clé ?",
     "sshHostKeyConfirm": "Faire confiance",
     "sshHostKeyCancel": "Annuler"
   },
@@ -98,11 +98,11 @@
       },
       "address": {
         "title": "Adresse du serveur",
-        "description": "Entrez l'IP ou le domaine du serveur. Pour local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>. Si vous utilisez SSH, indiquez l'h?te SSH."
+        "description": "Entrez l'IP ou le domaine du serveur. Pour local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>. Si vous utilisez SSH, indiquez l'hôte SSH."
       },
       "port": {
         "title": "Port Memcached",
-        "description": "Le port par d?faut de Memcached est <strong>11211</strong>. S'il a ?t? chang?, utilisez le port configur? sur le serveur."
+        "description": "Le port par défaut de Memcached est <strong>11211</strong>. S'il a été changé, utilisez le port configuré sur le serveur."
       },
       "auth": {
         "title": "Authentification (Optionnel)",
@@ -114,23 +114,23 @@
       },
       "sshToggle": {
         "title": "Connexion SSH (optionnelle)",
-        "description": "Activez pour acc?der ? un serveur distant via SSH."
+        "description": "Activez pour accéder à un serveur distant via SSH."
       },
       "sshPort": {
         "title": "Port SSH",
-        "description": "Le port SSH par d?faut est <strong>22</strong>."
+        "description": "Le port SSH par défaut est <strong>22</strong>."
       },
       "sshAuth": {
         "title": "Authentification SSH (optionnelle)",
-        "description": "Indiquez un nom d'utilisateur/mot de passe ou une cl? priv?e pour vous authentifier via SSH."
+        "description": "Indiquez un nom d'utilisateur/mot de passe ou une clé privée pour vous authentifier via SSH."
       },
       "sshHostKey": {
-        "title": "V?rification de l'h?te SSH",
-        "description": "Lors de la premi?re connexion, il faudra approuver l'empreinte de l'h?te."
+        "title": "Vérification de l'hôte SSH",
+        "description": "Lors de la première connexion, il faudra approuver l'empreinte de l'hôte."
       },
       "sshStorage": {
-        "title": "S?curit? SSH",
-        "description": "Pour enregistrer les identifiants SSH, activez le chiffrement du stockage."
+        "title": "Sécurité SSH",
+        "description": "Activez le chiffrement du stockage pour utiliser SSH."
       }
     },
     "close": "Fermer"
@@ -144,8 +144,8 @@
     "refresh": "Actualiser",
     "autoRefresh": "Actualisation auto",
     "clearAll": "Tout effacer",
-    "export": "Export Dump",
-    "import": "Import Dump",
+    "export": "Exporter le dump",
+    "import": "Importer le dump",
     "searchPlaceholder": "Tapez une clé ou une regex...",
     "columns": {
       "key": "Clé",
@@ -201,79 +201,79 @@
     "close": "Fermer"
   },
   "dump": {
-    "title": "Export dump",
-    "description": "Dump export runs in batches to avoid overloading the server.",
-    "preparing": "Preparing dump...",
-    "running": "Dump in progress...",
-    "done": "Dump completed.",
-    "cancelled": "Dump cancelled.",
-    "error": "Failed to export dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "download": "Download dump",
-    "prefetch": "Calculate total",
-    "prefetching": "Calculating total...",
-    "start": "Start export",
-    "save": "Save dump",
-    "saved": "Dump saved.",
-    "saveError": "Could not save the dump.",
-    "saveLocation": "Save location",
-    "chooseLocation": "Choose location",
-    "saveHint": "Pick a file location for the export (optional).",
-    "locationSelected": "Location selected",
-    "cancel": "Cancel",
-    "close": "Close",
-    "empty": "No keys found."
+    "title": "Exporter le dump",
+    "description": "L'export du dump se fait par lots pour éviter de surcharger le serveur.",
+    "preparing": "Préparation du dump...",
+    "running": "Export du dump en cours...",
+    "done": "Export du dump terminé.",
+    "cancelled": "Export du dump annulé.",
+    "error": "Échec de l'export du dump.",
+    "progress": "Progression",
+    "successRate": "Taux de succès",
+    "items": "Éléments",
+    "batch": "Lot",
+    "download": "Télécharger le dump",
+    "prefetch": "Calculer le total",
+    "prefetching": "Calcul du total...",
+    "start": "Démarrer l'export",
+    "save": "Enregistrer le dump",
+    "saved": "Dump enregistré.",
+    "saveError": "Impossible d'enregistrer le dump.",
+    "saveLocation": "Emplacement d'enregistrement",
+    "chooseLocation": "Choisir l'emplacement",
+    "saveHint": "Choisissez l'emplacement du fichier à exporter (optionnel).",
+    "locationSelected": "Emplacement sélectionné",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "empty": "Aucune clé trouvée."
   },
   "dumpImport": {
-    "title": "Import dump",
-    "description": "Import runs in batches to avoid overloading the server.",
-    "fileLabel": "Dump file",
-    "fileHint": "Select a .json file exported by MemGUI.",
-    "chooseFile": "Select file",
-    "fileSelected": "Selected file",
-    "ready": "File ready to import.",
-    "invalidFile": "Invalid dump file.",
-    "empty": "No items found in the dump.",
-    "start": "Start import",
-    "preparing": "Preparing import...",
-    "running": "Import in progress...",
-    "done": "Import completed.",
-    "cancelled": "Import cancelled.",
-    "error": "Failed to import dump.",
-    "progress": "Progress",
-    "successRate": "Success rate",
-    "items": "Items",
-    "batch": "Batch",
-    "cancel": "Cancel",
-    "close": "Close"
+    "title": "Importer le dump",
+    "description": "L'import se fait par lots pour éviter de surcharger le serveur.",
+    "fileLabel": "Fichier de dump",
+    "fileHint": "Sélectionnez un fichier .json exporté par MemGUI.",
+    "chooseFile": "Sélectionner un fichier",
+    "fileSelected": "Fichier sélectionné",
+    "ready": "Fichier prêt à être importé.",
+    "invalidFile": "Fichier de dump invalide.",
+    "empty": "Aucun élément trouvé dans le dump.",
+    "start": "Démarrer l'import",
+    "preparing": "Préparation de l'import...",
+    "running": "Import en cours...",
+    "done": "Import terminé.",
+    "cancelled": "Import annulé.",
+    "error": "Échec de l'import du dump.",
+    "progress": "Progression",
+    "successRate": "Taux de succès",
+    "items": "Éléments",
+    "batch": "Lot",
+    "cancel": "Annuler",
+    "close": "Fermer"
   },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "title": "Sécurité de l'application",
+    "description": "Chiffre les données locales enregistrées par MemGUI.",
+    "passwordLabel": "Mot de passe de l'application",
+    "passwordPlaceholder": "Saisissez un mot de passe",
+    "confirmLabel": "Confirmer le mot de passe",
+    "confirmPlaceholder": "Saisissez à nouveau le mot de passe",
+    "unlockButton": "Déverrouiller",
+    "enableButton": "Activer le chiffrement",
+    "disableButton": "Désactiver le chiffrement",
+    "statusEnabled": "Chiffrement activé",
+    "statusLocked": "Stockage verrouillé",
+    "disableConfirm": "Désactiver le chiffrement ? Les données stockées seront enregistrées en clair.",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "Le mot de passe est requis.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "invalidPassword": "Mot de passe invalide.",
+      "enableFailed": "Impossible d'activer le chiffrement.",
+      "disableFailed": "Impossible de désactiver le chiffrement."
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "Chiffrement activé.",
+      "disabled": "Chiffrement désactivé.",
+      "unlocked": "Stockage déverrouillé."
     }
   },
   "loadingModal": {
