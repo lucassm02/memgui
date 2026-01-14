@@ -39,9 +39,6 @@ const normalizeReleaseNotes = (releaseNotes) => {
   return "";
 };
 
-const toPlainText = (text) =>
-  text.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "");
-
 app.whenReady().then(async () => {
   let PRODUCTION_PORT = null;
 
@@ -63,7 +60,14 @@ app.whenReady().then(async () => {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
 
-  const iconPath = path.join(__dirname, "..", "..", "asset", "mem-gui.ico");
+  const iconPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "asset",
+    "icons",
+    "icon.ico"
+  );
 
   const mainWindow = new BrowserWindow({
     width: width - 100,
@@ -88,6 +92,15 @@ app.whenReady().then(async () => {
 
   if (!isDev) {
     autoUpdater.autoDownload = true;
+    let cachedReleaseNotes = "";
+    const getReleaseNotes = (info) => {
+      const normalized = normalizeReleaseNotes(info?.releaseNotes);
+      if (normalized) {
+        cachedReleaseNotes = normalized;
+        return normalized;
+      }
+      return cachedReleaseNotes;
+    };
     const sendUpdateEvent = (channel, payload) => {
       if (!mainWindow || mainWindow.isDestroyed()) return;
       mainWindow.webContents.send(channel, payload);
@@ -98,7 +111,7 @@ app.whenReady().then(async () => {
         version: info?.version,
         releaseDate: info?.releaseDate,
         releaseName: info?.releaseName,
-        releaseNotes: toPlainText(normalizeReleaseNotes(info?.releaseNotes))
+        releaseNotes: getReleaseNotes(info)
       });
     });
 
@@ -114,7 +127,7 @@ app.whenReady().then(async () => {
         version: info?.version,
         releaseName: info?.releaseName,
         releaseDate: info?.releaseDate,
-        releaseNotes: toPlainText(normalizeReleaseNotes(info?.releaseNotes))
+        releaseNotes: getReleaseNotes(info)
       });
     });
 
