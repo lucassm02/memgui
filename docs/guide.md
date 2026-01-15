@@ -103,13 +103,12 @@ Note: SSH connections, storage encryption, and dump import/export are available 
 
 ## Screenshots
 
-![MemGUI Home - Memcached GUI client](./screenshots/00-home.png)
-![Help](./screenshots/01-help.png)
-![Connection](./screenshots/02-connection.png)
-![Advanced Connection](./screenshots/03-advanced-connection.png)
-![Empty List](./screenshots/04-empty-list.png)
-![Create Key](./screenshots/05-create-key.png)
-![Key List](./screenshots/06-list.png)
-![Key Details](./screenshots/07-details.png)
-![Edit Key](./screenshots/08-edit-key.png)
-![Server Statistics](./screenshots/09-statistics.png)
+![MemGUI Home - Memcached GUI client](./screenshots/home.png)
+![Connection guide](./screenshots/connection-guide.png)
+![New connection](./screenshots/new-connection.png)
+![Connection management](./screenshots/management.png)
+![Storage security](./screenshots/app-security.png)
+![Key list](./screenshots/keys.png)
+![New key](./screenshots/new-key.png)
+![Dump import](./screenshots/import.png)
+![Dump export](./screenshots/export.png)
