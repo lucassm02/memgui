@@ -27,6 +27,10 @@ jobs:
         with:
           node-version: 20
           cache: yarn
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: Enable Corepack
         run: corepack enable
       - name: Use Yarn 1
