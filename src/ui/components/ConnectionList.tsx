@@ -31,7 +31,8 @@ const ConnectionList = () => {
     handleChoseConnection,
     handleDeleteConnection,
     currentConnection,
-    isConnected
+    isConnected,
+    handleDisconnect
   } = useConnections();
   const { openConnectionModal } = useModal();
   const { t } = useTranslation();
@@ -66,6 +67,11 @@ const ConnectionList = () => {
   };
 
   const handleCreateConnection = () => {
+    closeMenu();
+    if (isConnected) {
+      handleDisconnect();
+      navigate("/");
+    }
     openConnectionModal();
   };
 
