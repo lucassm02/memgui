@@ -7,11 +7,11 @@
 [![Latest Release](https://img.shields.io/github/v/release/lucassm02/memgui?color=blue&label=Download)](https://github.com/lucassm02/memgui/releases)
 [![License: Non-Commercial Use Only](https://img.shields.io/badge/license-NCU-orange.svg)](LICENCE.md)
 
-Website: https://lucassm02.github.io/memgui/
+Website: <https://lucassm02.github.io/memgui/>
 
 MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bulk operations, and connect securely with SASL or SSH without the CLI. Built for developers and ops teams who want a fast Memcached GUI client for local, staging, or production servers.
 
-## Latest Release Highlights (v1.2.0-beta)
+## Latest Release Highlights (v1.2.0)
 
 - SSH connections with an improved connection flow
 - Dump import/export and data import improvements
@@ -23,7 +23,7 @@ MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bu
 
 - Key management for Memcached (create, edit JSON or text, delete, inspect)
 - Dump import/export for backup and migration
-- SSH connections with host key verification (v1.2.0-beta)
+- SSH connections with host key verification (v1.2.0)
 - Storage encryption for local data and SSH secrets
 - Bulk delete with confirmation to avoid accidental data loss
 - Server-side key search with regex or plain text filters
@@ -37,7 +37,7 @@ MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bu
 
 ## Quick Start
 
-1. Download the latest build from https://github.com/lucassm02/memgui/releases (v1.2.0-beta is a pre-release)
+1. Download the latest build from <https://github.com/lucassm02/memgui/releases>
 2. Choose portable (unpacked) or installer
 3. Launch MemGUI and add your Memcached connection
 4. Manage keys, search, and monitor stats in the GUI
@@ -49,9 +49,9 @@ MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bu
 
 ## Download
 
-Get the latest build from the Releases page: https://github.com/lucassm02/memgui/releases
+Get the latest build from the Releases page: <https://github.com/lucassm02/memgui/releases>
 
-Pre-release v1.2.0-beta adds SSH connections, storage encryption, and dump import/export.
+Release v1.2.0 adds SSH connections, storage encryption, and dump import/export.
 
 ## Contributing
 

@@ -6,8 +6,8 @@ MemGUI is a Memcached GUI client and desktop app for managing cached data with a
 
 - Memcached key management (create, edit JSON or text, delete, inspect)
 - Dump import/export for backup and migration
-- SSH connections with host key verification (v1.2.0-beta)
-- Storage encryption for local data and SSH secrets (v1.2.0-beta)
+- SSH connections with host key verification (v1.2.0)
+- Storage encryption for local data and SSH secrets (v1.2.0)
 - Bulk delete with confirmation for safe cleanup
 - Server-side key search with regex or plain text filters
 - Faster key indexing with stale key pruning
@@ -18,11 +18,11 @@ MemGUI is a Memcached GUI client and desktop app for managing cached data with a
 - Update notices and auto-update availability for desktop builds
 - Multi-language UI with a persistent language selector
 
-Note: SSH connections, storage encryption, and dump import/export are available in v1.2.0-beta (pre-release).
+Note: SSH connections, storage encryption, and dump import/export are available in v1.2.0 (pre-release).
 
 ## Install and Launch
 
-1. Download the latest build from https://github.com/lucassm02/memgui/releases
+1. Download the latest build from <https://github.com/lucassm02/memgui/releases>
 2. Choose portable (unpacked) or installer
 3. Launch MemGUI and add your Memcached connection
 
@@ -33,7 +33,7 @@ Note: SSH connections, storage encryption, and dump import/export are available 
 - If required, enable SASL and provide username and password.
 - Save and connect.
 
-## SSH Connections (v1.2.0-beta)
+## SSH Connections (v1.2.0)
 
 - Enable "Connect via SSH" in the connection form.
 - Enter the SSH host, port (default 22), and username.
@@ -41,7 +41,7 @@ Note: SSH connections, storage encryption, and dump import/export are available 
 - Confirm the host fingerprint when prompted.
 - Enable storage encryption to save SSH secrets.
 
-## Storage Encryption (v1.2.0-beta)
+## Storage Encryption (v1.2.0)
 
 - Open the Storage Security panel in the connections screen.
 - Enable encryption and set a password to protect local data.
@@ -54,7 +54,7 @@ Note: SSH connections, storage encryption, and dump import/export are available 
 - Edit keys inline and save changes.
 - Delete keys individually when needed.
 
-## Import and Export (Dump) (v1.2.0-beta)
+## Import and Export (Dump) (v1.2.0)
 
 - In the key list, choose Export Dump to back up keys.
 - Export runs in batches to avoid server overload.
@@ -87,7 +87,7 @@ Note: SSH connections, storage encryption, and dump import/export are available 
 
 - Desktop builds surface update notices inside the UI.
 - Auto-update availability is shown when a new release is ready.
-- Pre-release builds (like v1.2.0-beta) are listed on GitHub Releases.
+- Pre-release builds (like v1.2.0) are listed on GitHub Releases.
 
 ## Language and Localization
 
