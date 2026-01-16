@@ -195,7 +195,9 @@ class ConnectionController {
           settled = true;
           clearTimeout(timeout);
           if (error) {
-            reject(error instanceof Error ? error : new Error("Memcached error"));
+            reject(
+              error instanceof Error ? error : new Error("Memcached error")
+            );
             return;
           }
           resolve();

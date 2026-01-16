@@ -1,9 +1,9 @@
 import { ShieldCheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 
+import StorageSecurityPanel from "./StorageSecurityPanel";
 import { useDarkMode, useElectron } from "@/ui/hooks";
 import { toneButton } from "@/ui/utils/buttonTone";
-import StorageSecurityPanel from "./StorageSecurityPanel";
 
 type StorageSecurityModalProps = {
   isOpen: boolean;
