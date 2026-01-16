@@ -54,11 +54,11 @@
       "hostPlaceholder": "مثال: 192.168.1.1",
       "port": "المنفذ",
       "options": "خيارات متقدمة",
-      "username": "اسم المستخدم (اختياري)",
+      "username": "Ø§Ø³Ù Ø§ÙÙØ³ØªØ®Ø¯Ù",
       "usernamePlaceholder": "أدخل اسم المستخدم",
-      "password": "كلمة المرور (اختياري)",
+      "password": "ÙÙÙØ© Ø§ÙÙØ±ÙØ±",
       "passwordPlaceholder": "أدخل كلمة المرور",
-      "timeout": "المهلة بالثواني (300 كحد أدنى)",
+      "timeout": "المهلة بالثواني (1 كحد أدنى)",
       "memcachedPort": "منفذ Memcached",
       "authToggle": "استخدام المصادقة",
       "sshToggle": "الاتصال عبر SSH",
@@ -67,10 +67,18 @@
       "sshPort": "منفذ SSH",
       "sshUsername": "اسم مستخدم SSH",
       "sshUsernamePlaceholder": "أدخل اسم مستخدم SSH",
-      "sshPassword": "كلمة مرور SSH (اختياري)",
+      "sshPassword": "كلمة مرور SSH",
       "sshPasswordPlaceholder": "أدخل كلمة مرور SSH",
-      "sshPrivateKey": "المفتاح الخاص لـ SSH (اختياري)",
-      "sshPrivateKeyPlaceholder": "الصق المفتاح الخاص"
+      "sshAuthMethod": "مصادقة SSH",
+      "sshAuthMethodPassword": "كلمة المرور",
+      "sshAuthMethodPrivateKey": "ملف المفتاح الخاص",
+      "sshPrivateKey": "ملف المفتاح الخاص لـ SSH",
+      "sshPrivateKeyPlaceholder": "الصق المفتاح الخاص",
+      "sshPrivateKeySelect": "اختر ملف المفتاح",
+      "sshPrivateKeySelected": "الملف المحدد",
+      "sshPrivateKeyLoaded": "تم تحميل المفتاح المحفوظ",
+      "sshPrivateKeyHint": "اختر ملف مفتاح خاص للمصادقة عبر SSH.",
+      "sshPrivateKeyClear": "مسح"
     },
     "authNote": "عند تفعيل المصادقة، لا يمكن إدارة سوى المفاتيح التي تم إنشاؤها في <strong>MemGUI</strong> بسبب قيود بروتوكول Memcached الموثّق.",
     "cancel": "إلغاء",
@@ -79,7 +87,9 @@
     "test": "اختبار",
     "testing": "جارٍ الاختبار...",
     "testSuccess": "تم الاتصال بنجاح!",
+    "authRequired": "ÙØ±Ø¬Ù Ø¥Ø¯Ø®Ø§Ù Ø§Ø³Ù Ø§ÙÙØ³ØªØ®Ø¯Ù ÙÙÙÙØ© Ø§ÙÙØ±ÙØ±.",
     "sshAuthRequired": "يرجى إدخال كلمة مرور SSH أو مفتاح خاص.",
+    "sshPrivateKeyLoadError": "تعذر قراءة ملف المفتاح الخاص.",
     "sshStorageWarning": "??????? SSH? ???? ????? ???????.",
     "sshHostKeyTitle": "تأكيد مفتاح مضيف SSH",
     "sshHostKeyMessage": "بصمة مضيف SSH: {{fingerprint}}. هل تثق بهذا المضيف؟",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "عنوان الخادم",
-        "description": "أدخل عنوان IP أو نطاق الخادم. للاستخدام المحلي، استخدم <code>127.0.0.1</code> أو <code>localhost</code>. إذا كنت تستخدم SSH، أدخل مضيف SSH."
+        "description": "أدخل عنوان IP أو نطاق الخادم. للاستخدام المحلي، استخدم <code>127.0.0.1</code> أو <code>localhost</code>."
       },
       "port": {
         "title": "منفذ Memcached",
@@ -251,6 +261,7 @@
     "close": "إغلاق"
   },
   "storageSecurity": {
+    "sshInfo": "لاستخدام SSH، يحتاج MemGUI إلى حفظ بيانات الاعتماد محليًا. التشفير يحمي هذه البيانات.",
     "title": "أمان التطبيق",
     "description": "يشفر البيانات المحلية المخزنة بواسطة MemGUI.",
     "passwordLabel": "كلمة مرور التطبيق",

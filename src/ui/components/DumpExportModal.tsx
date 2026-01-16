@@ -531,10 +531,7 @@ const DumpExportModal = ({
   };
 
   const handleStartDump = () => {
-    if (
-      statusRef.current === "connecting" ||
-      statusRef.current === "running"
-    ) {
+    if (statusRef.current === "connecting" || statusRef.current === "running") {
       return;
     }
     handlePrefetchDump({ autoStart: true, force: true });

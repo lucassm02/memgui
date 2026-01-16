@@ -54,11 +54,11 @@
       "hostPlaceholder": "z. B. 192.168.1.1",
       "port": "Port",
       "options": "Erweiterte Optionen",
-      "username": "Benutzername (optional)",
+      "username": "Benutzername",
       "usernamePlaceholder": "Benutzernamen eingeben",
-      "password": "Passwort (optional)",
+      "password": "Passwort",
       "passwordPlaceholder": "Passwort eingeben",
-      "timeout": "Timeout in Sekunden (mindestens 300)",
+      "timeout": "Timeout in Sekunden (mindestens 1)",
       "memcachedPort": "Memcached-Port",
       "authToggle": "Authentifizierung verwenden",
       "sshToggle": "Per SSH verbinden",
@@ -67,10 +67,18 @@
       "sshPort": "SSH-Port",
       "sshUsername": "SSH-Benutzername",
       "sshUsernamePlaceholder": "Geben Sie Ihren SSH-Benutzernamen ein",
-      "sshPassword": "SSH-Passwort (optional)",
+      "sshPassword": "SSH-Passwort",
       "sshPasswordPlaceholder": "Geben Sie Ihr SSH-Passwort ein",
-      "sshPrivateKey": "SSH-Privatschlüssel (optional)",
-      "sshPrivateKeyPlaceholder": "Fügen Sie Ihren privaten Schlüssel ein"
+      "sshAuthMethod": "SSH-Authentifizierung",
+      "sshAuthMethodPassword": "Passwort",
+      "sshAuthMethodPrivateKey": "Private Schlüsseldatei",
+      "sshPrivateKey": "SSH-Privatschlüsseldatei",
+      "sshPrivateKeyPlaceholder": "Fügen Sie Ihren privaten Schlüssel ein",
+      "sshPrivateKeySelect": "Schlüsseldatei auswählen",
+      "sshPrivateKeySelected": "Ausgewählte Datei",
+      "sshPrivateKeyLoaded": "Gespeicherter Schlüssel geladen",
+      "sshPrivateKeyHint": "Wählen Sie eine private Schlüsseldatei für die SSH-Authentifizierung.",
+      "sshPrivateKeyClear": "Zurücksetzen"
     },
     "authNote": "Wenn die Authentifizierung aktiviert ist, können aufgrund einer Einschränkung des authentifizierten Memcached-Protokolls nur Schlüssel verwaltet werden, die in <strong>MemGUI</strong> erstellt wurden.",
     "cancel": "Abbrechen",
@@ -79,7 +87,9 @@
     "test": "Testen",
     "testing": "Teste...",
     "testSuccess": "Verbindung erfolgreich!",
+    "authRequired": "Geben Sie Benutzername und Passwort an.",
     "sshAuthRequired": "Geben Sie ein SSH-Passwort oder einen privaten Schlüssel an.",
+    "sshPrivateKeyLoadError": "Die private Schlüsseldatei konnte nicht gelesen werden.",
     "sshStorageWarning": "Aktivieren Sie die Speicherverschl?sselung, um SSH zu verwenden.",
     "sshHostKeyTitle": "SSH-Hostschlüssel bestätigen",
     "sshHostKeyMessage": "SSH-Host-Fingerprint: {{fingerprint}}. Vertrauen Sie diesem Host?",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "Serveradresse",
-        "description": "Geben Sie die IP oder den Domainnamen des Servers ein. Für lokal verwenden Sie <code>127.0.0.1</code> oder <code>localhost</code>. Bei SSH geben Sie den SSH-Host an."
+        "description": "Geben Sie die IP oder den Domainnamen des Servers ein. Für lokal verwenden Sie <code>127.0.0.1</code> oder <code>localhost</code>."
       },
       "port": {
         "title": "Memcached-Port",
@@ -253,6 +263,7 @@
   "storageSecurity": {
     "title": "App-Sicherheit",
     "description": "Verschlüsselt lokale Daten, die von MemGUI gespeichert werden.",
+    "sshInfo": "Für SSH muss MemGUI Anmeldedaten lokal speichern. Verschlüsselung schützt diese Daten.",
     "passwordLabel": "App-Passwort",
     "passwordPlaceholder": "Passwort eingeben",
     "confirmLabel": "Passwort bestätigen",

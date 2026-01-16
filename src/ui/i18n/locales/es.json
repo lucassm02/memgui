@@ -54,11 +54,11 @@
       "hostPlaceholder": "Ej: 192.168.1.1",
       "port": "Puerto",
       "options": "Opciones avanzadas",
-      "username": "Usuario (opcional)",
+      "username": "Usuario",
       "usernamePlaceholder": "Introduce tu usuario",
-      "password": "Contraseña (opcional)",
+      "password": "ContraseÃ±a",
       "passwordPlaceholder": "Introduce tu contraseña",
-      "timeout": "Timeout en segundos (mínimo 300)",
+      "timeout": "Timeout en segundos (mínimo 1)",
       "memcachedPort": "Puerto de Memcached",
       "authToggle": "Usar autenticación",
       "sshToggle": "Conectar vía SSH",
@@ -67,10 +67,18 @@
       "sshPort": "Puerto SSH",
       "sshUsername": "Usuario SSH",
       "sshUsernamePlaceholder": "Introduce tu usuario SSH",
-      "sshPassword": "Contraseña SSH (opcional)",
+      "sshPassword": "Contraseña SSH",
       "sshPasswordPlaceholder": "Introduce tu contraseña SSH",
-      "sshPrivateKey": "Clave privada SSH (opcional)",
-      "sshPrivateKeyPlaceholder": "Pega tu clave privada"
+      "sshAuthMethod": "Autenticación SSH",
+      "sshAuthMethodPassword": "Contraseña",
+      "sshAuthMethodPrivateKey": "Archivo de clave privada",
+      "sshPrivateKey": "Archivo de clave privada SSH",
+      "sshPrivateKeyPlaceholder": "Pega tu clave privada",
+      "sshPrivateKeySelect": "Seleccionar archivo de clave",
+      "sshPrivateKeySelected": "Archivo seleccionado",
+      "sshPrivateKeyLoaded": "Clave guardada cargada",
+      "sshPrivateKeyHint": "Selecciona una clave privada para autenticarte por SSH.",
+      "sshPrivateKeyClear": "Limpiar"
     },
     "authNote": "Cuando la autenticación está habilitada, solo se pueden gestionar las claves creadas en <strong>MemGUI</strong> debido a una limitación del protocolo de Memcached autenticado.",
     "cancel": "Cancelar",
@@ -79,7 +87,9 @@
     "test": "Probar",
     "testing": "Probando...",
     "testSuccess": "¡Conexión realizada con éxito!",
+    "authRequired": "Proporciona un usuario y una contraseÃ±a.",
     "sshAuthRequired": "Proporciona una contraseña SSH o una clave privada.",
+    "sshPrivateKeyLoadError": "No se pudo leer el archivo de clave privada.",
     "sshStorageWarning": "Habilita el cifrado del almacenamiento para usar SSH.",
     "sshHostKeyTitle": "Confirmar clave del host SSH",
     "sshHostKeyMessage": "Huella del host SSH: {{fingerprint}}. ¿Confías en este host?",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "Dirección del servidor",
-        "description": "Introduce la IP o dominio del servidor. Para uso local, utiliza <code>127.0.0.1</code> o <code>localhost</code>. Si usas SSH, indica el host SSH."
+        "description": "Introduce la IP o dominio del servidor. Para uso local, utiliza <code>127.0.0.1</code> o <code>localhost</code>."
       },
       "port": {
         "title": "Puerto de Memcached",
@@ -253,6 +263,7 @@
   "storageSecurity": {
     "title": "Seguridad de la app",
     "description": "Cifra los datos locales guardados por MemGUI.",
+    "sshInfo": "Para usar SSH, MemGUI necesita guardar credenciales localmente. El cifrado protege estos datos.",
     "passwordLabel": "Contraseña de la app",
     "passwordPlaceholder": "Introduce una contraseña",
     "confirmLabel": "Confirmar contraseña",

@@ -54,11 +54,11 @@
       "hostPlaceholder": "例: 192.168.1.1",
       "port": "ポート",
       "options": "詳細オプション",
-      "username": "ユーザー名（任意）",
+      "username": "ã¦ã¼ã¶ã¼å",
       "usernamePlaceholder": "ユーザー名を入力",
-      "password": "パスワード（任意）",
+      "password": "ãã¹ã¯ã¼ã",
       "passwordPlaceholder": "パスワードを入力",
-      "timeout": "タイムアウト（秒、最小 300）",
+      "timeout": "タイムアウト（秒、最小 1",
       "memcachedPort": "Memcached ポート",
       "authToggle": "認証を使用する",
       "sshToggle": "SSHで接続",
@@ -67,10 +67,18 @@
       "sshPort": "SSH ポート",
       "sshUsername": "SSH ユーザー名",
       "sshUsernamePlaceholder": "SSHユーザー名を入力",
-      "sshPassword": "SSH パスワード（任意）",
+      "sshPassword": "SSH パスワード",
       "sshPasswordPlaceholder": "SSHパスワードを入力",
-      "sshPrivateKey": "SSH 秘密鍵（任意）",
-      "sshPrivateKeyPlaceholder": "秘密鍵を貼り付け"
+      "sshAuthMethod": "SSH 認証",
+      "sshAuthMethodPassword": "パスワード",
+      "sshAuthMethodPrivateKey": "秘密鍵ファイル",
+      "sshPrivateKey": "SSH 秘密鍵ファイル",
+      "sshPrivateKeyPlaceholder": "秘密鍵を貼り付け",
+      "sshPrivateKeySelect": "秘密鍵ファイルを選択",
+      "sshPrivateKeySelected": "選択したファイル",
+      "sshPrivateKeyLoaded": "保存済みの鍵を読み込みました",
+      "sshPrivateKeyHint": "SSH 認証のために秘密鍵ファイルを選択してください。",
+      "sshPrivateKeyClear": "クリア"
     },
     "authNote": "認証が有効な場合、<strong>MemGUI</strong> 内で作成されたキーのみ管理できます。これは認証済み Memcached プロトコルの制限によるものです。",
     "cancel": "キャンセル",
@@ -79,7 +87,9 @@
     "test": "テスト",
     "testing": "テスト中...",
     "testSuccess": "接続に成功しました！",
+    "authRequired": "ã¦ã¼ã¶ã¼åã¨ãã¹ã¯ã¼ããå¥åãã¦ãã ããã",
     "sshAuthRequired": "SSHのパスワードまたは秘密鍵を入力してください。",
+    "sshPrivateKeyLoadError": "秘密鍵ファイルを読み取れませんでした。",
     "sshStorageWarning": "SSH ??????????????????????????",
     "sshHostKeyTitle": "SSH ホスト鍵の確認",
     "sshHostKeyMessage": "SSHホストのフィンガープリント: {{fingerprint}}。このホストを信頼しますか？",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "サーバーアドレス",
-        "description": "サーバーのIPまたはドメインを入力してください。ローカルの場合は <code>127.0.0.1</code> または <code>localhost</code> を使用します。SSHを使用する場合はSSHホストを入力してください。"
+        "description": "サーバーのIPまたはドメインを入力してください。ローカルの場合は <code>127.0.0.1</code> または <code>localhost</code> を使用します。"
       },
       "port": {
         "title": "Memcached ポート",
@@ -251,6 +261,7 @@
     "close": "閉じる"
   },
   "storageSecurity": {
+    "sshInfo": "SSH を使うには、MemGUI が認証情報をローカルに保存する必要があります。暗号化で保護されます。",
     "title": "アプリのセキュリティ",
     "description": "MemGUIが保存するローカルデータを暗号化します。",
     "passwordLabel": "アプリのパスワード",

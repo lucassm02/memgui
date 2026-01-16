@@ -54,11 +54,11 @@
       "hostPlaceholder": "例如：192.168.1.1",
       "port": "端口",
       "options": "高级选项",
-      "username": "用户名（可选）",
+      "username": "ç¨æ·å",
       "usernamePlaceholder": "输入用户名",
-      "password": "密码（可选）",
+      "password": "å¯ç ",
       "passwordPlaceholder": "输入密码",
-      "timeout": "超时时间（秒，最少 300）",
+      "timeout": "超时时间（秒，最少 1",
       "memcachedPort": "Memcached 端口",
       "authToggle": "使用认证",
       "sshToggle": "通过 SSH 连接",
@@ -67,10 +67,18 @@
       "sshPort": "SSH 端口",
       "sshUsername": "SSH 用户名",
       "sshUsernamePlaceholder": "输入 SSH 用户名",
-      "sshPassword": "SSH 密码（可选）",
+      "sshPassword": "SSH 密码",
       "sshPasswordPlaceholder": "输入 SSH 密码",
-      "sshPrivateKey": "SSH 私钥（可选）",
-      "sshPrivateKeyPlaceholder": "粘贴私钥"
+      "sshAuthMethod": "SSH 认证",
+      "sshAuthMethodPassword": "密码",
+      "sshAuthMethodPrivateKey": "私钥文件",
+      "sshPrivateKey": "SSH 私钥文件",
+      "sshPrivateKeyPlaceholder": "粘贴私钥",
+      "sshPrivateKeySelect": "选择私钥文件",
+      "sshPrivateKeySelected": "已选择文件",
+      "sshPrivateKeyLoaded": "已加载保存的密钥",
+      "sshPrivateKeyHint": "请选择用于 SSH 认证的私钥文件。",
+      "sshPrivateKeyClear": "清除"
     },
     "authNote": "启用身份验证时，由于已验证的 Memcached 协议限制，只能管理在 <strong>MemGUI</strong> 中创建的键。",
     "cancel": "取消",
@@ -79,7 +87,9 @@
     "test": "测试",
     "testing": "正在测试...",
     "testSuccess": "连接成功！",
+    "authRequired": "è¯·è¾å¥ç¨æ·ååå¯ç ã",
     "sshAuthRequired": "请提供 SSH 密码或私钥。",
+    "sshPrivateKeyLoadError": "无法读取私钥文件。",
     "sshStorageWarning": "??? SSH?????????",
     "sshHostKeyTitle": "确认 SSH 主机密钥",
     "sshHostKeyMessage": "SSH 主机指纹：{{fingerprint}}。是否信任此主机？",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "服务器地址",
-        "description": "输入服务器 IP 或域名。本地使用 <code>127.0.0.1</code> 或 <code>localhost</code>。如果使用 SSH，请填写 SSH 主机。"
+        "description": "输入服务器 IP 或域名。本地使用 <code>127.0.0.1</code> 或 <code>localhost</code>。"
       },
       "port": {
         "title": "Memcached 端口",
@@ -251,6 +261,7 @@
     "close": "关闭"
   },
   "storageSecurity": {
+    "sshInfo": "使用 SSH 时，MemGUI 需要在本地保存凭据。加密可保护这些数据。",
     "title": "应用安全",
     "description": "对 MemGUI 保存的本地数据进行加密。",
     "passwordLabel": "应用密码",

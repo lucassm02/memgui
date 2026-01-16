@@ -61,7 +61,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     port: 11211,
     name: "",
     id: "",
-    timeout: 300,
+    timeout: 30,
     username: "",
     password: "",
     ssh: undefined
@@ -81,6 +81,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
   const refreshingKeyCountConnectionRef = useRef<string>("");
   const initialKeyLoadPendingRef = useRef(false);
   const initialKeyLoadConnectionRef = useRef<string>("");
+  const sshHostKeyCacheRef = useRef<Map<string, string>>(new Map());
 
   const navigate = useNavigate();
   const {
@@ -97,14 +98,66 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     connection: Omit<Connection, "id"> | Connection
   ): string => getConnectionIdentity({ ...connection, id: "" } as Connection);
 
+  const normalizeLegacySshConnection = useCallback((connection: Connection) => {
+    if (!connection.ssh) return connection;
+    const sshHost = connection.ssh.host?.trim();
+    if (sshHost) return connection;
+    return {
+      ...connection,
+      host: "127.0.0.1",
+      ssh: {
+        ...connection.ssh,
+        host: connection.host
+      }
+    };
+  }, []);
+
+  const getSshHostKeyCacheKey = (
+    connection: Omit<Connection, "id">
+  ): string | null => {
+    if (!connection.ssh) return null;
+    const sshHost = connection.ssh.host?.trim() || connection.host.trim();
+    if (!sshHost) return null;
+    return `${sshHost}:${connection.ssh.port}`;
+  };
+
+  const cacheSshHostKeyFingerprint = (
+    connection: Omit<Connection, "id">,
+    fingerprint: string
+  ) => {
+    const key = getSshHostKeyCacheKey(connection);
+    if (!key) return;
+    sshHostKeyCacheRef.current.set(key, fingerprint);
+  };
+
+  const applyCachedSshHostKeyFingerprint = (
+    connection: Omit<Connection, "id">
+  ): Omit<Connection, "id"> => {
+    if (!connection.ssh || connection.ssh.hostKeyFingerprint?.trim()) {
+      return connection;
+    }
+
+    const key = getSshHostKeyCacheKey(connection);
+    if (!key) return connection;
+    const cached = sshHostKeyCacheRef.current.get(key);
+    if (!cached) return connection;
+
+    return {
+      ...connection,
+      ssh: { ...connection.ssh, hostKeyFingerprint: cached }
+    };
+  };
+
   const buildSshPayload = (ssh?: Connection["ssh"]) => {
     if (!ssh) return undefined;
+    const hostValue = ssh.host?.trim();
     const passwordValue = ssh.password;
     const privateKeyValue = ssh.privateKey?.trim();
     const hasPassword = !!passwordValue && passwordValue.trim().length > 0;
     const hasPrivateKey = !!privateKeyValue;
     const fingerprintValue = ssh.hostKeyFingerprint?.trim();
     return {
+      ...(hostValue ? { host: hostValue } : {}),
       port: ssh.port,
       username: ssh.username,
       ...(hasPassword ? { password: passwordValue } : {}),
@@ -221,6 +274,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
               hostKeyFingerprint: hostKey.fingerprint
             }
           };
+          cacheSshHostKeyFingerprint(updatedParams, hostKey.fingerprint);
           const ok = await retry(updatedParams);
           resolve(ok);
         },
@@ -235,13 +289,22 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
 
     const { value } = data;
     const storedConnections = value as Connection[];
-    const sanitizedConnections = storedConnections.map((connection) =>
+    let legacySshDetected = false;
+    const normalizedConnections = storedConnections.map((connection) => {
+      const normalized = normalizeLegacySshConnection(connection);
+      if (normalized !== connection) {
+        legacySshDetected = true;
+      }
+      return normalized;
+    });
+    const sanitizedConnections = normalizedConnections.map((connection) =>
       sanitizeConnectionForStorage(connection)
     );
 
     if (
-      !canPersistSshSecrets &&
-      storedConnections.some((connection) => hasSshSecrets(connection.ssh))
+      legacySshDetected ||
+      (!canPersistSshSecrets &&
+        storedConnections.some((connection) => hasSshSecrets(connection.ssh)))
     ) {
       await setKey("CONNECTIONS", sanitizedConnections);
     }
@@ -252,6 +315,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     setKey,
     canPersistSshSecrets,
     hasSshSecrets,
+    normalizeLegacySshConnection,
     sanitizeConnectionForStorage
   ]);
 
@@ -426,12 +490,13 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     options?: { skipHostKeyPrompt?: boolean }
   ) => {
     try {
-      if (!ensureSshEncryption(params.ssh)) {
+      const resolvedParams = applyCachedSshHostKeyFingerprint(params);
+      if (!ensureSshEncryption(resolvedParams.ssh)) {
         return false;
       }
       showLoading();
 
-      const { host, port, timeout, password, username, ssh } = params;
+      const { host, port, timeout, password, username, ssh } = resolvedParams;
 
       const authentication =
         username || password ? { password, username } : undefined;
@@ -455,7 +520,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       initialKeyLoadPendingRef.current = true;
       initialKeyLoadConnectionRef.current = connectionId;
 
-      const newConnection = { ...params, id: connectionId };
+      const newConnection = { ...resolvedParams, id: connectionId };
       const storedConnection = sanitizeConnectionForStorage(newConnection);
       setCurrentConnection(storedConnection);
       setSavedConnections((prev) => {
@@ -472,8 +537,11 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       const hostKeyError = parseSshHostKeyError(error);
       if (hostKeyError && !options?.skipHostKeyPrompt) {
         dismissLoading();
-        return await confirmSshHostKey(params, hostKeyError, (nextParams) =>
-          connectWithParams(nextParams, { skipHostKeyPrompt: true })
+        return await confirmSshHostKey(
+          resolvedParams,
+          hostKeyError,
+          (nextParams) =>
+            connectWithParams(nextParams, { skipHostKeyPrompt: true })
         );
       }
       dismissLoading();
@@ -561,7 +629,8 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
     params: Omit<Connection, "id">,
     options?: { skipHostKeyPrompt?: boolean }
   ): Promise<boolean> => {
-    const { host, port, timeout, password, username, ssh } = params;
+    const resolvedParams = applyCachedSshHostKeyFingerprint(params);
+    const { host, port, timeout, password, username, ssh } = resolvedParams;
     let tempConnectionId = "";
     try {
       if (!ensureSshEncryption(ssh)) {
@@ -593,8 +662,11 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       const hostKeyError = parseSshHostKeyError(error);
       if (hostKeyError && !options?.skipHostKeyPrompt) {
         dismissLoading();
-        return await confirmSshHostKey(params, hostKeyError, (nextParams) =>
-          testConnectionWithParams(nextParams, { skipHostKeyPrompt: true })
+        return await confirmSshHostKey(
+          resolvedParams,
+          hostKeyError,
+          (nextParams) =>
+            testConnectionWithParams(nextParams, { skipHostKeyPrompt: true })
         );
       }
       showAlert(t("errors.connectionFailed"), "error");
@@ -635,7 +707,7 @@ export const ConnectionsProvider = ({ children }: { children: ReactNode }) => {
       port: 11211,
       name: "",
       id: "",
-      timeout: 300,
+      timeout: 30,
       ssh: undefined
     });
   };

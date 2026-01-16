@@ -54,11 +54,11 @@
       "hostPlaceholder": "예: 192.168.1.1",
       "port": "포트",
       "options": "고급 옵션",
-      "username": "사용자 이름 (선택 사항)",
+      "username": "ì¬ì©ì ì´ë¦",
       "usernamePlaceholder": "사용자 이름 입력",
-      "password": "비밀번호 (선택 사항)",
+      "password": "ë¹ë°ë²í¸",
       "passwordPlaceholder": "비밀번호 입력",
-      "timeout": "타임아웃(초, 최소 300)",
+      "timeout": "타임아웃(초, 최소 1)",
       "memcachedPort": "Memcached 포트",
       "authToggle": "인증 사용",
       "sshToggle": "SSH로 연결",
@@ -67,10 +67,18 @@
       "sshPort": "SSH 포트",
       "sshUsername": "SSH 사용자 이름",
       "sshUsernamePlaceholder": "SSH 사용자 이름 입력",
-      "sshPassword": "SSH 비밀번호(선택 사항)",
+      "sshPassword": "SSH 비밀번호",
       "sshPasswordPlaceholder": "SSH 비밀번호 입력",
-      "sshPrivateKey": "SSH 개인 키(선택 사항)",
-      "sshPrivateKeyPlaceholder": "개인 키 붙여넣기"
+      "sshAuthMethod": "SSH 인증",
+      "sshAuthMethodPassword": "비밀번호",
+      "sshAuthMethodPrivateKey": "개인 키 파일",
+      "sshPrivateKey": "SSH 개인 키 파일",
+      "sshPrivateKeyPlaceholder": "개인 키 붙여넣기",
+      "sshPrivateKeySelect": "개인 키 파일 선택",
+      "sshPrivateKeySelected": "선택된 파일",
+      "sshPrivateKeyLoaded": "저장된 키가 로드되었습니다",
+      "sshPrivateKeyHint": "SSH 인증을 위해 개인 키 파일을 선택하세요.",
+      "sshPrivateKeyClear": "지우기"
     },
     "authNote": "인증이 활성화된 경우, 인증된 Memcached 프로토콜의 제한으로 인해 <strong>MemGUI</strong>에서 생성된 키만 관리할 수 있습니다.",
     "cancel": "취소",
@@ -79,7 +87,9 @@
     "test": "테스트",
     "testing": "테스트 중...",
     "testSuccess": "연결에 성공했습니다!",
+    "authRequired": "ì¬ì©ì ì´ë¦ê³¼ ë¹ë°ë²í¸ë¥¼ ìë ¥íì¸ì.",
     "sshAuthRequired": "SSH 비밀번호 또는 개인 키를 입력하세요.",
+    "sshPrivateKeyLoadError": "개인 키 파일을 읽지 못했습니다.",
     "sshStorageWarning": "SSH? ????? ???? ???? ??????.",
     "sshHostKeyTitle": "SSH 호스트 키 확인",
     "sshHostKeyMessage": "SSH 호스트 지문: {{fingerprint}}. 이 호스트를 신뢰하시겠습니까?",
@@ -98,7 +108,7 @@
       },
       "address": {
         "title": "서버 주소",
-        "description": "서버 IP 또는 도메인을 입력하세요. 로컬의 경우 <code>127.0.0.1</code> 또는 <code>localhost</code>를 사용합니다. SSH를 사용하는 경우 SSH 호스트를 입력하세요."
+        "description": "서버 IP 또는 도메인을 입력하세요. 로컬의 경우 <code>127.0.0.1</code> 또는 <code>localhost</code>를 사용합니다."
       },
       "port": {
         "title": "Memcached 포트",
@@ -251,6 +261,7 @@
     "close": "닫기"
   },
   "storageSecurity": {
+    "sshInfo": "SSH를 사용하려면 MemGUI가 자격 증명을 로컬에 저장해야 합니다. 암호화가 이를 보호합니다.",
     "title": "앱 보안",
     "description": "MemGUI가 저장하는 로컬 데이터를 암호화합니다.",
     "passwordLabel": "앱 비밀번호",

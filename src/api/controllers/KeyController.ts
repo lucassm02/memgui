@@ -622,7 +622,9 @@ class KeyController {
           const resolvedExpiration =
             ttl > maxRelativeExpiration ? nowUnixTime + ttl : ttl;
           const options =
-            resolvedExpiration > 0 ? { expires: resolvedExpiration } : undefined;
+            resolvedExpiration > 0
+              ? { expires: resolvedExpiration }
+              : undefined;
 
           try {
             const success = await connection.client.set(key, value, options);

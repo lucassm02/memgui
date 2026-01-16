@@ -42,6 +42,7 @@ const ConnectedHeader = () => {
   }
 
   const { openMenu } = useMenu();
+  const displayHost = currentConnection.ssh?.host ?? currentConnection.host;
 
   return (
     <>
@@ -92,7 +93,7 @@ const ConnectedHeader = () => {
               >
                 <LinkIcon className="w-4 h-4" />
                 <span>
-                  {currentConnection.host}:{currentConnection.port}
+                  {displayHost}:{currentConnection.port}
                 </span>
                 <div className="relative flex items-center">
                   <span className="sr-only">connected</span>

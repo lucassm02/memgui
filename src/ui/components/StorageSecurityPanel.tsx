@@ -11,9 +11,15 @@ import { toneButton } from "@/ui/utils/buttonTone";
 
 type StorageSecurityPanelProps = {
   className?: string;
+  showHeader?: boolean;
+  variant?: "panel" | "plain";
 };
 
-const StorageSecurityPanel = ({ className = "" }: StorageSecurityPanelProps) => {
+const StorageSecurityPanel = ({
+  className = "",
+  showHeader = true,
+  variant = "panel"
+}: StorageSecurityPanelProps) => {
   const { darkMode } = useDarkMode();
   const { showAlert, showConfirm, showLoading, dismissLoading } = useModal();
   const {
@@ -106,41 +112,48 @@ const StorageSecurityPanel = ({ className = "" }: StorageSecurityPanelProps) => 
   const statusIcon = storageLocked ? LockClosedIcon : LockOpenIcon;
   const StatusIcon = statusIcon;
 
+  const containerClass =
+    variant === "plain"
+      ? "w-full"
+      : `p-4 rounded-xl border ${
+          darkMode
+            ? "bg-gray-900/40 border-gray-700"
+            : "bg-white border-gray-200"
+        }`;
+
   return (
-    <div
-      className={`p-4 rounded-xl border ${
-        darkMode ? "bg-gray-900/40 border-gray-700" : "bg-white border-gray-200"
-      } ${className}`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h4
-            className={`text-sm font-semibold ${
-              darkMode ? "text-gray-100" : "text-gray-800"
+    <div className={`${containerClass} ${className}`}>
+      {showHeader && (
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h4
+              className={`text-sm font-semibold ${
+                darkMode ? "text-gray-100" : "text-gray-800"
+              }`}
+            >
+              {t("storageSecurity.title")}
+            </h4>
+            <p
+              className={`text-xs mt-1 ${
+                darkMode ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              {t("storageSecurity.description")}
+            </p>
+          </div>
+          <div
+            className={`p-2 rounded-lg ${
+              darkMode ? "bg-emerald-400/10" : "bg-emerald-50"
             }`}
           >
-            {t("storageSecurity.title")}
-          </h4>
-          <p
-            className={`text-xs mt-1 ${
-              darkMode ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
-            {t("storageSecurity.description")}
-          </p>
+            <ShieldCheckIcon
+              className={`w-5 h-5 ${
+                darkMode ? "text-emerald-300" : "text-emerald-600"
+              }`}
+            />
+          </div>
         </div>
-        <div
-          className={`p-2 rounded-lg ${
-            darkMode ? "bg-emerald-400/10" : "bg-emerald-50"
-          }`}
-        >
-          <ShieldCheckIcon
-            className={`w-5 h-5 ${
-              darkMode ? "text-emerald-300" : "text-emerald-600"
-            }`}
-          />
-        </div>
-      </div>
+      )}
 
       {encryptionEnabled && (
         <div className="flex items-center gap-2 mt-3">

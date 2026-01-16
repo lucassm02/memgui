@@ -3,6 +3,7 @@ import memjs from "memjs";
 import { Client as SshClient } from "ssh2";
 
 export interface SshConfig {
+  host?: string;
   port: number;
   username: string;
   password?: string;

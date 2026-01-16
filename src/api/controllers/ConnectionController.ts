@@ -126,6 +126,7 @@ class ConnectionController {
 
       const sshConfig = ssh
         ? {
+            host: ssh.host?.trim(),
             port: ssh.port,
             username: ssh.username.trim(),
             password: ssh.password,
@@ -135,10 +136,14 @@ class ConnectionController {
         : undefined;
 
       if (sshConfig) {
+        const normalizedSshHost = sshConfig.host?.trim();
+        const legacySshHost = !normalizedSshHost;
+        const sshHost = normalizedSshHost || host;
+        const remoteHost = legacySshHost ? "127.0.0.1" : host;
         tunnel = await createSshTunnel({
-          sshHost: host,
+          sshHost,
           ssh: sshConfig,
-          remoteHost: "127.0.0.1",
+          remoteHost,
           remotePort: Number(port),
           readyTimeoutMs: connectionTimeout * 1000,
           expectedHostFingerprint: sshConfig.hostKeyFingerprint
@@ -162,10 +167,39 @@ class ConnectionController {
       );
       client = memcachedClient;
 
+      const memcachedTimeoutMs = Math.round(connectionTimeout * 1000);
       await new Promise<void>((resolve, reject) => {
-        memcachedClient.stats((error: unknown) =>
-          error ? reject(error) : resolve()
-        );
+        let settled = false;
+        const timeout = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          try {
+            memcachedClient.close();
+          } catch {
+            // Ignore close errors.
+          }
+          if (tunnel) {
+            closeSshTunnel(tunnel);
+            tunnel = null;
+          }
+          client = null;
+          reject(
+            new Error(
+              `Timeout: No response from memcached within ${memcachedTimeoutMs}ms`
+            )
+          );
+        }, memcachedTimeoutMs);
+
+        memcachedClient.stats((error: unknown) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeout);
+          if (error) {
+            reject(error instanceof Error ? error : new Error("Memcached error"));
+            return;
+          }
+          resolve();
+        });
       });
 
       const newConnection: MemcachedConnection = {

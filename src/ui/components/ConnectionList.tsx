@@ -146,6 +146,7 @@ const ConnectionList = () => {
 
               {sortedConnections.map((conn) => {
                 const isActive = isConnectionActive(conn);
+                const displayHost = conn.ssh?.host ?? conn.host;
                 return (
                   <div
                     key={getConnectionIdentity(conn)}
@@ -179,7 +180,7 @@ const ConnectionList = () => {
                           darkMode ? "text-gray-400" : "text-gray-500"
                         }`}
                       >
-                        {conn.host}:{conn.port}
+                        {displayHost}:{conn.port}
                       </div>
                     </div>
 

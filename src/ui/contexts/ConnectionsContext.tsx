@@ -1,6 +1,7 @@
 import { createContext } from "react";
 
 export interface SshConfig {
+  host?: string;
   port: number;
   username: string;
   password?: string;

@@ -31,8 +31,7 @@ const KeyList = () => {
     totalKeyCount
   } = useConnections();
 
-  const { openCreateModal, openEditModal, openViewDataModal } =
-    useModal();
+  const { openCreateModal, openEditModal, openViewDataModal } = useModal();
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");

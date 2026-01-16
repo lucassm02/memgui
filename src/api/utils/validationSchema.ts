@@ -2,6 +2,14 @@ import { z } from "zod";
 
 const sshSchema = z
   .object({
+    host: z
+      .string({
+        required_error: "O host SSH é obrigatório.",
+        invalid_type_error: "O host SSH deve ser uma string."
+      })
+      .trim()
+      .min(1, { message: "O host SSH não pode ser vazio." })
+      .optional(),
     port: z
       .number({
         required_error: "A porta SSH é obrigatória.",
@@ -70,8 +78,8 @@ const connectionSchema = z.object({
         invalid_type_error: "O timeout de conexão deve ser um número."
       })
       .int({ message: "O timeout de conexão deve ser um número inteiro." })
-      .min(300, {
-        message: "O timeout de conexão deve ser no mínimo 300 segundos."
+      .min(1, {
+        message: "O timeout de conexão deve ser no mínimo 1 segundo."
       })
       .max(3600, {
         message: "O timeout de conexão deve ser no máximo 3600 segundos."
