@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lucassm02.github.io/memgui/sitemap.xml

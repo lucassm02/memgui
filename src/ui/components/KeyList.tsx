@@ -28,12 +28,10 @@ const KeyList = () => {
     handleCreateKey,
     handleEditKey,
     currentConnection,
-    handleFlushAllKeys,
     totalKeyCount
   } = useConnections();
 
-  const { openCreateModal, openEditModal, openViewDataModal, showConfirm } =
-    useModal();
+  const { openCreateModal, openEditModal, openViewDataModal } = useModal();
   const { t } = useTranslation();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -97,20 +95,6 @@ const KeyList = () => {
   }, [searchTerm, maxItems, currentConnection.id]);
 
   const filteredKeys = keys;
-
-  const handleConfirmFlushAll = () => {
-    showConfirm({
-      title: t("keyList.flushConfirmation.title"),
-      message: t("keyList.flushConfirmation.message"),
-      confirmLabel: t("keyList.flushConfirmation.confirm"),
-      cancelLabel: t("keyList.flushConfirmation.cancel"),
-      type: "error",
-      onConfirm: async () => {
-        await handleFlushAllKeys();
-      }
-    });
-  };
-
   return (
     <div
       className={`w-full px-2 sm:px-3 max-w-none mx-auto mt-10 transition-all ${
@@ -178,14 +162,6 @@ const KeyList = () => {
             >
               <PlusIcon className="w-5 h-5" />
               {t("keyList.create")}
-            </button>
-
-            <button
-              onClick={handleConfirmFlushAll}
-              className={toneButton("danger", darkMode)}
-            >
-              <TrashIcon className="w-5 h-5" />
-              {t("keyList.clearAll")}
             </button>
           </div>
         </div>

@@ -9,7 +9,7 @@ const buildOptions = {
   sourcemap: false,
   external: ["path", "fs", "os", "http", "https", "vite", "net", "crypto"],
   target: ["esnext"],
-  loader: { ".tsx": "tsx", ".ts": "ts" },
+  loader: { ".tsx": "tsx", ".ts": "ts", ".node": "file" },
   logLevel: "info"
 };
 

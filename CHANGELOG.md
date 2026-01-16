@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](https://semver.org/) and uses the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
 
+## [1.2.0] - 2026-01-16
+
+### Added
+
+- **SSH connections** with an improved connection flow.
+- **Key import/export** plus **data import** improvements.
+- **Encryption support** for stored data.
+- **Lightweight index update listener** for new keys.
+- **Auth-specific index events and queue updates** in the API.
+- **Experimental CI pipeline** to generate builds.
+
+### Changed
+
+- **Memcached connection layer** refactored for clearer structure.
+- **NeDB storage path** now uses the OS default app data directory.
+- **Key index architecture** sharded with centralized reserved keys.
+- **Index reuse and stale key pruning** for faster key lookups.
+- **Cachedump processing** reuses results and reads full slabs.
+- **Search limits** and **data size display** refined in the API/UI.
+- **UI polish** across menus, confirmation modal, and dump modal spacing.
+- **Translation strings** corrected for UI copy.
+- **Env loading** now uses dotenv and ignores reserved keys in limits.
+
+### Fixed
+
+- **Infinite loading** when selecting the active connection.
+- **Key count** no longer includes reserved keys.
+
+### Security
+
+- **Security limitations and optimizations** applied across the app.
+
 ## [1.1.0] - 2025-12-12
 
 ### Added

@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
+import ReactMarkdown, { Components } from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
 
 import { useDarkMode } from "../hooks/useDarkMode";
 import { useElectron } from "../hooks/useElectron";
@@ -25,6 +29,7 @@ const UpdateNotice = () => {
   const [updateState, setUpdateState] = useState<UpdateState | null>(null);
   const [isInstalling, setIsInstalling] = useState(false);
   const [showErrorDetails, setShowErrorDetails] = useState(false);
+  const [showReleaseNotes, setShowReleaseNotes] = useState(false);
 
   useEffect(() => {
     if (!enabled) return;
@@ -36,14 +41,26 @@ const UpdateNotice = () => {
       _event: Electron.IpcRendererEvent,
       payload: UpdatePayload
     ) => {
-      setUpdateState({ status: "available", payload });
+      setUpdateState((prev) => {
+        const nextPayload =
+          payload?.releaseNotes || !prev?.payload?.releaseNotes
+            ? payload
+            : { ...payload, releaseNotes: prev.payload.releaseNotes };
+        return { status: "available", payload: nextPayload };
+      });
     };
 
     const handleDownloaded = (
       _event: Electron.IpcRendererEvent,
       payload: UpdatePayload
     ) => {
-      setUpdateState({ status: "downloaded", payload });
+      setUpdateState((prev) => {
+        const nextPayload =
+          payload?.releaseNotes || !prev?.payload?.releaseNotes
+            ? payload
+            : { ...payload, releaseNotes: prev.payload.releaseNotes };
+        return { status: "downloaded", payload: nextPayload };
+      });
     };
 
     const handleError = (
@@ -101,6 +118,87 @@ const UpdateNotice = () => {
     return Number.isNaN(parsed.getTime()) ? "" : parsed.toLocaleDateString();
   }, [updateState?.payload?.releaseDate]);
 
+  const markdownComponents = useMemo<Components>(() => {
+    const linkClass = darkMode
+      ? "text-sky-300 hover:text-sky-200"
+      : "text-blue-600 hover:text-blue-500";
+    const inlineCodeClass = darkMode
+      ? "bg-white/10 text-gray-100"
+      : "bg-gray-200 text-gray-900";
+    const blockCodeClass = darkMode
+      ? "bg-gray-900/70 border-gray-700 text-gray-100"
+      : "bg-white border-gray-200 text-gray-900";
+
+    return {
+      a: ({ node, className, ...props }) => (
+        <a
+          {...props}
+          className={`underline ${linkClass} ${className ?? ""}`.trim()}
+          target="_blank"
+          rel="noreferrer"
+        />
+      ),
+      ul: ({ node, className, ...props }) => (
+        <ul
+          {...props}
+          className={`list-disc pl-5 space-y-1 ${className ?? ""}`.trim()}
+        />
+      ),
+      ol: ({ node, className, ...props }) => (
+        <ol
+          {...props}
+          className={`list-decimal pl-5 space-y-1 ${className ?? ""}`.trim()}
+        />
+      ),
+      h1: ({ node, className, ...props }) => (
+        <h1
+          {...props}
+          className={`text-sm font-semibold ${className ?? ""}`.trim()}
+        />
+      ),
+      h2: ({ node, className, ...props }) => (
+        <h2
+          {...props}
+          className={`text-sm font-semibold ${className ?? ""}`.trim()}
+        />
+      ),
+      h3: ({ node, className, ...props }) => (
+        <h3
+          {...props}
+          className={`text-sm font-semibold ${className ?? ""}`.trim()}
+        />
+      ),
+      code: ({ node, inline, className, children, ...props }) =>
+        inline ? (
+          <code
+            {...props}
+            className={`rounded px-1 py-0.5 text-xs font-mono ${inlineCodeClass} ${
+              className ?? ""
+            }`.trim()}
+          >
+            {children}
+          </code>
+        ) : (
+          <code
+            {...props}
+            className={`text-xs font-mono ${className ?? ""}`.trim()}
+          >
+            {children}
+          </code>
+        ),
+      pre: ({ node, className, children, ...props }) => (
+        <pre
+          {...props}
+          className={`overflow-x-auto rounded-md border p-2 text-xs font-mono ${blockCodeClass} ${
+            className ?? ""
+          }`.trim()}
+        >
+          {children}
+        </pre>
+      )
+    };
+  }, [darkMode]);
+
   const summaryMessage = useMemo(() => {
     if (status !== "error") return description;
     if (!description) return "";
@@ -122,6 +220,7 @@ const UpdateNotice = () => {
     setUpdateState(null);
     setIsInstalling(false);
     setShowErrorDetails(false);
+    setShowReleaseNotes(false);
   };
 
   const handleInstall = () => {
@@ -130,6 +229,8 @@ const UpdateNotice = () => {
     setIsInstalling(true);
     electron.ipcRenderer.send("auto-update-install");
   };
+
+  const canShowReleaseNotes = status !== "error" && Boolean(releaseNotes);
 
   return (
     <div className="fixed top-14 right-4 z-[70] w-[28rem] max-w-[calc(100%-1.5rem)]">
@@ -168,15 +269,23 @@ const UpdateNotice = () => {
           </button>
         </div>
 
-        {status !== "error" && releaseNotes && (
+        {canShowReleaseNotes && showReleaseNotes && (
           <div
-            className={`mt-3 border rounded-lg max-h-48 overflow-auto text-sm whitespace-pre-wrap leading-relaxed ${
+            className={`mt-3 border rounded-lg max-h-48 overflow-auto ${
               darkMode
                 ? "bg-gray-800/70 border-gray-700 text-gray-200"
                 : "bg-gray-50 border-gray-200 text-gray-800"
             }`}
           >
-            <div className="p-3">{releaseNotes}</div>
+            <div className="p-3 text-sm leading-relaxed space-y-2">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                components={markdownComponents}
+              >
+                {releaseNotes}
+              </ReactMarkdown>
+            </div>
           </div>
         )}
 
@@ -193,6 +302,14 @@ const UpdateNotice = () => {
         )}
 
         <div className="mt-4 flex justify-end gap-2">
+          {canShowReleaseNotes && (
+            <button
+              onClick={() => setShowReleaseNotes((prev) => !prev)}
+              className={toneButton("neutral", darkMode, "sm")}
+            >
+              {showReleaseNotes ? "Ocultar release notes" : "Ver release notes"}
+            </button>
+          )}
           {status === "downloaded" ? (
             <>
               <button

@@ -10,13 +10,14 @@ import connectionsRoutes from "./api/routes/connections";
 import keysRoutes from "./api/routes/keys";
 import storagesRoutes from "./api/routes/storages";
 import { logger } from "./api/utils";
+import { registerDumpWebsocket } from "./api/ws/dump";
+import { registerImportWebsocket } from "./api/ws/import";
 
-function loadEnvFile() {
+function loadEnvFile(dev: boolean = false) {
+  if (!dev) return;
   const envPath = path.resolve(process.cwd(), ".env");
   dotenv.config({ path: envPath });
 }
-
-loadEnvFile();
 
 export async function server(port = 0, dev: boolean = false, host?: string) {
   try {
@@ -63,6 +64,32 @@ export async function server(port = 0, dev: boolean = false, host?: string) {
     let address: { port: number };
 
     const server = http.createServer(app);
+    const dumpWss = registerDumpWebsocket();
+    const importWss = registerImportWebsocket();
+
+    server.on("upgrade", (request, socket, head) => {
+      const host = request.headers.host ?? "localhost";
+      const url = request.url ? new URL(request.url, `http://${host}`) : null;
+      const pathname = url?.pathname ?? "";
+
+      if (pathname === "/ws/dump") {
+        dumpWss.handleUpgrade(request, socket, head, (ws) => {
+          dumpWss.emit("connection", ws, request);
+        });
+        return;
+      }
+
+      if (pathname === "/ws/import") {
+        importWss.handleUpgrade(request, socket, head, (ws) => {
+          importWss.emit("connection", ws, request);
+        });
+        return;
+      }
+
+      if (pathname.startsWith("/ws/")) {
+        socket.destroy();
+      }
+    });
 
     function listenAsync(port = 0, host?: string) {
       return new Promise((resolve, reject) => {
@@ -117,5 +144,6 @@ type Argv = { port?: number; host?: string; start?: boolean; dev?: boolean };
 const { port, host, start, dev } = cli.argv as Argv;
 
 if (start) {
+  loadEnvFile(dev);
   server(port, dev, host);
 }

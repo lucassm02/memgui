@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "返回",
-    "stats": "统计",
+    "stats": "管理",
     "disconnect": "断开连接"
   },
   "connectionHome": {
@@ -40,7 +40,7 @@
     "setupGuideLink": "配置指南"
   },
   "connectionList": {
-    "title": "已保存的连接",
+    "title": "连接",
     "empty": "未找到连接",
     "edit": "编辑连接"
   },
@@ -54,11 +54,31 @@
       "hostPlaceholder": "例如：192.168.1.1",
       "port": "端口",
       "options": "高级选项",
-      "username": "用户名（可选）",
+      "username": "ç¨æ·å",
       "usernamePlaceholder": "输入用户名",
-      "password": "密码（可选）",
+      "password": "å¯ç ",
       "passwordPlaceholder": "输入密码",
-      "timeout": "超时时间（秒，最少 300）"
+      "timeout": "超时时间（秒，最少 1",
+      "memcachedPort": "Memcached 端口",
+      "authToggle": "使用认证",
+      "sshToggle": "通过 SSH 连接",
+      "sshHost": "SSH 主机",
+      "sshHostPlaceholder": "例：server.example.com",
+      "sshPort": "SSH 端口",
+      "sshUsername": "SSH 用户名",
+      "sshUsernamePlaceholder": "输入 SSH 用户名",
+      "sshPassword": "SSH 密码",
+      "sshPasswordPlaceholder": "输入 SSH 密码",
+      "sshAuthMethod": "SSH 认证",
+      "sshAuthMethodPassword": "密码",
+      "sshAuthMethodPrivateKey": "私钥文件",
+      "sshPrivateKey": "SSH 私钥文件",
+      "sshPrivateKeyPlaceholder": "粘贴私钥",
+      "sshPrivateKeySelect": "选择私钥文件",
+      "sshPrivateKeySelected": "已选择文件",
+      "sshPrivateKeyLoaded": "已加载保存的密钥",
+      "sshPrivateKeyHint": "请选择用于 SSH 认证的私钥文件。",
+      "sshPrivateKeyClear": "清除"
     },
     "authNote": "启用身份验证时，由于已验证的 Memcached 协议限制，只能管理在 <strong>MemGUI</strong> 中创建的键。",
     "cancel": "取消",
@@ -66,7 +86,17 @@
     "save": "保存更改",
     "test": "测试",
     "testing": "正在测试...",
-    "testSuccess": "连接成功！"
+    "testSuccess": "连接成功！",
+    "authRequired": "è¯·è¾å¥ç¨æ·ååå¯ç ã",
+    "sshAuthRequired": "请提供 SSH 密码或私钥。",
+    "sshPrivateKeyLoadError": "无法读取私钥文件。",
+    "sshStorageWarning": "??? SSH?????????",
+    "sshHostKeyTitle": "确认 SSH 主机密钥",
+    "sshHostKeyMessage": "SSH 主机指纹：{{fingerprint}}。是否信任此主机？",
+    "sshHostKeyMismatchTitle": "SSH 主机密钥已更改",
+    "sshHostKeyMismatchMessage": "SSH 主机密钥已更改。期望：{{expected}}。收到：{{fingerprint}}。是否信任新密钥？",
+    "sshHostKeyConfirm": "信任",
+    "sshHostKeyCancel": "取消"
   },
   "setupGuide": {
     "title": "配置指南",
@@ -78,19 +108,39 @@
       },
       "address": {
         "title": "服务器地址",
-        "description": "输入 Memcached 服务器的 IP 或域名。用于本地时，请使用 <code>127.0.0.1</code> 或 <code>localhost</code>。"
+        "description": "输入服务器 IP 或域名。本地使用 <code>127.0.0.1</code> 或 <code>localhost</code>。"
       },
       "port": {
-        "title": "端口",
-        "description": "Memcached 默认端口为 <strong>11211</strong>。如果已更改，请使用配置的端口。"
+        "title": "Memcached 端口",
+        "description": "Memcached 默认端口为 <strong>11211</strong>。如已更改，请使用服务器配置的端口。"
       },
       "auth": {
         "title": "身份验证（可选）",
-        "description": "仅在服务器需要身份验证时填写用户名和密码。"
+        "description": "仅在服务器要求时启用认证并输入用户名和密码。"
       },
       "timeout": {
         "title": "超时",
         "description": "超时时间定义最大响应时间。"
+      },
+      "sshToggle": {
+        "title": "SSH 连接（可选）",
+        "description": "启用后可通过 SSH 访问远程服务器。"
+      },
+      "sshPort": {
+        "title": "SSH 端口",
+        "description": "默认 SSH 端口为 <strong>22</strong>。"
+      },
+      "sshAuth": {
+        "title": "SSH 认证（可选）",
+        "description": "输入用户名/密码或私钥以通过 SSH 认证。"
+      },
+      "sshHostKey": {
+        "title": "SSH 主机验证",
+        "description": "首次连接时需要确认主机指纹。"
+      },
+      "sshStorage": {
+        "title": "SSH 安全",
+        "description": "??? SSH?????????"
       }
     },
     "close": "关闭"
@@ -104,6 +154,8 @@
     "refresh": "刷新",
     "autoRefresh": "自动刷新",
     "clearAll": "全部清除",
+    "export": "导出 dump",
+    "import": "导入 dump",
     "searchPlaceholder": "输入键或正则...",
     "columns": {
       "key": "键",
@@ -158,30 +210,81 @@
     "format": "格式",
     "close": "关闭"
   },
+  "dump": {
+    "title": "导出 dump",
+    "description": "导出 dump 会分批进行，以避免服务器负载过高。",
+    "preparing": "正在准备 dump...",
+    "running": "dump 导出中...",
+    "done": "dump 导出完成。",
+    "cancelled": "dump 已取消。",
+    "error": "导出 dump 失败。",
+    "progress": "进度",
+    "successRate": "成功率",
+    "items": "项",
+    "batch": "批次",
+    "download": "下载 dump",
+    "prefetch": "计算总数",
+    "prefetching": "正在计算总数...",
+    "start": "开始导出",
+    "save": "保存 dump",
+    "saved": "dump 已保存。",
+    "saveError": "保存 dump 失败。",
+    "saveLocation": "保存位置",
+    "chooseLocation": "选择位置",
+    "saveHint": "选择导出文件的保存位置（可选）。",
+    "locationSelected": "已选择位置",
+    "cancel": "取消",
+    "close": "关闭",
+    "empty": "未找到任何键。"
+  },
+  "dumpImport": {
+    "title": "导入 dump",
+    "description": "导入会分批进行，以避免服务器负载过高。",
+    "fileLabel": "dump 文件",
+    "fileHint": "选择由 MemGUI 导出的 .json 文件。",
+    "chooseFile": "选择文件",
+    "fileSelected": "已选择文件",
+    "ready": "文件已准备好导入。",
+    "invalidFile": "dump 文件无效。",
+    "empty": "dump 中未找到任何项。",
+    "start": "开始导入",
+    "preparing": "正在准备导入...",
+    "running": "导入中...",
+    "done": "导入完成。",
+    "cancelled": "导入已取消。",
+    "error": "导入 dump 失败。",
+    "progress": "进度",
+    "successRate": "成功率",
+    "items": "项",
+    "batch": "批次",
+    "cancel": "取消",
+    "close": "关闭"
+  },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "sshInfo": "使用 SSH 时，MemGUI 需要在本地保存凭据。加密可保护这些数据。",
+    "title": "应用安全",
+    "description": "对 MemGUI 保存的本地数据进行加密。",
+    "passwordLabel": "应用密码",
+    "passwordPlaceholder": "输入密码",
+    "confirmLabel": "确认密码",
+    "confirmPlaceholder": "再次输入密码",
+    "unlockButton": "解锁",
+    "enableButton": "启用加密",
+    "disableButton": "禁用加密",
+    "statusEnabled": "已启用加密",
+    "statusLocked": "存储已锁定",
+    "disableConfirm": "禁用加密？存储的数据将以明文保存。",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "密码不能为空。",
+      "passwordMismatch": "两次密码不一致。",
+      "invalidPassword": "密码无效。",
+      "enableFailed": "无法启用加密。",
+      "disableFailed": "无法禁用加密。"
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "加密已启用。",
+      "disabled": "加密已禁用。",
+      "unlocked": "存储已解锁。"
     }
   },
   "loadingModal": {
@@ -198,7 +301,7 @@
     "cancel": "取消"
   },
   "statistics": {
-    "title": "服务器统计",
+    "title": "管理",
     "advanced": "高级监控",
     "slabs": "Slab 统计",
     "host": "主机",

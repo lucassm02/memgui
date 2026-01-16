@@ -47,6 +47,7 @@ const AlertModal = () => {
     alertModalConfirmLabel,
     alertModalCancelLabel,
     alertModalOnConfirm,
+    alertModalOnCancel,
     alertModalTitle
   } = useModal();
   const { darkMode } = useDarkMode();
@@ -77,6 +78,19 @@ const AlertModal = () => {
     }
   };
 
+  const handleCancel = async () => {
+    const onCancel = alertModalOnCancel;
+    dismissAlert();
+
+    if (!onCancel) return;
+
+    try {
+      await onCancel();
+    } catch (error) {
+      console.error("Confirm modal cancel action failed", error);
+    }
+  };
+
   return (
     <div
       className={`fixed ${
@@ -93,7 +107,7 @@ const AlertModal = () => {
         </div>
 
         <p
-          className={`mt-3 text-sm ${
+          className={`mt-3 text-sm whitespace-pre-wrap break-words ${
             darkMode ? "text-gray-200" : "text-gray-800"
           }`}
         >
@@ -103,7 +117,7 @@ const AlertModal = () => {
         {alertModalMode === "confirm" ? (
           <div className="mt-5 flex justify-end gap-3">
             <button
-              onClick={dismissAlert}
+              onClick={handleCancel}
               className={toneButton("neutral", darkMode, "sm")}
             >
               {alertModalCancelLabel || t("alertModal.cancel")}

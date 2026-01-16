@@ -1,10 +1,12 @@
 import { createContext } from "react";
 
 export interface SshConfig {
+  host?: string;
   port: number;
   username: string;
   password?: string;
   privateKey?: string;
+  hostKeyFingerprint?: string;
 }
 
 export interface Connection {
@@ -86,7 +88,8 @@ export interface ConnectionsContextType {
   handleLoadKeys: (
     showLoadingModal?: boolean,
     search?: string,
-    limit?: number
+    limit?: number,
+    options?: { force?: boolean }
   ) => Promise<boolean>;
   handleFlushAllKeys: () => Promise<boolean>;
   handleCreateKey: (newKey: KeyData) => Promise<boolean>;

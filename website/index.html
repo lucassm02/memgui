@@ -6,52 +6,48 @@
     <link
       rel="icon"
       type="image/svg+xml"
-      href="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg"
+      href="https://raw.githubusercontent.com/lucassm02/memgui/main/asset/images/logo-white.svg"
     />
     <meta
       name="description"
-      content="MemGUI 1.1.0: multi-language GUI for Memcached with update notices, bulk key deletion, backend search, and detailed server insights."
+      content="MemGUI is a desktop GUI client for Memcached with SASL and SSH connections, key management, dump import/export, encrypted storage, and server stats."
     />
     <meta
       name="keywords"
-      content="MemGUI, Memcached, GUI, SASL Authentication, Cache, Key Management, Auto-update, Update Notice, Language Selector, i18n, Advanced Search"
+      content="MemGUI, Memcached GUI client, Memcached desktop app, SSH, SASL authentication, dump import export, encrypted storage, cache key management, Memcached monitoring, cache GUI"
     />
     <meta name="author" content="lucassm02" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://lucassm02.github.io/memgui/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://lucassm02.github.io/mem-gui/" />
-    <meta
-      property="og:title"
-      content="MemGUI 1.1.0 - Multi-language GUI for Memcached"
-    />
+    <meta property="og:url" content="https://lucassm02.github.io/memgui/" />
+    <meta property="og:title" content="MemGUI - Memcached GUI Client" />
     <meta
       property="og:description"
-      content="Manage and monitor your Memcached servers with MemGUI 1.1.0. New: i18n (pt-BR/en), update notices, bulk key cleanup, and backend search."
+      content="Manage and monitor Memcached servers with a desktop GUI client for key management, dump import/export, SSH and SASL connections, and server stats."
     />
     <meta
       property="og:image"
-      content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png"
+      content="https://raw.githubusercontent.com/lucassm02/memgui/main/asset/banners/banner-gray.png"
     />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://lucassm02.github.io/mem-gui/" />
-    <meta
-      name="twitter:title"
-      content="MemGUI 1.1.0 - Multi-language GUI for Memcached"
-    />
+    <meta name="twitter:url" content="https://lucassm02.github.io/memgui/" />
+    <meta name="twitter:title" content="MemGUI - Memcached GUI Client" />
     <meta
       name="twitter:description"
-      content="Manage and monitor your Memcached servers with MemGUI 1.1.0. New: i18n (pt-BR/en), update notices, bulk key cleanup, and backend search."
+      content="Manage and monitor Memcached servers with a desktop GUI client for key management, dump import/export, SSH and SASL connections, and server stats."
     />
     <meta
       name="twitter:image"
-      content="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/banners/banner-gray.png"
+      content="https://raw.githubusercontent.com/lucassm02/memgui/main/asset/banners/banner-gray.png"
     />
 
-    <title>MemGUI 1.1.0 | Manage Your Memcached Servers Efficiently</title>
+    <title>MemGUI - Memcached GUI Client and Desktop App</title>
 
     <!-- Google Font -->
     <link
@@ -66,27 +62,27 @@
     <header class="hero" id="top">
       <div class="version-pill">
         <span class="pill-dot"></span>
-        <span>Version 1.1.0: i18n, update alerts, bulk actions</span>
+        <span>Version 1.2.0 stable: SSH, encryption, dump import/export</span>
       </div>
       <img
-        src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/asset/images/logo-white.svg"
+        src="https://raw.githubusercontent.com/lucassm02/memgui/main/asset/images/logo-white.svg"
         alt="MemGUI Logo"
       />
       <h1>MemGUI</h1>
       <p>
-        Multi-language GUI for Memcached with SASL, backend key search, inline
-        connection editing, bulk key cleanup, and update notices so you never
-        miss a release.
+        Memcached GUI client with SASL and SSH connections, dump import/export,
+        encrypted local storage, backend key search, and update notices so you
+        never miss a release.
       </p>
       <div class="hero-tags">
-        <span class="tag">pt-BR / en</span>
+        <span class="tag">SSH connections</span>
+        <span class="tag">Dump import/export</span>
+        <span class="tag">Encrypted storage</span>
         <span class="tag">Update notices</span>
-        <span class="tag">Backend search</span>
-        <span class="tag">Bulk key delete</span>
       </div>
       <div class="cta-buttons">
-        <a href="#download">Download 1.1.0</a>
-        <a href="https://github.com/lucassm02/mem-gui" target="_blank"
+        <a href="#download">Download stable</a>
+        <a href="https://github.com/lucassm02/memgui" target="_blank"
           >View on GitHub</a
         >
         <a class="ghost-link" href="#whats-new">See what is new</a>
@@ -113,98 +109,66 @@
       <section id="about">
         <h2>About MemGUI</h2>
         <p>
-          <strong>MemGUI</strong> is a powerful, intuitive graphical interface
-          for <em>Memcached</em> that now speaks English and Portuguese,
-          surfaces update notices, and keeps key searches fast by delegating
-          them to the backend. Manage connections with SASL, switch between
-          servers, and keep every key, stat, and connection in view.
+          <strong>MemGUI</strong> is a powerful, intuitive desktop GUI client
+          for <em>Memcached</em> with SASL and SSH connections, dump
+          import/export, encrypted local storage, and fast backend search.
+          Manage connections, switch between servers, and keep every key, stat,
+          and connection in view.
         </p>
         <p class="sub-heading">
-          Version 1.1.0 introduces i18n with a language selector, inline
-          connection editing, bulk key deletion, server key counts, and safer
-          forms with mandatory field warnings.
+          Version 1.2.0 (stable) adds SSH connections, storage encryption, dump
+          import/export improvements, and faster key indexing with stale key
+          pruning.
         </p>
       </section>
 
       <!-- WHAT'S NEW -->
       <section id="whats-new">
-        <h2>What is new in 1.1.0</h2>
+        <h2>What is new in 1.2.0</h2>
         <p class="sub-heading">
-          Released 2025-12-12. Highlights from the latest update.
+          Released 2026-01-16. Stable release highlights.
         </p>
         <div class="changelog-grid">
           <div class="changelog-card">
             <h3>Added</h3>
             <ul>
-              <li>
-                Internationalization (i18n) with Portuguese (Brazil) and English
-                resources plus a language selector.
-              </li>
-              <li>
-                Update and auto-update notices in the UI and Electron shell when
-                new builds are available.
-              </li>
-              <li>
-                Connection editing directly from the connection list using the
-                existing modal flow.
-              </li>
-              <li>
-                Bulk key deletion to remove all keys from the current server
-                with a single action.
-              </li>
-              <li>
-                Server key count displayed across the key list and statistics
-                screens.
-              </li>
-              <li>
-                Mandatory field warnings in the create-key form to prevent empty
-                submissions.
-              </li>
+              <li>SSH connections with an improved connection flow.</li>
+              <li>Dump import/export and data import improvements.</li>
+              <li>Storage encryption for local data (required for SSH).</li>
+              <li>Lightweight index update listener for new keys.</li>
             </ul>
           </div>
           <div class="changelog-card">
             <h3>Changed</h3>
             <ul>
               <li>
-                Key search now runs in the backend with optimized queries for
-                faster, consistent results.
+                Key index architecture sharded with centralized reserved keys.
               </li>
-              <li>
-                Connection switching and list UI refined for smoother, clearer
-                transitions.
-              </li>
-              <li>
-                UI text and error messages sourced from translation keys instead
-                of hardcoded strings.
-              </li>
-              <li>
-                Statistics and modals updated to render localized labels,
-                placeholders, and messages.
-              </li>
-              <li>
-                General UI polish across headers, modals, and button tones for
-                better readability.
-              </li>
+              <li>Index reuse and stale key pruning for faster key lookups.</li>
+              <li>Cachedump processing reuses results and reads full slabs.</li>
+              <li>Search limits and data size display refined in the UI.</li>
+              <li>UI polish across menus, confirmation, and dump modals.</li>
             </ul>
           </div>
           <div class="changelog-card">
             <h3>Fixed</h3>
             <ul>
+              <li>Infinite loading when selecting the active connection.</li>
+              <li>Key count no longer includes reserved keys.</li>
+            </ul>
+          </div>
+          <div class="changelog-card">
+            <h3>Security</h3>
+            <ul>
               <li>
-                Expiration calculations now handle negative timeUntilExpiration
-                values correctly.
+                Security limitations and optimizations applied across the app.
               </li>
-              <li>
-                Zero-length responses fall back safely to avoid crashes when
-                reading empty payloads.
-              </li>
-              <li>Header alignment adjusted so UI elements stay centered.</li>
             </ul>
           </div>
         </div>
         <a
           class="changelog-link"
-          href="https://github.com/lucassm02/mem-gui/blob/main/CHANGELOG.md"
+          href="https://github.com/lucassm02/memgui/blob/main/CHANGELOG.md"
           target="_blank"
         >
           Read the full changelog
@@ -216,45 +180,50 @@
         <h2>Key Features</h2>
         <div class="features-grid">
           <div class="feature-card">
-            <h3>i18n and Language Selector</h3>
+            <h3>SSH Connections</h3>
             <p>
-              Switch between Portuguese (Brazil) and English with auto-detection
-              and persisted preferences.
+              Connect to remote Memcached servers through SSH with host key
+              verification.
             </p>
           </div>
           <div class="feature-card">
-            <h3>Update Notices</h3>
-            <p>
-              Stay informed with in-app update and auto-update alerts whenever a
-              new build is available.
-            </p>
+            <h3>Encrypted Storage</h3>
+            <p>Protect local data and SSH secrets with storage encryption.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Dump Import/Export</h3>
+            <p>Export dumps for backup and import data back into a server.</p>
           </div>
           <div class="feature-card">
             <h3>Backend Key Search</h3>
             <p>
-              Optimized server-side key search keeps listings fast and
-              consistent across large datasets.
+              Optimized server-side search with faster indexing and stale key
+              pruning.
             </p>
           </div>
           <div class="feature-card">
-            <h3>Connection Control</h3>
+            <h3>SASL Authentication</h3>
             <p>
-              Edit connections directly from the list and switch between servers
-              without losing context.
+              Secure Memcached connections with username and password when
+              required.
             </p>
           </div>
           <div class="feature-card">
             <h3>Bulk Key Cleanup</h3>
             <p>
               Remove all keys on the current server in one action, with clear
-              safeguards in the UI.
+              confirmations.
             </p>
           </div>
           <div class="feature-card">
             <h3>Server Insights</h3>
+            <p>Track key counts, uptime, memory usage, and cache metrics.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Multi-language UI</h3>
             <p>
-              Track key counts, uptime, memory usage, and more with localized
-              labels and modal details.
+              Use Portuguese (Brazil), English, and other locales with a
+              selector.
             </p>
           </div>
         </div>
@@ -264,14 +233,19 @@
       <section id="download">
         <h2>Download</h2>
         <p>
-          Ready to streamline your Memcached workflow? Get MemGUI 1.1.0 directly
-          from our
+          Ready to streamline your Memcached workflow? Get the latest stable
+          release from our
           <a
-            href="https://github.com/lucassm02/mem-gui/releases/latest"
+            href="https://github.com/lucassm02/memgui/releases/latest"
             target="_blank"
             >GitHub Releases</a
-          >. The app now ships with i18n (pt-BR/en), update notices, backend key
-          search, and safer bulk actions.
+          >. Latest stable:
+          <a
+            href="https://github.com/lucassm02/memgui/releases/tag/v1.2.0"
+            target="_blank"
+            >v1.2.0</a
+          >
+          with SSH connections, encrypted storage, and dump import/export.
         </p>
         <ul>
           <li>
@@ -284,16 +258,15 @@
           </li>
         </ul>
         <div class="release-meta">
-          <span class="tag">v1.1.0</span>
-          <span class="tag">Dec 12, 2025</span>
+          <span class="tag">v1.2.0 stable</span>
           <span class="tag">pt-BR / en</span>
         </div>
         <a
           class="download-button"
-          href="https://github.com/lucassm02/mem-gui/releases/latest"
+          href="https://github.com/lucassm02/memgui/releases/latest"
           target="_blank"
         >
-          Download MemGUI
+          Download stable
         </a>
       </section>
 
@@ -302,34 +275,33 @@
         <h2>Example</h2>
         <p>
           Dive into our intuitive interface. Below is a snapshot of the MemGUI
-          dashboard for managing keys, viewing server stats, and keeping track
-          of key counts.
+          home dashboard, connection guide, key list, and connection management.
         </p>
         <div class="screenshot">
           <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/00-home.png"
+            src="https://raw.githubusercontent.com/lucassm02/memgui/main/docs/screenshots/home.png"
             alt="MemGUI Screenshot - Home"
           />
         </div>
 
         <div class="screenshot">
           <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/03-advanced-connection.png"
-            alt="MemGUI Screenshot - Connection"
+            src="https://raw.githubusercontent.com/lucassm02/memgui/main/docs/screenshots/connection-guide.png"
+            alt="MemGUI Screenshot - Connection guide"
           />
         </div>
 
         <div class="screenshot">
           <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/05-create-key.png"
-            alt="MemGUI Screenshot - Create Key"
+            src="https://raw.githubusercontent.com/lucassm02/memgui/main/docs/screenshots/keys.png"
+            alt="MemGUI Screenshot - Key list"
           />
         </div>
 
         <div class="screenshot">
           <img
-            src="https://raw.githubusercontent.com/lucassm02/mem-gui/main/screenshot/09-statistics.png"
-            alt="MemGUI Screenshot - Server Statistics"
+            src="https://raw.githubusercontent.com/lucassm02/memgui/main/docs/screenshots/management.png"
+            alt="MemGUI Screenshot - Connection management"
           />
         </div>
       </section>
@@ -364,7 +336,7 @@
           services, or integrating this software into commercial products - is
           strictly prohibited. For complete details, see our
           <a
-            href="https://github.com/lucassm02/mem-gui/blob/main/LICENCE.md"
+            href="https://github.com/lucassm02/memgui/blob/main/LICENCE.md"
             target="_blank"
             >LICENSE</a
           >
@@ -380,13 +352,13 @@
           <strong>MemGUI</strong>? We would love to hear from you! Please visit:
         </p>
         <p>
-          <a href="https://github.com/lucassm02/mem-gui" target="_blank"
+          <a href="https://github.com/lucassm02/memgui" target="_blank"
             >Our GitHub Repository</a
           >
         </p>
         <p>
           Or open an
-          <a href="https://github.com/lucassm02/mem-gui/issues" target="_blank"
+          <a href="https://github.com/lucassm02/memgui/issues" target="_blank"
             >issue on GitHub</a
           >
           to report bugs or request new features.
@@ -396,9 +368,9 @@
 
     <!-- FOOTER -->
     <footer>
-      <p>&copy; 2025 MemGUI. All Rights Reserved.</p>
+      <p>&copy; 2026 MemGUI. All Rights Reserved.</p>
       <p>
-        <a href="https://github.com/lucassm02/mem-gui" target="_blank"
+        <a href="https://github.com/lucassm02/memgui" target="_blank"
           >View on GitHub</a
         >
         |

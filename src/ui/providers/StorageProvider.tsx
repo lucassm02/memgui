@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { Key, StorageContext } from "../contexts/StorageContext";
 import api, {
   clearStoragePassword,
@@ -16,18 +16,18 @@ export const StorageProvider = ({ children }: { children: ReactNode }) => {
   type GetAll = { status: boolean; items: { key: string; value: unknown }[] };
   type EncryptionStatus = { enabled: boolean };
 
-  const refreshEncryptionStatus = async () => {
+  const refreshEncryptionStatus = useCallback(async () => {
     try {
       const { data } = await api.get<EncryptionStatus>("/storages/encryption");
       setEncryptionEnabled(!!data.enabled);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refreshEncryptionStatus();
-  }, []);
+  }, [refreshEncryptionStatus]);
 
   useEffect(() => {
     setStorageVersion((prev) => prev + 1);

@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "Voltar",
-    "stats": "Estatísticas",
+    "stats": "Gerenciamento",
     "disconnect": "Desconectar"
   },
   "connectionHome": {
@@ -40,7 +40,7 @@
     "setupGuideLink": "guia de configuração"
   },
   "connectionList": {
-    "title": "Conexões Salvas",
+    "title": "Conexões",
     "empty": "Nenhuma conexão encontrada",
     "edit": "Editar conexão"
   },
@@ -55,21 +55,30 @@
       "port": "Porta",
       "memcachedPort": "Porta",
       "options": "Opções Avançadas",
-      "username": "Usuário (opcional)",
+      "username": "Usuário",
       "usernamePlaceholder": "Digite seu usuário",
-      "password": "Senha (opcional)",
+      "password": "Senha",
       "passwordPlaceholder": "Digite sua senha",
-      "timeout": "Timeout em segundos (mínimo 300)",
+      "authToggle": "Usar autenticação",
+      "timeout": "Timeout em segundos (mínimo 1)",
       "sshToggle": "Conectar via SSH",
       "sshHost": "Servidor SSH",
       "sshHostPlaceholder": "Ex: servidor.exemplo.com",
       "sshPort": "Porta SSH",
       "sshUsername": "Usuário SSH",
       "sshUsernamePlaceholder": "Digite seu usuário SSH",
-      "sshPassword": "Senha SSH (opcional)",
+      "sshPassword": "Senha SSH",
       "sshPasswordPlaceholder": "Digite sua senha SSH",
-      "sshPrivateKey": "Chave privada SSH (opcional)",
-      "sshPrivateKeyPlaceholder": "Cole sua chave privada"
+      "sshAuthMethod": "Autenticação SSH",
+      "sshAuthMethodPassword": "Senha",
+      "sshAuthMethodPrivateKey": "Arquivo de chave privada",
+      "sshPrivateKey": "Arquivo de chave privada SSH",
+      "sshPrivateKeyPlaceholder": "Cole sua chave privada",
+      "sshPrivateKeySelect": "Selecionar arquivo de chave",
+      "sshPrivateKeySelected": "Arquivo selecionado",
+      "sshPrivateKeyLoaded": "Chave salva carregada",
+      "sshPrivateKeyHint": "Selecione uma chave privada para autenticar via SSH.",
+      "sshPrivateKeyClear": "Limpar"
     },
     "authNote": "Com autenticação ativada, apenas chaves criadas no <strong>MemGUI</strong> podem ser gerenciadas, devido a uma limitação do protocolo do Memcached autenticado.",
     "cancel": "Cancelar",
@@ -78,7 +87,16 @@
     "test": "Testar",
     "testing": "Testando...",
     "testSuccess": "Conexão realizada com sucesso!",
-    "sshAuthRequired": "Informe a senha ou a chave privada do SSH."
+    "authRequired": "Informe usuÃ¡rio e senha.",
+    "sshAuthRequired": "Informe a senha ou a chave privada do SSH.",
+    "sshPrivateKeyLoadError": "Não foi possível ler o arquivo da chave privada.",
+    "sshStorageWarning": "Ative a criptografia do storage para usar SSH.",
+    "sshHostKeyTitle": "Confirmar chave do host SSH",
+    "sshHostKeyMessage": "Impressão digital do host SSH: {{fingerprint}}. Deseja confiar neste host?",
+    "sshHostKeyMismatchTitle": "Chave do host SSH alterada",
+    "sshHostKeyMismatchMessage": "A chave do host SSH mudou. Esperada: {{expected}}. Recebida: {{fingerprint}}. Deseja confiar na nova chave?",
+    "sshHostKeyConfirm": "Confiar",
+    "sshHostKeyCancel": "Cancelar"
   },
   "setupGuide": {
     "title": "Guia de Configuração",
@@ -90,19 +108,39 @@
       },
       "address": {
         "title": "Endereço do Servidor",
-        "description": "Insira o IP ou domínio do servidor Memcached. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>."
+        "description": "Insira o IP ou domínio do servidor. Para local, use <code>127.0.0.1</code> ou <code>localhost</code>."
       },
       "port": {
-        "title": "Porta",
+        "title": "Porta do Memcached",
         "description": "O padrão do Memcached é <strong>11211</strong>. Caso tenha sido alterado, utilize a porta configurada no servidor."
       },
       "auth": {
         "title": "Autenticação (Opcional)",
-        "description": "Insira usuário e senha apenas se seu servidor exigir autenticação."
+        "description": "Ative a autenticação e informe usuário e senha apenas se seu servidor exigir."
       },
       "timeout": {
         "title": "Timeout",
         "description": "O timeout define o tempo máximo de resposta."
+      },
+      "sshToggle": {
+        "title": "Conexão SSH (Opcional)",
+        "description": "Ative para acessar um servidor remoto via SSH."
+      },
+      "sshPort": {
+        "title": "Porta SSH",
+        "description": "A porta padrão do SSH é <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "Autenticação SSH (Opcional)",
+        "description": "Informe usuário e senha ou uma chave privada para autenticar via SSH."
+      },
+      "sshHostKey": {
+        "title": "Verificação do Host SSH",
+        "description": "Na primeira conexão, você precisará confirmar a impressão digital do host."
+      },
+      "sshStorage": {
+        "title": "Segurança do SSH",
+        "description": "Ative a criptografia do storage para usar SSH."
       }
     },
     "close": "Fechar"
@@ -116,6 +154,8 @@
     "refresh": "Atualizar",
     "autoRefresh": "Auto Atualizar",
     "clearAll": "Limpar Tudo",
+    "export": "Exportar dump",
+    "import": "Importar dump",
     "searchPlaceholder": "Digite uma chave ou regex...",
     "columns": {
       "key": "Chave",
@@ -170,9 +210,60 @@
     "format": "Formato",
     "close": "Fechar"
   },
+  "dump": {
+    "title": "Exportar",
+    "description": "O dump será gerado em lotes para evitar sobrecarga do servidor.",
+    "preparing": "Preparando dump...",
+    "running": "Dump em andamento...",
+    "done": "Dump finalizado.",
+    "cancelled": "Dump cancelado.",
+    "error": "Falha ao exportar dump.",
+    "progress": "Progresso",
+    "successRate": "Sucesso",
+    "items": "Itens",
+    "batch": "Lote",
+    "download": "Baixar dump",
+    "prefetch": "Calcular total",
+    "prefetching": "Calculando total...",
+    "start": "Iniciar exportação",
+    "save": "Salvar dump",
+    "saved": "Dump salvo.",
+    "saveError": "Não foi possível salvar o dump.",
+    "saveLocation": "Local de salvamento",
+    "chooseLocation": "Selecionar local",
+    "saveHint": "Escolha o local do arquivo para exportação (opcional).",
+    "locationSelected": "Local selecionado",
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "empty": "Nenhuma chave encontrada."
+  },
+  "dumpImport": {
+    "title": "Importar",
+    "description": "A importação será feita em lotes para evitar sobrecarga do servidor.",
+    "fileLabel": "Arquivo de dump",
+    "fileHint": "Selecione um arquivo .json exportado pelo MemGUI.",
+    "chooseFile": "Selecionar arquivo",
+    "fileSelected": "Arquivo selecionado",
+    "ready": "Arquivo pronto para importar.",
+    "invalidFile": "Arquivo de dump inválido.",
+    "empty": "Nenhum item encontrado no dump.",
+    "start": "Iniciar importação",
+    "preparing": "Preparando importação...",
+    "running": "Importação em andamento...",
+    "done": "Importação finalizada.",
+    "cancelled": "Importação cancelada.",
+    "error": "Falha ao importar dump.",
+    "progress": "Progresso",
+    "successRate": "Sucesso",
+    "items": "Itens",
+    "batch": "Lote",
+    "cancel": "Cancelar",
+    "close": "Fechar"
+  },
   "storageSecurity": {
-    "title": "Seguranca do app",
+    "title": "Segurança do app",
     "description": "Criptografa os dados locais salvos pelo MemGUI.",
+    "sshInfo": "Para usar SSH, o MemGUI precisa salvar credenciais localmente. A criptografia protege esses dados.",
     "passwordLabel": "Senha do app",
     "passwordPlaceholder": "Digite uma senha",
     "confirmLabel": "Confirmar senha",
@@ -182,13 +273,13 @@
     "disableButton": "Desativar criptografia",
     "statusEnabled": "Criptografia ativada",
     "statusLocked": "Storage bloqueado",
-    "disableConfirm": "Desativar criptografia? Os dados serao salvos em texto puro.",
+    "disableConfirm": "Desativar criptografia? Os dados serão salvos em texto puro.",
     "errors": {
-      "passwordRequired": "Senha obrigatoria.",
-      "passwordMismatch": "As senhas nao conferem.",
-      "invalidPassword": "Senha invalida.",
-      "enableFailed": "Nao foi possivel ativar a criptografia.",
-      "disableFailed": "Nao foi possivel desativar a criptografia."
+      "passwordRequired": "Senha obrigatória.",
+      "passwordMismatch": "As senhas não conferem.",
+      "invalidPassword": "Senha inválida.",
+      "enableFailed": "Não foi possível ativar a criptografia.",
+      "disableFailed": "Não foi possível desativar a criptografia."
     },
     "success": {
       "enabled": "Criptografia ativada.",
@@ -196,7 +287,6 @@
       "unlocked": "Storage desbloqueado."
     }
   },
-
   "loadingModal": {
     "loading": "Carregando..."
   },
@@ -211,7 +301,7 @@
     "cancel": "Cancelar"
   },
   "statistics": {
-    "title": "Estatísticas do Servidor",
+    "title": "Gerenciamento",
     "advanced": "Monitoramento Avançado",
     "slabs": "Estatísticas de Slabs",
     "host": "Host",

@@ -28,7 +28,7 @@
   },
   "header": {
     "back": "Retour",
-    "stats": "Statistiques",
+    "stats": "Gestion",
     "disconnect": "Déconnecter"
   },
   "connectionHome": {
@@ -40,7 +40,7 @@
     "setupGuideLink": "guide de configuration"
   },
   "connectionList": {
-    "title": "Connexions enregistrées",
+    "title": "Connexions",
     "empty": "Aucune connexion trouvée",
     "edit": "Modifier la connexion"
   },
@@ -54,11 +54,31 @@
       "hostPlaceholder": "Ex : 192.168.1.1",
       "port": "Port",
       "options": "Options avancées",
-      "username": "Nom d'utilisateur (optionnel)",
+      "username": "Nom d'utilisateur",
       "usernamePlaceholder": "Entrez votre nom d'utilisateur",
-      "password": "Mot de passe (optionnel)",
+      "password": "Mot de passe",
       "passwordPlaceholder": "Entrez votre mot de passe",
-      "timeout": "Timeout en secondes (minimum 300)"
+      "timeout": "Timeout en secondes (minimum 1)",
+      "memcachedPort": "Port Memcached",
+      "authToggle": "Utiliser l'authentification",
+      "sshToggle": "Se connecter via SSH",
+      "sshHost": "Hôte SSH",
+      "sshHostPlaceholder": "Ex : serveur.exemple.com",
+      "sshPort": "Port SSH",
+      "sshUsername": "Nom d'utilisateur SSH",
+      "sshUsernamePlaceholder": "Entrez votre nom d'utilisateur SSH",
+      "sshPassword": "Mot de passe SSH",
+      "sshPasswordPlaceholder": "Entrez votre mot de passe SSH",
+      "sshAuthMethod": "Authentification SSH",
+      "sshAuthMethodPassword": "Mot de passe",
+      "sshAuthMethodPrivateKey": "Fichier de clé privée",
+      "sshPrivateKey": "Fichier de clé privée SSH",
+      "sshPrivateKeyPlaceholder": "Collez votre clé privée",
+      "sshPrivateKeySelect": "Sélectionner un fichier de clé",
+      "sshPrivateKeySelected": "Fichier sélectionné",
+      "sshPrivateKeyLoaded": "Clé enregistrée chargée",
+      "sshPrivateKeyHint": "Sélectionnez une clé privée pour vous authentifier via SSH.",
+      "sshPrivateKeyClear": "Effacer"
     },
     "authNote": "Lorsque l'authentification est activée, seules les clés créées dans <strong>MemGUI</strong> peuvent être gérées en raison d'une limitation du protocole Memcached authentifié.",
     "cancel": "Annuler",
@@ -66,7 +86,17 @@
     "save": "Enregistrer les modifications",
     "test": "Tester",
     "testing": "Test en cours...",
-    "testSuccess": "Connexion réussie !"
+    "testSuccess": "Connexion réussie !",
+    "authRequired": "Renseignez un nom d'utilisateur et un mot de passe.",
+    "sshAuthRequired": "Fournissez un mot de passe SSH ou une clé privée.",
+    "sshPrivateKeyLoadError": "Impossible de lire le fichier de clé privée.",
+    "sshStorageWarning": "Activez le chiffrement du stockage pour utiliser SSH.",
+    "sshHostKeyTitle": "Confirmer la clé d'hôte SSH",
+    "sshHostKeyMessage": "Empreinte de l'hôte SSH : {{fingerprint}}. Faites-vous confiance à cet hôte ?",
+    "sshHostKeyMismatchTitle": "La clé d'hôte SSH a changé",
+    "sshHostKeyMismatchMessage": "La clé d'hôte SSH a changé. Attendue : {{expected}}. Reçue : {{fingerprint}}. Faire confiance à la nouvelle clé ?",
+    "sshHostKeyConfirm": "Faire confiance",
+    "sshHostKeyCancel": "Annuler"
   },
   "setupGuide": {
     "title": "Guide de configuration",
@@ -78,19 +108,39 @@
       },
       "address": {
         "title": "Adresse du serveur",
-        "description": "Saisissez l'IP ou le domaine du serveur Memcached. Pour un usage local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>."
+        "description": "Entrez l'IP ou le domaine du serveur. Pour local, utilisez <code>127.0.0.1</code> ou <code>localhost</code>."
       },
       "port": {
-        "title": "Port",
-        "description": "Le port par défaut de Memcached est <strong>11211</strong>. Si vous l'avez modifié, utilisez le port configuré."
+        "title": "Port Memcached",
+        "description": "Le port par défaut de Memcached est <strong>11211</strong>. S'il a été changé, utilisez le port configuré sur le serveur."
       },
       "auth": {
         "title": "Authentification (Optionnel)",
-        "description": "Renseignez l'utilisateur et le mot de passe uniquement si votre serveur requiert une authentification."
+        "description": "Activez l'authentification et renseignez l'utilisateur et le mot de passe uniquement si votre serveur l'exige."
       },
       "timeout": {
         "title": "Timeout",
         "description": "Le timeout définit le temps de réponse maximum."
+      },
+      "sshToggle": {
+        "title": "Connexion SSH (optionnelle)",
+        "description": "Activez pour accéder à un serveur distant via SSH."
+      },
+      "sshPort": {
+        "title": "Port SSH",
+        "description": "Le port SSH par défaut est <strong>22</strong>."
+      },
+      "sshAuth": {
+        "title": "Authentification SSH (optionnelle)",
+        "description": "Indiquez un nom d'utilisateur/mot de passe ou une clé privée pour vous authentifier via SSH."
+      },
+      "sshHostKey": {
+        "title": "Vérification de l'hôte SSH",
+        "description": "Lors de la première connexion, il faudra approuver l'empreinte de l'hôte."
+      },
+      "sshStorage": {
+        "title": "Sécurité SSH",
+        "description": "Activez le chiffrement du stockage pour utiliser SSH."
       }
     },
     "close": "Fermer"
@@ -104,6 +154,8 @@
     "refresh": "Actualiser",
     "autoRefresh": "Actualisation auto",
     "clearAll": "Tout effacer",
+    "export": "Exporter le dump",
+    "import": "Importer le dump",
     "searchPlaceholder": "Tapez une clé ou une regex...",
     "columns": {
       "key": "Clé",
@@ -158,30 +210,81 @@
     "format": "Format",
     "close": "Fermer"
   },
+  "dump": {
+    "title": "Exporter le dump",
+    "description": "L'export du dump se fait par lots pour éviter de surcharger le serveur.",
+    "preparing": "Préparation du dump...",
+    "running": "Export du dump en cours...",
+    "done": "Export du dump terminé.",
+    "cancelled": "Export du dump annulé.",
+    "error": "Échec de l'export du dump.",
+    "progress": "Progression",
+    "successRate": "Taux de succès",
+    "items": "Éléments",
+    "batch": "Lot",
+    "download": "Télécharger le dump",
+    "prefetch": "Calculer le total",
+    "prefetching": "Calcul du total...",
+    "start": "Démarrer l'export",
+    "save": "Enregistrer le dump",
+    "saved": "Dump enregistré.",
+    "saveError": "Impossible d'enregistrer le dump.",
+    "saveLocation": "Emplacement d'enregistrement",
+    "chooseLocation": "Choisir l'emplacement",
+    "saveHint": "Choisissez l'emplacement du fichier à exporter (optionnel).",
+    "locationSelected": "Emplacement sélectionné",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "empty": "Aucune clé trouvée."
+  },
+  "dumpImport": {
+    "title": "Importer le dump",
+    "description": "L'import se fait par lots pour éviter de surcharger le serveur.",
+    "fileLabel": "Fichier de dump",
+    "fileHint": "Sélectionnez un fichier .json exporté par MemGUI.",
+    "chooseFile": "Sélectionner un fichier",
+    "fileSelected": "Fichier sélectionné",
+    "ready": "Fichier prêt à être importé.",
+    "invalidFile": "Fichier de dump invalide.",
+    "empty": "Aucun élément trouvé dans le dump.",
+    "start": "Démarrer l'import",
+    "preparing": "Préparation de l'import...",
+    "running": "Import en cours...",
+    "done": "Import terminé.",
+    "cancelled": "Import annulé.",
+    "error": "Échec de l'import du dump.",
+    "progress": "Progression",
+    "successRate": "Taux de succès",
+    "items": "Éléments",
+    "batch": "Lot",
+    "cancel": "Annuler",
+    "close": "Fermer"
+  },
   "storageSecurity": {
-    "title": "App Security",
-    "description": "Encrypt local data stored by MemGUI.",
-    "passwordLabel": "App password",
-    "passwordPlaceholder": "Enter a password",
-    "confirmLabel": "Confirm password",
-    "confirmPlaceholder": "Re-enter the password",
-    "unlockButton": "Unlock",
-    "enableButton": "Enable encryption",
-    "disableButton": "Disable encryption",
-    "statusEnabled": "Encryption enabled",
-    "statusLocked": "Storage locked",
-    "disableConfirm": "Disable encryption? Stored data will be saved in plain text.",
+    "title": "Sécurité de l'application",
+    "description": "Chiffre les données locales enregistrées par MemGUI.",
+    "sshInfo": "Pour utiliser SSH, MemGUI doit stocker des identifiants localement. Le chiffrement protège ces données.",
+    "passwordLabel": "Mot de passe de l'application",
+    "passwordPlaceholder": "Saisissez un mot de passe",
+    "confirmLabel": "Confirmer le mot de passe",
+    "confirmPlaceholder": "Saisissez à nouveau le mot de passe",
+    "unlockButton": "Déverrouiller",
+    "enableButton": "Activer le chiffrement",
+    "disableButton": "Désactiver le chiffrement",
+    "statusEnabled": "Chiffrement activé",
+    "statusLocked": "Stockage verrouillé",
+    "disableConfirm": "Désactiver le chiffrement ? Les données stockées seront enregistrées en clair.",
     "errors": {
-      "passwordRequired": "Password is required.",
-      "passwordMismatch": "Passwords do not match.",
-      "invalidPassword": "Invalid password.",
-      "enableFailed": "Could not enable encryption.",
-      "disableFailed": "Could not disable encryption."
+      "passwordRequired": "Le mot de passe est requis.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "invalidPassword": "Mot de passe invalide.",
+      "enableFailed": "Impossible d'activer le chiffrement.",
+      "disableFailed": "Impossible de désactiver le chiffrement."
     },
     "success": {
-      "enabled": "Encryption enabled.",
-      "disabled": "Encryption disabled.",
-      "unlocked": "Storage unlocked."
+      "enabled": "Chiffrement activé.",
+      "disabled": "Chiffrement désactivé.",
+      "unlocked": "Stockage déverrouillé."
     }
   },
   "loadingModal": {
@@ -198,7 +301,7 @@
     "cancel": "Annuler"
   },
   "statistics": {
-    "title": "Statistiques du serveur",
+    "title": "Gestion",
     "advanced": "Surveillance avancée",
     "slabs": "Statistiques des slabs",
     "host": "Hôte",

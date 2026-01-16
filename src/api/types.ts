@@ -1,12 +1,14 @@
-import memjs from "memjs";
 import net from "net";
+import memjs from "memjs";
 import { Client as SshClient } from "ssh2";
 
 export interface SshConfig {
+  host?: string;
   port: number;
   username: string;
   password?: string;
   privateKey?: string;
+  hostKeyFingerprint?: string;
 }
 
 export interface SshTunnel {

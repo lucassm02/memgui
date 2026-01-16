@@ -17,13 +17,6 @@
     "composite": true,
     "useUnknownInCatchVariables": false
   },
-  "include": [
-    ".",
-    "../server.ts"
-  ],
-  "exclude": [
-    "../../node_modules",
-    "../electron/**/*",
-    "../../dist"
-  ]
+  "include": [".", "../server.ts"],
+  "exclude": ["../../node_modules", "../electron/**/*", "../../dist"]
 }

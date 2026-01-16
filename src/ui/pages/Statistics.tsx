@@ -9,20 +9,34 @@ import {
   DocumentChartBarIcon,
   ExclamationTriangleIcon,
   ServerIcon,
-  SignalIcon
+  SignalIcon,
+  TrashIcon
 } from "@heroicons/react/24/outline";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import ConnectedHeader from "@/ui/components/ConnectedHeader";
 import ConnectionList from "@/ui/components/ConnectionList";
-import { useConnections, useDarkMode } from "@/ui/hooks";
+import DumpExportModal from "@/ui/components/DumpExportModal";
+import DumpImportModal from "@/ui/components/DumpImportModal";
+import { useConnections, useDarkMode, useModal } from "@/ui/hooks";
+import { toneButton } from "@/ui/utils/buttonTone";
 
 export function Dashboard() {
   const { darkMode } = useDarkMode();
   const { t } = useTranslation();
 
-  const { serverData, handleLoadServerData, totalKeyCount } = useConnections();
+  const {
+    serverData,
+    handleLoadServerData,
+    totalKeyCount,
+    currentConnection,
+    handleFlushAllKeys,
+    refreshKeyCount
+  } = useConnections();
+  const { showConfirm } = useModal();
+  const [dumpModalOpen, setDumpModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -34,9 +48,31 @@ export function Dashboard() {
     };
   }, [handleLoadServerData]);
 
+  useEffect(() => {
+    setDumpModalOpen(false);
+    setImportModalOpen(false);
+  }, [currentConnection.id]);
+
   if (!serverData) return null;
 
   const uptimeDays = Math.floor(+serverData.serverInfo.uptime / 86400);
+  const exportDisabled = !currentConnection.id;
+  const importDisabled = !currentConnection.id;
+  const actionButtonClass = (variant: "primary" | "success" | "danger") =>
+    `${toneButton(variant, darkMode)} w-full justify-center shadow-md hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none`;
+
+  const handleConfirmFlushAll = () => {
+    showConfirm({
+      title: t("keyList.flushConfirmation.title"),
+      message: t("keyList.flushConfirmation.message"),
+      confirmLabel: t("keyList.flushConfirmation.confirm"),
+      cancelLabel: t("keyList.flushConfirmation.cancel"),
+      type: "error",
+      onConfirm: async () => {
+        await handleFlushAllKeys();
+      }
+    });
+  };
 
   return (
     <>
@@ -52,6 +88,50 @@ export function Dashboard() {
           <h2 className="text-2xl font-semibold mb-6">
             {t("statistics.title")}
           </h2>
+
+          <div
+            className={`relative overflow-hidden grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 rounded-xl p-4 border shadow-lg ${
+              darkMode
+                ? "bg-gradient-to-br from-slate-900/80 via-slate-900/40 to-slate-800/70 border-white/10"
+                : "bg-gradient-to-br from-white via-slate-50 to-slate-100 border-slate-200"
+            }`}
+          >
+            <div
+              className={`pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full blur-3xl ${
+                darkMode ? "bg-blue-500/15" : "bg-blue-500/20"
+              }`}
+            />
+            <div
+              className={`pointer-events-none absolute -left-20 -bottom-20 h-40 w-40 rounded-full blur-3xl ${
+                darkMode ? "bg-emerald-500/10" : "bg-emerald-500/20"
+              }`}
+            />
+            <button
+              onClick={() => setDumpModalOpen(true)}
+              className={actionButtonClass("primary")}
+              disabled={exportDisabled}
+            >
+              <ArrowDownTrayIcon className="w-5 h-5" />
+              {t("keyList.export")}
+            </button>
+
+            <button
+              onClick={() => setImportModalOpen(true)}
+              className={actionButtonClass("success")}
+              disabled={importDisabled}
+            >
+              <ArrowUpTrayIcon className="w-5 h-5" />
+              {t("keyList.import")}
+            </button>
+
+            <button
+              onClick={handleConfirmFlushAll}
+              className={actionButtonClass("danger")}
+            >
+              <TrashIcon className="w-5 h-5" />
+              {t("keyList.clearAll")}
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
             <InfoCard
@@ -181,6 +261,25 @@ export function Dashboard() {
           </div>
         </div>
       </div>
+      <DumpExportModal
+        isOpen={dumpModalOpen}
+        onClose={() => setDumpModalOpen(false)}
+        connectionId={currentConnection.id}
+        connectionName={currentConnection.name}
+        connectionHost={currentConnection.host}
+        connectionPort={currentConnection.port}
+      />
+      <DumpImportModal
+        isOpen={importModalOpen}
+        onClose={() => {
+          setImportModalOpen(false);
+          void refreshKeyCount();
+        }}
+        connectionId={currentConnection.id}
+        onImportComplete={() => {
+          void refreshKeyCount();
+        }}
+      />
       <ConnectionList />
     </>
   );

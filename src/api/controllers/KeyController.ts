@@ -12,7 +12,8 @@ import {
   ONE_MINUTE_IN_SECONDS,
   ONE_DAY_IN_SECONDS,
   RESERVED_KEYS,
-  isReservedKey
+  isReservedKey,
+  touchConnection
 } from "@/api/utils";
 import { executeMemcachedCommand } from "@/api/utils/executeMemcachedCommand";
 
@@ -21,6 +22,12 @@ type KeyPayload = {
   value: string;
   timeUntilExpiration: number;
   size: number;
+};
+
+type ImportItem = {
+  key?: string;
+  value?: unknown;
+  timeUntilExpiration?: number;
 };
 
 const INDEX_REFRESH_EVENT = "index-refresh";
@@ -48,6 +55,54 @@ type IndexRefreshPayload = {
 type IndexAddPayload = {
   connection: MemcachedConnection;
   key: string;
+};
+
+type DumpStartPayload = {
+  total: number;
+  batchSize: number;
+  batchCount: number;
+};
+
+type DumpPrefetchPayload = {
+  total: number;
+  batchSize: number;
+  batchCount: number;
+  indexCount: number;
+  cachedumpCount: number;
+};
+
+type DumpBatchPayload = {
+  items: KeyPayload[];
+  batchIndex: number;
+  batchCount: number;
+  processed: number;
+  total: number;
+  successCount: number;
+  failureCount: number;
+  progress: number;
+  successRate: number;
+};
+
+type DumpSummaryPayload = {
+  total: number;
+  processed: number;
+  successCount: number;
+  failureCount: number;
+  durationMs: number;
+};
+
+type ImportBatchResult = {
+  processed: number;
+  successCount: number;
+  failureCount: number;
+  importedKeys: string[];
+};
+
+type DumpKeySnapshot = {
+  keys: string[];
+  keysInfo: Key[] | null;
+  indexCount: number;
+  cachedumpCount: number;
 };
 
 class KeyController {
@@ -302,7 +357,10 @@ class KeyController {
         throw new Error("Valor curr_items invalido");
       }
 
-      response.json({ count });
+      const reservedCount = await this.getReservedKeyCount(connection);
+      const visibleCount = Math.max(0, count - reservedCount);
+
+      response.json({ count: visibleCount });
     } catch (error) {
       const message = "Falha ao contar chaves";
       logger.error(message, error);
@@ -419,6 +477,226 @@ class KeyController {
     }
   }
 
+  async streamDump(
+    connection: MemcachedConnection,
+    options: {
+      batchSize?: number;
+      onStart?: (payload: DumpStartPayload) => void | Promise<void>;
+      onBatch: (payload: DumpBatchPayload) => void | Promise<void>;
+      onComplete?: (payload: DumpSummaryPayload) => void | Promise<void>;
+      onCancel?: (payload: DumpSummaryPayload) => void | Promise<void>;
+      shouldCancel?: () => boolean;
+    }
+  ): Promise<void> {
+    const startedAt = Date.now();
+    touchConnection(connection);
+    const { keys, keysInfo } = await this.resolveDumpKeys(connection);
+    const total = keys.length;
+    const batchSize = this.resolveDumpBatchSize(options.batchSize);
+    const batchCount = total > 0 ? Math.ceil(total / batchSize) : 0;
+
+    if (options.onStart) {
+      await options.onStart({ total, batchSize, batchCount });
+    }
+
+    if (total === 0) {
+      const summary: DumpSummaryPayload = {
+        total: 0,
+        processed: 0,
+        successCount: 0,
+        failureCount: 0,
+        durationMs: Date.now() - startedAt
+      };
+      if (options.onComplete) {
+        await options.onComplete(summary);
+      }
+      return;
+    }
+
+    const serverUnixTime = await this.getServerUnixTime(connection);
+    let processed = 0;
+    let successCount = 0;
+
+    for (let index = 0; index < total; index += batchSize) {
+      if (options.shouldCancel?.()) {
+        const summary: DumpSummaryPayload = {
+          total,
+          processed,
+          successCount,
+          failureCount: Math.max(processed - successCount, 0),
+          durationMs: Date.now() - startedAt
+        };
+        if (options.onCancel) {
+          await options.onCancel(summary);
+        }
+        return;
+      }
+
+      touchConnection(connection);
+      const batchKeys = keys.slice(index, index + batchSize);
+      const items = await this.getKeysValue(
+        batchKeys,
+        connection,
+        keysInfo ?? undefined,
+        serverUnixTime
+      );
+
+      processed += batchKeys.length;
+      successCount += items.length;
+      const failureCount = Math.max(processed - successCount, 0);
+      const progress = total > 0 ? Math.round((processed / total) * 100) : 100;
+      const successRate =
+        total > 0 ? Math.round((successCount / total) * 100) : 100;
+
+      await options.onBatch({
+        items,
+        batchIndex: Math.floor(index / batchSize) + 1,
+        batchCount,
+        processed,
+        total,
+        successCount,
+        failureCount,
+        progress,
+        successRate
+      });
+    }
+
+    const summary: DumpSummaryPayload = {
+      total,
+      processed,
+      successCount,
+      failureCount: Math.max(total - successCount, 0),
+      durationMs: Date.now() - startedAt
+    };
+
+    if (options.onComplete) {
+      await options.onComplete(summary);
+    }
+  }
+
+  async importBatch(
+    connection: MemcachedConnection,
+    items: ImportItem[]
+  ): Promise<ImportBatchResult> {
+    const list = Array.isArray(items) ? items : [];
+    if (list.length === 0) {
+      return {
+        processed: 0,
+        successCount: 0,
+        failureCount: 0,
+        importedKeys: []
+      };
+    }
+
+    touchConnection(connection);
+    const allowReservedKeys = this.shouldExposeReservedKeys();
+    const maxRelativeExpiration = ONE_DAY_IN_SECONDS * 30;
+    const nowUnixTime = Math.floor(Date.now() / 1000);
+    const limit = pLimit(
+      Math.min(MAX_CONCURRENT_REQUESTS, Math.max(1, list.length))
+    );
+
+    const results = await Promise.all(
+      list.map((item) =>
+        limit(async () => {
+          const key = typeof item?.key === "string" ? item.key.trim() : "";
+          if (!key) {
+            return { ok: false, key: "" };
+          }
+
+          if (!allowReservedKeys && isReservedKey(key)) {
+            return { ok: false, key };
+          }
+
+          const rawValue = item?.value;
+          if (rawValue === undefined) {
+            return { ok: false, key };
+          }
+
+          const value =
+            typeof rawValue === "string" ? rawValue : String(rawValue);
+          const expiresRaw = item?.timeUntilExpiration;
+          const ttl = Number.isFinite(expiresRaw)
+            ? Math.max(0, Math.floor(expiresRaw as number))
+            : 0;
+          const resolvedExpiration =
+            ttl > maxRelativeExpiration ? nowUnixTime + ttl : ttl;
+          const options =
+            resolvedExpiration > 0
+              ? { expires: resolvedExpiration }
+              : undefined;
+
+          try {
+            const success = await connection.client.set(key, value, options);
+            return { ok: Boolean(success), key };
+          } catch (error) {
+            logger.error(`Erro ao importar chave ${key}`, error as Error);
+            return { ok: false, key };
+          }
+        })
+      )
+    );
+
+    const importedKeys: string[] = [];
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (const result of results) {
+      if (result.ok) {
+        successCount += 1;
+        importedKeys.push(result.key);
+      } else {
+        failureCount += 1;
+      }
+    }
+
+    return {
+      processed: list.length,
+      successCount,
+      failureCount,
+      importedKeys
+    };
+  }
+
+  async prefetchDump(
+    connection: MemcachedConnection,
+    options: { batchSize?: number } = {}
+  ): Promise<DumpPrefetchPayload> {
+    touchConnection(connection);
+    const snapshot = await this.getDumpKeySnapshot(connection);
+    const total = snapshot.keys.length;
+    const batchSize = this.resolveDumpBatchSize(options.batchSize);
+    const batchCount = total > 0 ? Math.ceil(total / batchSize) : 0;
+
+    return {
+      total,
+      batchSize,
+      batchCount,
+      indexCount: snapshot.indexCount,
+      cachedumpCount: snapshot.cachedumpCount
+    };
+  }
+
+  async registerImportedKeys(
+    connection: MemcachedConnection,
+    keys: string[]
+  ): Promise<void> {
+    const uniqueKeys = Array.from(new Set(keys)).filter(
+      (key) => key && !isReservedKey(key)
+    );
+
+    if (uniqueKeys.length === 0) {
+      return;
+    }
+
+    if (connection.authentication) {
+      await this.updateKeyIndex(uniqueKeys, connection, false);
+      return;
+    }
+
+    this.emitIndexRefresh(connection);
+  }
+
   private resolveConnection(request: Request): {
     connection: MemcachedConnection;
     connectionId: string;
@@ -470,6 +748,41 @@ class KeyController {
       : storedKeys;
 
     return { storedKeys, reservedIndexKeys, listKeys };
+  }
+
+  private async getReservedKeyCount(
+    connection: MemcachedConnection
+  ): Promise<number> {
+    try {
+      const response = await connection.client.get(RESERVED_KEYS.INDEXES);
+      if (!response?.value) {
+        return 0;
+      }
+
+      let indexKeys: string[] = [];
+      try {
+        const parsed = JSON.parse(response.value.toString());
+        if (Array.isArray(parsed)) {
+          indexKeys = Array.from(
+            new Set(
+              parsed.filter(
+                (key): key is string =>
+                  typeof key === "string" &&
+                  key.startsWith(RESERVED_KEYS.SHARD_PREFIX)
+              )
+            )
+          );
+        }
+      } catch (error) {
+        logger.error("Erro ao ler indice de chaves", error as Error);
+        return 1;
+      }
+
+      return 1 + indexKeys.length;
+    } catch (error) {
+      logger.error("Erro ao obter chaves reservadas", error as Error);
+      return 0;
+    }
   }
 
   private async sendCachedumpResponse(
@@ -1122,6 +1435,82 @@ class KeyController {
     }
 
     return filtered;
+  }
+
+  private resolveDumpBatchSize(batchSize?: number): number {
+    const maxBatchSize = Math.max(1, Math.min(MAX_CONCURRENT_REQUESTS, 100));
+    const defaultBatchSize = Math.min(50, maxBatchSize);
+
+    if (!Number.isFinite(batchSize) || batchSize === undefined) {
+      return defaultBatchSize;
+    }
+
+    return Math.max(1, Math.min(Math.floor(batchSize), maxBatchSize));
+  }
+
+  private async resolveDumpKeys(
+    connection: MemcachedConnection
+  ): Promise<{ keys: string[]; keysInfo: Key[] | null }> {
+    const snapshot = await this.getDumpKeySnapshot(connection);
+    return { keys: snapshot.keys, keysInfo: snapshot.keysInfo };
+  }
+
+  private async getDumpKeySnapshot(
+    connection: MemcachedConnection
+  ): Promise<DumpKeySnapshot> {
+    const allowReservedKeys = this.shouldExposeReservedKeys();
+
+    if (connection.authentication) {
+      let storedKeys: string[] = [];
+      try {
+        storedKeys = await this.getStoredKeysFromIndex(connection);
+      } catch (error) {
+        logger.error("Erro ao ler indice para exportacao", error as Error);
+      }
+      const keys = allowReservedKeys
+        ? storedKeys
+        : storedKeys.filter((key) => !isReservedKey(key));
+      return {
+        keys,
+        keysInfo: null,
+        indexCount: keys.length,
+        cachedumpCount: 0
+      };
+    }
+
+    let storedKeys: string[] = [];
+    try {
+      storedKeys = await this.getStoredKeysFromIndex(connection);
+    } catch (error) {
+      logger.error("Erro ao ler indice para exportacao", error as Error);
+    }
+
+    let cachedumpKeysInfo: Key[] | null = null;
+    try {
+      const cachedump = await this.getCachedumpKeysInfo(connection);
+      cachedumpKeysInfo = allowReservedKeys
+        ? cachedump.keysInfo
+        : cachedump.keysInfo.filter((info) => !isReservedKey(info.key));
+    } catch (error) {
+      logger.error("Erro ao obter cachedump para exportacao", error as Error);
+    }
+
+    const storedKeysFiltered = allowReservedKeys
+      ? storedKeys
+      : storedKeys.filter((key) => !isReservedKey(key));
+    const cachedumpKeys = cachedumpKeysInfo
+      ? cachedumpKeysInfo.map((info) => info.key)
+      : [];
+    const keys = Array.from(
+      new Set([...storedKeysFiltered, ...cachedumpKeys])
+    ).sort();
+
+    return {
+      keys,
+      keysInfo: cachedumpKeysInfo,
+      indexCount: storedKeysFiltered.length,
+      cachedumpCount: cachedumpKeys.length
+    };
   }
 }
 
