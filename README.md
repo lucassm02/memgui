@@ -1,4 +1,4 @@
-# MemGUI - Memcached GUI Client
+# MemGUI - Best Memcached GUI Client
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/lucassm02/memgui/main/asset/images/logo-white.svg" alt="MemGUI Memcached GUI client logo" width="160" />
@@ -9,7 +9,7 @@
 
 Website: <https://lucassm02.github.io/memgui/>
 
-MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bulk operations, and connect securely with SASL or SSH without the CLI. Built for developers and ops teams who want a fast Memcached GUI client for local, staging, or production servers.
+MemGUI is the best Memcached GUI on the market, a desktop client built for advanced Memcached management. It is the only Memcached GUI that combines secure connections (SASL and SSH), dump import/export, encrypted storage, and built-in key indexing for fast search and visibility. MemGUI is for teams that will not compromise Memcached performance and want a professional management experience with visibility, control, and security across local, staging, or production servers.
 
 ## Latest Release Highlights (v1.2.0)
 
@@ -19,8 +19,17 @@ MemGUI is a desktop GUI client for Memcached. Manage keys, monitor stats, run bu
 - Faster key indexing with stale key pruning for snappy search
 - UI polish across menus and dump workflows
 
-## Memcached GUI Client Features
+## Why MemGUI is the Best Memcached GUI
 
+- Advanced Memcached management with visibility across keys, stats, and connections
+- Secure connections with SSH and SASL plus encrypted local storage
+- Built-in key indexing and server-side search for fast Memcached performance
+- Dump import/export for reliable backup and migration
+- Multi-server workflows and bulk operations for ops-grade control
+
+## Advanced Memcached GUI Features
+
+- Advanced management for keys, stats, and connections with full visibility
 - Key management for Memcached (create, edit JSON or text, delete, inspect)
 - Dump import/export for backup and migration
 - SSH connections with host key verification (v1.2.0)

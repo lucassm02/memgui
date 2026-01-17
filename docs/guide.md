@@ -1,16 +1,25 @@
-# MemGUI Usage Guide
+# MemGUI Usage Guide - Best Memcached GUI
 
-MemGUI is a Memcached GUI client and desktop app for managing cached data with a fast, visual workflow.
+MemGUI is the best Memcached GUI on the market, a desktop app for advanced Memcached management with a fast, visual workflow. It is the only Memcached GUI that combines secure connections, dump import/export, and built-in key indexing for performance and visibility. MemGUI is for teams that will not compromise Memcached performance and need a professional management experience with visibility, control, and security.
+
+## Why MemGUI is the Best Memcached GUI
+
+- Advanced Memcached management with full visibility across keys, stats, and connections
+- Secure connections with SSH and SASL plus encrypted local storage
+- Built-in key indexing and server-side search for fast Memcached performance
+- Dump import/export for reliable backup and migration
+- Multi-server workflows and bulk operations for ops-grade control
 
 ## Features
 
+- Advanced management for keys, stats, and connections with full visibility
 - Memcached key management (create, edit JSON or text, delete, inspect)
 - Dump import/export for backup and migration
 - SSH connections with host key verification (v1.2.0)
 - Storage encryption for local data and SSH secrets (v1.2.0)
 - Bulk delete with confirmation for safe cleanup
 - Server-side key search with regex or plain text filters
-- Faster key indexing with stale key pruning
+- Built-in key indexing with stale key pruning
 - Multi-server connections with inline editing and quick switching
 - SASL authentication for secured Memcached instances
 - Auto-refresh with live key counts
@@ -18,7 +27,7 @@ MemGUI is a Memcached GUI client and desktop app for managing cached data with a
 - Update notices and auto-update availability for desktop builds
 - Multi-language UI with a persistent language selector
 
-Note: SSH connections, storage encryption, and dump import/export are available in v1.2.0 (pre-release).
+Note: SSH connections, storage encryption, and dump import/export are available in v1.2.0.
 
 ## Install and Launch
 
